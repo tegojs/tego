@@ -77,7 +77,7 @@ async function appReady() {
 
 async function runApp(options = {}) {
   console.log('installing...');
-  await run('tachybase', ['install', '-f']);
+  await run('tego', ['install', '-f']);
   if (await isPortReachable(process.env.APP_PORT!)) {
     console.log('app started');
     return;
@@ -225,7 +225,7 @@ export default (cli: Command) => {
     });
 
   e2e.command('reinstall-app').action(async (options) => {
-    await run('tachybase', ['install', '-f'], options);
+    await run('tego', ['install', '-f'], options);
   });
 
   e2e.command('install-deps').action(async () => {

@@ -1,6 +1,7 @@
 import { Command } from 'commander';
+import { rimrafSync } from 'rimraf';
 
-import { isDev, run } from '../util';
+import { isDev } from '../util';
 
 /**
  *
@@ -15,11 +16,9 @@ export default (cli: Command) => {
       if (!isDev()) {
         return;
       }
-      run('rimraf', ['-rf', './storage/app-dev']);
+      rimrafSync('{apps,packages}/*/{lib,esm,es,dist,node_modules}', { glob: true });
       if (opts.all) {
-        run('rimraf', ['-rf', '{node_modules,.umi,tsconfig.paths.json}']);
+        rimrafSync('node_modules', { glob: true });
       }
-      run('rimraf', ['-rf', 'apps/*/{lib,esm,es,dist,node_modules}']);
-      run('rimraf', ['-rf', 'packages/*/{lib,esm,es,dist,node_modules}']);
     });
 };

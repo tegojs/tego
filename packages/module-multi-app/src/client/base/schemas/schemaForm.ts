@@ -21,17 +21,17 @@ export const formSchema: ISchema = {
     //   'x-decorator': 'FormItem',
     //   'x-content': i18nText('Standalone deployment'),
     // },
-    'options.autoStart': {
-      title: i18nText('Start mode'),
-      'x-component': 'Radio.Group',
-      'x-decorator': 'FormItem',
-      default: false,
-      enum: [
-        { label: i18nText('Start on first visit'), value: false },
-        { label: i18nText('Start with main application'), value: true },
-      ],
-      'x-hidden': '{{ !admin }}',
-    },
+    // 'options.autoStart': {
+    //   title: i18nText('Start mode'),
+    //   'x-component': 'Radio.Group',
+    //   'x-decorator': 'FormItem',
+    //   default: false,
+    //   enum: [
+    //     { label: i18nText('Start on first visit'), value: false },
+    //     { label: i18nText('Start with main application'), value: true },
+    //   ],
+    //   'x-hidden': '{{ !admin }}',
+    // },
     cnamePrefix: {
       title: i18nText('Custom domain prefix'),
       'x-component': 'Input',

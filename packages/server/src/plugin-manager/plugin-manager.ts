@@ -395,6 +395,10 @@ export class PluginManager {
     }
     for (const plugin of this.options.plugins || []) {
       if (typeof plugin === 'string') {
+        // TODO tachybase 的presets插件处理机制
+        if (plugin in TachybaseGlobal.getInstance().get<Record<string, any>>('PRESETS')) {
+          continue;
+        }
         const packageName = await PluginManager.getPackageName(plugin);
         const file = require.resolve(packageName, { paths: [process.cwd(), ...pluginPaths] });
         const sourceDir = basename(dirname(file)) === 'src' ? 'src' : 'lib';
@@ -867,14 +871,7 @@ export class PluginManager {
     }
     const file = resolve(process.cwd(), 'storage/app-upgrading');
     await fs.writeFile(file, '', 'utf-8');
-    // await this.app.upgrade();
-    if (process.env.IS_DEV_CMD) {
-      await tsxRerunning();
-    } else {
-      await execa('pnpm', ['tachybase', 'pm2-restart'], {
-        env: process.env,
-      });
-    }
+    await this.app.upgrade();
   }
 
   /**

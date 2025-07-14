@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-cloud-component",
   "displayName": "Cloud component",
-  "version": "1.3.13",
+  "version": "1.3.17",
   "description": "Cloud component",
   "keywords": [
     "System management"
@@ -14,13 +14,13 @@
   "devDependencies": {
     "@antv/g6": "^5.0.45",
     "@babel/core": "7.27.4",
-    "@babel/parser": "7.27.5",
+    "@babel/parser": "7.28.0",
     "@babel/preset-env": "7.27.2",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@babel/standalone": "7.27.6",
     "@babel/traverse": "7.27.4",
-    "@bytemd/plugin-gemoji": "1.21.0",
+    "@bytemd/plugin-gemoji": "1.22.0",
     "@bytemd/plugin-gfm": "1.21.0",
     "@bytemd/plugin-highlight": "1.21.0",
     "@bytemd/react": "1.21.0",
@@ -28,7 +28,7 @@
     "@tachybase/components": "workspace:*",
     "@types/babel__core": "7.20.5",
     "@types/babel__traverse": "7.20.7",
-    "ahooks": "3.8.4",
+    "ahooks": "3.9.0",
     "antd": "5.22.5",
     "bytemd": "1.21.0",
     "exceljs": "^4.4.0",

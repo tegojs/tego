@@ -232,11 +232,11 @@ export class PluginMultiAppManager extends Plugin {
 
     Gateway.getInstance().addAppSelectorMiddleware(appSelectorMiddleware(this.app));
 
-    this.app.on('afterStart', onAfterStart(this.db));
+    // this.app.on('afterStart', onAfterStart(this.db));
 
-    this.app.on('afterUpgrade', async (app, options) => {
-      await this.subAppUpgradeHandler(app);
-    });
+    // this.app.on('afterUpgrade', async (app, options) => {
+    //   await this.subAppUpgradeHandler(app);
+    // });
 
     const notifyStatusChange = this.notifyStatusChange.bind(this);
     this.app.on('beforeStop', async (app) => {

@@ -9,7 +9,7 @@ import { SchemaInitializerButton } from '../components/SchemaInitializerButton';
 import { withInitializer } from '../hoc';
 import { SchemaInitializerOptions } from '../types';
 
-export * from './useAriaAttributeOfMenuItem';
+export { useAriaAttributeOfMenuItem } from './useAriaAttributeOfMenuItem';
 
 /**
  * @internal

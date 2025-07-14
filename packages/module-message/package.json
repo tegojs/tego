@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-message",
   "displayName": "Message",
-  "version": "1.3.13",
+  "version": "1.3.17",
   "description": "Send messages to users.",
   "keywords": [
     "System management"
@@ -13,13 +13,13 @@
   "dependencies": {},
   "devDependencies": {
     "@alicloud/dysmsapi20170525": "2.0.24",
-    "@alicloud/openapi-client": "0.4.12",
+    "@alicloud/openapi-client": "0.4.15",
     "@alicloud/tea-util": "1.4.9",
     "@ant-design/icons": "~5.3.7",
     "@tachybase/actions": "workspace:*",
     "@tachybase/components": "workspace:*",
     "@tachybase/utils": "workspace:*",
-    "ahooks": "3.8.4",
+    "ahooks": "3.9.0",
     "antd": "5.22.5",
     "jsonwebtoken": "8.5.1",
     "lodash": "^4.17.21",

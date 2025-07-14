@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-env-secrets",
   "displayName": "Variables and secrets",
-  "version": "1.3.13",
+  "version": "1.3.17",
   "description": "Centralized management of environment variables and secrets, used for sensitive data storage, configuration data reuse, multi-environment isolation, and more.",
   "keywords": [
     "System management"

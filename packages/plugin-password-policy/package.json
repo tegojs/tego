@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-password-policy",
   "displayName": "Password policy",
-  "version": "1.3.13",
+  "version": "1.3.17",
   "description": "Password policy, including password strength, password attempt limit, password lock time, ip whitelist/blacklist, etc.",
   "keywords": [
     "Security"

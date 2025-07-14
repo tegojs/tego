@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-department",
   "displayName": "Department",
-  "version": "1.3.13",
+  "version": "1.3.17",
   "description": "Organize users into a hierarchical tree structure of departments, and assign roles to departments as well.",
   "keywords": [
     "Users & permissions"
@@ -12,7 +12,7 @@
     "@ant-design/icons": "~5.3.7",
     "@tachybase/schema": "workspace:*",
     "@types/lodash": "~4.17.13",
-    "ahooks": "^3.8.4",
+    "ahooks": "^3.9.0",
     "antd": "5.22.5",
     "lodash": "4.17.21",
     "react": "^18.3.1"

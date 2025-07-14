@@ -1,4 +1,4 @@
-FROM tachybase/tachybase-node-pg:0.0.2 AS base
+FROM tegojs/tego-node-pg:latest AS base
 
 ARG TEGO_VERSION=latest
 ARG NPM_REGISTRY=https://registry.npmjs.org

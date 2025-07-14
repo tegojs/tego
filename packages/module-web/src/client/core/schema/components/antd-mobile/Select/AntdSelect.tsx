@@ -198,6 +198,7 @@ export const AntdSelect = observer((props) => {
               </CheckList>
             ) : (
               <PickerView
+                className={`${styles['customPickerView']}`}
                 columns={[showOptions]}
                 onChange={(value) => {
                   setSelectValue(value);

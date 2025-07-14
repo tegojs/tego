@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-demos-game-runesweeper",
   "displayName": "Game runesweeper demo",
-  "version": "1.3.13",
+  "version": "1.3.17",
   "description": "Game runesweeper demo",
   "keywords": [
     "Others"

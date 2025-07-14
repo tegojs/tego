@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-instrumentation",
   "displayName": "Custom instrumentation",
-  "version": "1.3.13",
+  "version": "1.3.17",
   "description": "A module for tracking and instrumentation in Tachybase.",
   "keywords": [
     "Logging and monitoring"

@@ -1,4 +1,4 @@
-name: Tachybase Image Nightly
+name: Tegojs Image Nightly
 
 on:
   workflow_dispatch:
@@ -31,8 +31,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: docker/tachybase/Dockerfile
+          file: docker/tego-nightly/Dockerfile
           push: true
           tags: |
-            tachybase/tachybase:nightly-${{ github.event.inputs.docker_tag }}
-            tachybase/tachybase:nightly-latest
+            tegojs/tego-nightly:${{ github.event.inputs.docker_tag }}
+            tegojs/tego-nightly:latest

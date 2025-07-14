@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-workflow",
   "displayName": "Workflow",
-  "version": "1.3.13",
+  "version": "1.3.17",
   "description": "A powerful BPM tool that provides foundational support for business automation, with the capability to extend unlimited triggers and nodes.",
   "keywords": [
     "Workflow"
@@ -14,7 +14,7 @@
   "devDependencies": {
     "@ant-design/icons": "~5.3.7",
     "@babel/core": "7.27.4",
-    "@babel/parser": "7.27.5",
+    "@babel/parser": "7.28.0",
     "@babel/preset-env": "7.27.2",
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
