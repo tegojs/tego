@@ -23,6 +23,7 @@ export class PluginPresets extends Plugin {
     'web',
     'worker-thread',
     'env-secrets',
+    'instrumentation',
   ];
 
   get builtInPlugins() {
@@ -49,7 +50,6 @@ export class PluginPresets extends Plugin {
     ['field-encryption', '0.23.8', true],
     ['log-viewer', '0.22.67', true],
     ['otp', '0.22.67', true],
-    ['instrumentation', '1.0.18', true],
     ['full-text-search', '0.23.24', true],
     ['password-policy', '0.23.65', true],
     ['auth-pages', '0.23.65', true],
@@ -91,6 +91,7 @@ export class PluginPresets extends Plugin {
     ['api-logs', '0.23.49', false],
     ['ocr-convert', '1.0.12', false],
     ['text-copy', '1.2.11', false],
+    ['log-prometheus', '1.3.15', false],
   ];
 
   get localPlugins() {

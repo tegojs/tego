@@ -102,5 +102,10 @@ export default defineCollection({
       type: 'string',
       name: 'specialRole',
     },
+    {
+      type: 'date',
+      name: 'lastSignInAt',
+      defaultValue: () => new Date(),
+    },
   ],
 });

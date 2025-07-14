@@ -281,6 +281,13 @@ export class BaseAuth extends Auth {
         message: this.ctx.t('User not found. Please sign in again to continue.', { ns: localeNamespace }),
         code: AuthErrorCode.NOT_EXIST_USER,
       });
+    } else {
+      await this.userRepository.update({
+        filterByTk: user.id,
+        values: {
+          lastSignInAt: new Date(),
+        },
+      });
     }
     const token = await this.signNewToken(user.id);
     return {

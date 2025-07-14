@@ -57,6 +57,11 @@ export const convertUTCToLocal = (utcString, formater = 'YYYY-MM-DD HH:mm:ss') =
   return localDate;
 };
 
+// 格式化日期时间
+export const formatDateTime = (date: Date, formater = 'YYYY-MM-DD HH:mm:ss') => {
+  return dayjs(date).format(formater);
+};
+
 const toMoment = (val: any, options?: Str2momentOptions) => {
   if (!val) {
     return;
