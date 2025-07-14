@@ -29,7 +29,6 @@ import {
   useActionContext,
   useCompile,
 } from '../../../../schema-component';
-
 import { getProperties, isSpecialInterrface } from './interfaceSchemaOptions';
 
 export const fieldInterfaceEditableSettings = new EditableSchemaSettings({
@@ -118,6 +117,10 @@ export const SetCollectionFieldModalWrapper = (props) => {
         const extraValues: Record<string, any> = {};
         if (isAssociationField) {
           extraValues.foreignKey = `f_${uid()}`;
+          if (record?.otherKey) {
+            extraValues.otherKey = `f_${uid()}`;
+            extraValues.through = `t_${uid()}`;
+          }
         }
 
         await api.resource('collections.fields', collectionName).update({

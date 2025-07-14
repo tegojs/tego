@@ -182,39 +182,43 @@ export function afterUpdateForForeignKeyField(db: Database) {
         },
         transaction,
       });
-    }
-    // 3. foreign key 在 through collection（多对多）
-    else if (['linkTo', 'm2m'].includes(interfaceType)) {
+    } else if (['linkTo', 'm2m'].includes(interfaceType)) {
       if (type !== 'belongsToMany') {
         return;
       }
+
       const collectionsRepo = db.getRepository('collections');
-      let throughInstance = await collectionsRepo.findOne({
+
+      const existingThrough = await collectionsRepo.findOne({
         filter: {
           name: through,
         },
         transaction,
       });
-      if (!throughInstance) {
-        throughInstance = await collectionsRepo.create({
-          values: {
+
+      if (existingThrough) {
+        await collectionsRepo.destroy({
+          filter: {
             name: through,
-            title: through,
-            timestamps: true,
-            autoGenId: false,
-            hidden: true,
-            autoCreate: true,
-            isThrough: true,
-            sortable: false,
           },
-          context,
           transaction,
         });
       }
 
-      // 删除旧 through 外键字段
-      await removeOldForeignKeyField(through, oldForeignKey);
-      await removeOldForeignKeyField(through, oldOtherKey);
+      await collectionsRepo.create({
+        values: {
+          name: through,
+          title: through,
+          timestamps: true,
+          autoGenId: false,
+          hidden: true,
+          autoCreate: true,
+          isThrough: true,
+          sortable: false,
+        },
+        context,
+        transaction,
+      });
 
       const opts1 = generateFkOptions(through, newForeignKey);
       const opts2 = generateFkOptions(through, newOtherKey);
@@ -226,6 +230,7 @@ export function afterUpdateForForeignKeyField(db: Database) {
         },
         transaction,
       });
+
       await createFieldIfNotExists({
         values: {
           collectionName: through,
@@ -246,6 +251,7 @@ export function afterUpdateForForeignKeyField(db: Database) {
       await hook(model, options);
     } catch (error) {
       console.error('Failed to update foreign key field:', error);
+      throw error;
     }
   };
 }
