@@ -29,6 +29,7 @@ import {
   useActionContext,
   useCompile,
 } from '../../../../schema-component';
+
 import { getProperties, isSpecialInterrface } from './interfaceSchemaOptions';
 
 export const fieldInterfaceEditableSettings = new EditableSchemaSettings({
