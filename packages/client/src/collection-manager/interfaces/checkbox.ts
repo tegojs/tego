@@ -7,6 +7,7 @@ export class CheckboxFieldInterface extends CollectionFieldInterface {
   name = 'checkbox';
   type = 'object';
   group = 'choices';
+  icon = 'checkboxField';
   order = 1;
   title = '{{t("Checkbox")}}';
   default = {

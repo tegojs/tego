@@ -341,7 +341,6 @@ export const tableColumnSettings = new SchemaSettings({
             };
           },
         },
-        fieldComponentSettingsItem,
       ],
     },
     {

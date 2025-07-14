@@ -91,6 +91,7 @@ export class PluginPresets extends Plugin {
     ['api-logs', '0.23.49', false],
     ['ocr-convert', '1.0.12', false],
     ['text-copy', '1.2.11', false],
+    ['form-design', '1.3.16', false],
   ];
 
   get localPlugins() {

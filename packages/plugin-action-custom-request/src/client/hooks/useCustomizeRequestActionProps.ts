@@ -5,6 +5,7 @@ import {
   useBlockRequestContext,
   useCollection_deprecated,
   useCompile,
+  useParsedFilter,
   useRecord,
 } from '@tachybase/client';
 import { useField, useFieldSchema, useForm } from '@tachybase/schema';
@@ -35,6 +36,36 @@ function getFilenameFromHeader(header) {
   return null;
 }
 
+const matchReturnValue = (inputArray, context) => {
+  const getValueByPath = (obj, pathArray) => {
+    return pathArray.reduce((acc, key) => (acc && acc[key] !== undefined ? acc[key] : undefined), obj);
+  };
+
+  const resolveExpression = (expr, context) => {
+    if (typeof expr === 'string') {
+      // 同时匹配 ${...} 和 {{...}}
+      return expr
+        .replace(/\$\{([^}]+)\}/g, (_, path) => {
+          const value = getValueByPath(context, path.trim().split('.'));
+          return value !== undefined ? value : '';
+        })
+        .replace(/\{\{([^}]+)\}\}/g, (_, path) => {
+          const value = getValueByPath(context, path.trim().split('.'));
+          return value !== undefined ? value : '';
+        });
+    }
+    return expr;
+  };
+
+  const resolveInputArray = (inputArray, context) => {
+    return inputArray.map((item) => ({
+      name: item.name,
+      value: resolveExpression(item.value, context),
+    }));
+  };
+  return resolveInputArray(inputArray, context);
+};
+
 export const useCustomizeRequestActionProps = () => {
   const apiClient = useAPIClient();
   const navigate = useNavigate();
@@ -52,6 +83,7 @@ export const useCustomizeRequestActionProps = () => {
   return {
     async onClick() {
       const { skipValidator, onSuccess } = actionSchema?.['x-action-settings'] ?? {};
+      const { resultValues } = actionSchema?.['x-request-setting'] ?? {};
       const xAction = actionSchema?.['x-action'];
       if (skipValidator !== true && xAction === 'customize:form:request') {
         await form.submit();
@@ -84,6 +116,16 @@ export const useCustomizeRequestActionProps = () => {
 
         const headerContentType = res.headers.getContentType();
         let filename = getFilenameFromHeader(res.headers['content-disposition']);
+
+        if (resultValues?.length) {
+          const requestData = { ...JSON.parse(res?.data?.data || {}), ...form.values };
+          const reqFormValues = {};
+          const matchValues = matchReturnValue(resultValues, requestData);
+          matchValues.forEach((valueItem) => {
+            reqFormValues[valueItem.name] = valueItem.value;
+          });
+          form.setValues(reqFormValues);
+        }
         if (onSuccess?.down) {
           if (headerContentType === 'application/octet-stream') {
             const downTitle = onSuccess.downTitle;

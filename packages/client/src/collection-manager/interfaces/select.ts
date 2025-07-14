@@ -6,6 +6,7 @@ import { dataSource, defaultProps, operators } from './properties';
 export class SelectFieldInterface extends CollectionFieldInterface {
   name = 'select';
   type = 'object';
+  icon = 'selectField';
   group = 'choices';
   order = 2;
   title = '{{t("Single select")}}';
@@ -31,7 +32,7 @@ export class SelectFieldInterface extends CollectionFieldInterface {
   schemaInitialize(schema: ISchema, { block }) {
     const props = (schema['x-component-props'] = schema['x-component-props'] || {});
     props.style = {
-      ...(props.style || {}),
+      ...props.style,
       width: '100%',
     };
 

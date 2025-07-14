@@ -8,6 +8,7 @@ import { defaultProps, recordPickerViewer } from './properties';
 export class UpdatedByFieldInterface extends CollectionFieldInterface {
   name = 'updatedBy';
   type = 'object';
+  icon = 'UserOutlined';
   group = 'systemInfo';
   order = 4;
   title = '{{t("Last updated by")}}';

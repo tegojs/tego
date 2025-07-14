@@ -8,6 +8,7 @@ export class O2OFieldInterface extends CollectionFieldInterface {
   name = 'o2o';
   type = 'object';
   group = 'relation';
+  icon = 'DeploymentUnitOutlined';
   order = 3;
   title = '{{t("One to one")}}';
   description = '{{t("One to one description")}}';
@@ -194,6 +195,7 @@ export class OHOFieldInterface extends CollectionFieldInterface {
   name = 'oho';
   type = 'object';
   group = 'relation';
+  icon = 'DeploymentUnitOutlined';
   order = 3;
   title = '{{t("One to one (has one)")}}';
   description = '{{t("One to one description")}}';
@@ -374,6 +376,7 @@ export class OHOFieldInterface extends CollectionFieldInterface {
 export class OBOFieldInterface extends CollectionFieldInterface {
   name = 'obo';
   type = 'object';
+  icon = 'DeploymentUnitOutlined';
   group = 'relation';
   order = 3;
   title = '{{t("One to one (belongs to)")}}';

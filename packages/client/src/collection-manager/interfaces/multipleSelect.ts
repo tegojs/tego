@@ -6,6 +6,7 @@ import { dataSource, defaultProps, operators } from './properties';
 export class MultipleSelectFieldInterface extends CollectionFieldInterface {
   name = 'multipleSelect';
   type = 'object';
+  icon = 'multipleSelectField';
   group = 'choices';
   order = 3;
   title = '{{t("Multiple select")}}';
@@ -33,7 +34,7 @@ export class MultipleSelectFieldInterface extends CollectionFieldInterface {
   schemaInitialize(schema: ISchema, { block }) {
     const props = (schema['x-component-props'] = schema['x-component-props'] || {});
     props.style = {
-      ...(props.style || {}),
+      ...props.style,
       width: '100%',
     };
 

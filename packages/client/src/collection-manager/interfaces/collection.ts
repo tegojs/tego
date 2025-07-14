@@ -6,6 +6,7 @@ import { collectionDataSource, defaultProps, operators } from './properties';
 export class CollectionSelectFieldInterface extends CollectionFieldInterface {
   name = 'collection';
   type = 'string';
+  icon = 'ClusterOutlined';
   group = 'advanced';
   order = 5;
   title = '{{t("Collection selector")}}';
@@ -34,7 +35,7 @@ export class CollectionSelectFieldInterface extends CollectionFieldInterface {
   schemaInitialize(schema: ISchema, { block }): void {
     const props = (schema['x-component-props'] = schema['x-component-props'] || {});
     props.style = {
-      ...(props.style || {}),
+      ...props.style,
       width: '100%',
     };
 

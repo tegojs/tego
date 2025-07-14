@@ -24,6 +24,9 @@ import {
   detailsBlockSettings,
   singleDataDetailsBlockSettings,
 } from '../modules/blocks/data-blocks/details-single/detailsBlockSettings';
+import { createFormBlockEditableSettings } from '../modules/blocks/data-blocks/form-editor/createFormBlockEditableSettings';
+import { fieldInterfaceEditableSettings } from '../modules/blocks/data-blocks/form-editor/fieldsInterfaceEditableSettings';
+import { formItemFieldEditableSettings } from '../modules/blocks/data-blocks/form-editor/formItemFieldEditableSettings';
 import {
   createFormBlockSettings,
   creationFormBlockSettings,
@@ -42,23 +45,42 @@ import { filterFormBlockSettings } from '../modules/blocks/filter-blocks/form/fi
 import { filterFormItemFieldSettings } from '../modules/blocks/filter-blocks/form/filterFormItemFieldSettings';
 import { filterTreeBlockSettings } from '../modules/blocks/filter-blocks/tree/filterTreeBlockSettings';
 import { markdownBlockSettings } from '../modules/blocks/other-blocks/markdown/markdownBlockSettings';
+import { cascaderComponentFieldEditableSettings } from '../modules/fields/component/Cascader/cascaderComponentFieldEditableSettings';
 import { cascaderComponentFieldSettings } from '../modules/fields/component/Cascader/cascaderComponentFieldSettings';
+import { cascadeSelectComponentFieldEditableSettings } from '../modules/fields/component/CascadeSelect/cascadeSelectComponentFieldEditableSettings';
 import { cascadeSelectComponentFieldSettings } from '../modules/fields/component/CascadeSelect/cascadeSelectComponentFieldSettings';
+import { checkboxComponentFieldEditableSettings } from '../modules/fields/component/Checkbox/checkboxComponentFieldEditableSettings';
 import { checkboxComponentFieldSettings } from '../modules/fields/component/Checkbox/checkboxComponentFieldSettings';
+import { CustomTitleComponentFieldEditableSettings } from '../modules/fields/component/CustomTitle/customTitleComponentFieldEditableSettings';
 import { CustomTitleComponentFieldSettings } from '../modules/fields/component/CustomTitle/customTitleComponentFieldSettings';
+import { datePickerComponentFieldEditableSettings } from '../modules/fields/component/DatePicker/datePickerComponentFieldEditableSettings';
 import { datePickerComponentFieldSettings } from '../modules/fields/component/DatePicker/datePickerComponentFieldSettings';
+import { drawerSubTableComponentFieldEditableSettings } from '../modules/fields/component/DrawerSubTable/drawerSubTableComponentFieldEditableSettings';
 import { drawerSubTableComponentFieldSettings } from '../modules/fields/component/DrawerSubTable/drawerSubTableComponentFieldSettings';
+import { fileManagerComponentFieldEditableSettings } from '../modules/fields/component/FileManager/fileManagerComponentFieldEditableSettings';
 import { fileManagerComponentFieldSettings } from '../modules/fields/component/FileManager/fileManagerComponentFieldSettings';
+import { uploadAttachmentComponentFieldEditableSettings } from '../modules/fields/component/FileManager/uploadAttachmentComponentFieldEditableSettings';
 import { uploadAttachmentComponentFieldSettings } from '../modules/fields/component/FileManager/uploadAttachmentComponentFieldSettings';
 import { inputComponentFieldSettings } from '../modules/fields/component/Input/inputComponentFieldsSettings';
+import { inputNumberComponentFieldEditableSettings } from '../modules/fields/component/InputNumber/inputNumberComponentFieldEditableSettings';
 import { inputNumberComponentFieldSettings } from '../modules/fields/component/InputNumber/inputNumberComponentFieldSettings';
+import { inputPreviewComponentFieldSettings } from '../modules/fields/component/InputPreview/inputPreviewComponentFieldSettings';
+import { multipleComponentFieldSettings } from '../modules/fields/component/MultipleSelect/multipleSelectComponentFieldSettings';
+import { subformComponentFieldEditableSettings } from '../modules/fields/component/Nester/subformComponentFieldEditableSettings';
 import { subformComponentFieldSettings } from '../modules/fields/component/Nester/subformComponentFieldSettings';
+import { recordPickerComponentFieldEditableSettings } from '../modules/fields/component/Picker/recordPickerComponentFieldEditableSettings';
 import { recordPickerComponentFieldSettings } from '../modules/fields/component/Picker/recordPickerComponentFieldSettings';
+import { subformPopoverComponentFieldEditableSettings } from '../modules/fields/component/PopoverNester/subformPopoverComponentFieldEditableSettings';
 import { subformPopoverComponentFieldSettings } from '../modules/fields/component/PopoverNester/subformPopoverComponentFieldSettings';
+import { radioComponentFieldEditableSettings } from '../modules/fields/component/Radio/radioComponentFieldEditableSettings';
 import { radioComponentFieldSettings } from '../modules/fields/component/Radio/radioComponentFieldSettings';
+import { selectComponentFieldEditableSettings } from '../modules/fields/component/Select/selectComponentFieldEditableSettings';
 import { selectComponentFieldSettings } from '../modules/fields/component/Select/selectComponentFieldSettings';
+import { subTablePopoverComponentFieldEditableSettings } from '../modules/fields/component/SubTable/subTablePopoverComponentFieldEditableSettings';
 import { subTablePopoverComponentFieldSettings } from '../modules/fields/component/SubTable/subTablePopoverComponentFieldSettings';
+import { tagComponentFieldEditableSettings } from '../modules/fields/component/Tag/tagComponentFieldEditableSettings';
 import { tagComponentFieldSettings } from '../modules/fields/component/Tag/tagComponentFieldSettings';
+import { unixTimestampComponentFieldEditableSettings } from '../modules/fields/component/UnixTimestamp/unixTimestampComponentFieldEditableSettings';
 import { unixTimestampComponentFieldSettings } from '../modules/fields/component/UnixTimestamp/unixTimestampComponentFieldSettings';
 
 export class SchemaSettingsPlugin extends Plugin {
@@ -117,6 +139,7 @@ export class SchemaSettingsPlugin extends Plugin {
     this.schemaSettingsManager.add(datePickerComponentFieldSettings);
     this.schemaSettingsManager.add(unixTimestampComponentFieldSettings);
     this.schemaSettingsManager.add(inputComponentFieldSettings);
+    this.schemaSettingsManager.add(inputPreviewComponentFieldSettings);
     this.schemaSettingsManager.add(inputNumberComponentFieldSettings);
     this.schemaSettingsManager.add(checkboxComponentFieldSettings);
     this.schemaSettingsManager.add(radioComponentFieldSettings);
@@ -126,5 +149,30 @@ export class SchemaSettingsPlugin extends Plugin {
     this.schemaSettingsManager.add(cascadeSelectComponentFieldSettings);
     this.schemaSettingsManager.add(uploadAttachmentComponentFieldSettings);
     this.schemaSettingsManager.add(cascaderComponentFieldSettings);
+
+    // editable formItem settings
+    this.app.editableSchemaSettingsManager.add(formItemFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(createFormBlockEditableSettings);
+    this.app.editableSchemaSettingsManager.add(fieldInterfaceEditableSettings);
+
+    // editable field component settings
+    this.app.editableSchemaSettingsManager.add(selectComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(checkboxComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(datePickerComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(unixTimestampComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(uploadAttachmentComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(inputNumberComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(recordPickerComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(radioComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(subTablePopoverComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(subformComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(subformPopoverComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(drawerSubTableComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(cascaderComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(CustomTitleComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(fileManagerComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(tagComponentFieldEditableSettings);
+    this.app.editableSchemaSettingsManager.add(cascadeSelectComponentFieldEditableSettings);
+    this.schemaSettingsManager.add(multipleComponentFieldSettings);
   }
 }

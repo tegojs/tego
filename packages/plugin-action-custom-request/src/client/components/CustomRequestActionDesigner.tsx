@@ -14,8 +14,14 @@ import { useFieldSchema } from '@tachybase/schema';
 import { App } from 'antd';
 
 import { listByCurrentRoleUrl } from '../constants';
-import { useCustomRequestVariableOptions, useGetCustomRequest } from '../hooks';
+import {
+  useCustomRequestFields,
+  useCustomRequestVariableOptions,
+  useCustomRequestVariableRecordOptions,
+  useGetCustomRequest,
+} from '../hooks';
 import { useCustomRequestsResource } from '../hooks/useCustomRequestsResource';
+import { useResultValuesVisible } from '../hooks/useResultValuesVisible';
 import { useTranslation } from '../locale';
 import { CustomRequestACLSchema, CustomRequestConfigurationFieldsSchema } from '../schemas';
 
@@ -42,7 +48,12 @@ export function CustomRequestSettingsItem() {
           ArrayItems,
         }}
         beforeOpen={() => !data && refresh()}
-        scope={{ useCustomRequestVariableOptions }}
+        scope={{
+          useCustomRequestVariableOptions,
+          useCustomRequestFields,
+          useCustomRequestVariableRecordOptions,
+          useResultValuesVisible,
+        }}
         schema={CustomRequestConfigurationFieldsSchema}
         initialValues={initialValues}
         onSubmit={async (config) => {
@@ -56,6 +67,13 @@ export function CustomRequestSettingsItem() {
               },
             },
             filterKeys: ['key'],
+          });
+          fieldSchema['x-request-setting'] = { ...config };
+          dn.emit('patch', {
+            schema: {
+              'x-uid': fieldSchema['x-uid'],
+              'x-request-setting': fieldSchema['x-request-setting'],
+            },
           });
           dn.refresh();
           refresh();

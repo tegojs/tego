@@ -4,6 +4,7 @@ import { dataSource, defaultProps, operators } from './properties';
 export class RadioGroupFieldInterface extends CollectionFieldInterface {
   name = 'radioGroup';
   type = 'object';
+  icon = 'radioGroupField';
   group = 'choices';
   order = 4;
   title = '{{t("Radio group")}}';

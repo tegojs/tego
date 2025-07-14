@@ -316,7 +316,6 @@ export const bulkEditFormItemSettings = new SchemaSettings({
               return !!(form && !isFormReadPretty && validateSchema);
             },
           },
-          { ...fieldComponentSettingsItem },
         ];
       },
     },

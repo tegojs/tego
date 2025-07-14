@@ -159,7 +159,7 @@ export const TargetKey = observer(
     const field: any = useField();
     field.required = true;
     useEffect(() => {
-      if (target) {
+      if (target && target !== '__temp__') {
         setOptions(
           getCollection(target)
             .fields?.filter((v) => {

@@ -190,7 +190,6 @@ export const filterCollapseItemFieldSettings = new SchemaSettings({
               };
             },
           },
-          { ...fieldComponentSettingsItem },
         ];
       },
     },

@@ -18,7 +18,7 @@ const openSizeWidthMap = new Map<OpenSize, string>([
 ]);
 export const ActionModal: ComposedActionDrawer<ModalProps> = observer(
   (props) => {
-    const { footerNodeName = 'Action.Modal.Footer', width, ...others } = props;
+    const { footerNodeName = 'Action.Modal.Footer', width, fullScreenButton = true, ...others } = props;
     const { styles } = useStyles();
     const { visible, setVisible, openSize = 'middle', modalProps } = useActionContext();
     const actualWidth = width ?? openSizeWidthMap.get(openSize);
@@ -47,7 +47,7 @@ export const ActionModal: ComposedActionDrawer<ModalProps> = observer(
           <div style={{ display: 'flex' }}>
             <span style={{ flex: 1 }}>{field.title}</span>
             <>
-              <Amplifier />
+              {fullScreenButton && <Amplifier />}
               <Button
                 type="text"
                 icon={<CloseOutlined />}

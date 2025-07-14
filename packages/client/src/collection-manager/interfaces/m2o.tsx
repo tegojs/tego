@@ -8,6 +8,7 @@ export class M2OFieldInterface extends CollectionFieldInterface {
   name = 'm2o';
   type = 'object';
   group = 'relation';
+  icon = 'DeploymentUnitOutlined';
   order = 5;
   title = '{{t("Many to one")}}';
   description = '{{t("Many to one description")}}';

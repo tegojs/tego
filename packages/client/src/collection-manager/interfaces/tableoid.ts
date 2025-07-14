@@ -5,6 +5,7 @@ export class TableoidFieldInterface extends CollectionFieldInterface {
   name = 'tableoid';
   type = 'object';
   group = 'systemInfo';
+  icon = 'FieldNumberOutlined';
   order = 0;
   title = '{{t("Table OID")}}';
   sortable = true;

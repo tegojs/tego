@@ -480,7 +480,6 @@ export const fieldSettingsFormItem = new SchemaSettings({
               return form && !isFormReadPretty && validateSchema;
             },
           },
-          { ...fieldComponentSettingsItem },
         ];
       },
     },

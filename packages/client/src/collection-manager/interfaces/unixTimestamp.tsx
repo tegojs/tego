@@ -5,6 +5,7 @@ export class UnixTimestampFieldInterface extends CollectionFieldInterface {
   name = 'unixTimestamp';
   type = 'object';
   group = 'datetime';
+  icon = 'HistoryOutlined';
   order = 1;
   title = '{{t("Unix Timestamp")}}';
   sortable = true;

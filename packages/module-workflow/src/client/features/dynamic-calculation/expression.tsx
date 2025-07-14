@@ -7,6 +7,7 @@ const { defaultProps } = interfacesProperties;
 export class ExpressionFieldInterface extends CollectionFieldInterface {
   name = 'expression';
   type = 'string';
+  icon = 'FunctionOutlined';
   group = 'advanced';
   order = 1;
   title = `{{t("Expression", { ns: "${NAMESPACE}" })}}`;
