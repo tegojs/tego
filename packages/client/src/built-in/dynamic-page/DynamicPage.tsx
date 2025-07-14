@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { AppNotFound } from '..';
 import { DataBlockProvider } from '../../data-source';
-import { RecordContext_deprecated } from '../../record-provider';
+import { RecordContext_deprecated, RecordProvider } from '../../record-provider';
 import { RemoteSchemaComponent } from '../../schema-component';
 import { useStyles } from './DynamicPage.style';
 import { PageNavBar } from './PageNavBar';
@@ -34,10 +34,16 @@ export const DynamicPage = () => {
               id: pathParams.filterByTk,
             }}
           >
-            <PageNavBar uid={pathParams.sub} />
-            <Card className="page-content">
-              <RemoteSchemaComponent uid={pathParams.sub} onlyRenderProperties />
-            </Card>
+            <RecordProvider
+              record={{
+                id: pathParams.filterByTk,
+              }}
+            >
+              <PageNavBar uid={pathParams.sub} />
+              <Card className="page-content">
+                <RemoteSchemaComponent uid={pathParams.sub} onlyRenderProperties />
+              </Card>
+            </RecordProvider>
           </RecordContext_deprecated.Provider>
         </DataBlockProvider>
       </div>

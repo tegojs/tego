@@ -80,7 +80,7 @@ export class ModuleWeb extends Plugin {
       Component: 'RouteSchemaComponent',
     });
     this.app.router.add('mobile.view.page', {
-      path: '/mobile/:name/sub/*',
+      path: '/mobile/:name/*',
       Component: DynamicPage,
     });
     this.app.router.add('mobile.swiper.page', {
