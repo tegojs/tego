@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAPIClient, useTranslation } from '@tachybase/client';
 import { ISchema, Schema, uid } from '@tachybase/schema';
 
@@ -7,8 +7,13 @@ import { App, Button, Drawer, Input, Layout, Menu, message, Modal, Radio, Toolti
 import { CheckboxGroupProps } from 'antd/es/checkbox';
 import _, { cloneDeep } from 'lodash';
 
-import { useCollection_deprecated } from '../../../../collection-manager';
 import {
+  useCollection_deprecated,
+  useCollectionManager_deprecated,
+  useResourceActionContext,
+} from '../../../../collection-manager';
+import {
+  createDesignable,
   SchemaComponent,
   SchemaComponentContext,
   useCompile,
@@ -20,8 +25,9 @@ import { EditableGrid } from './EditableGrid';
 import { useStyles } from './styles';
 
 export const EditorHeader = ({ onCancel, schema }) => {
-  const { title: collectionTitle, key, fields } = useCollection_deprecated();
-  const { dn } = useDesignable();
+  const { title: collectionTitle, fields, name } = useCollection_deprecated();
+  const { refreshCM } = useCollectionManager_deprecated();
+  const { dn, refresh } = useDesignable();
   const api = useAPIClient();
   const { Header } = Layout;
   const compile = useCompile();
@@ -36,6 +42,14 @@ export const EditorHeader = ({ onCancel, schema }) => {
     setTitle(tempTitle || collectionTitle);
     setModalVisible(false);
   };
+  const currentSchema = dn.current;
+  const currentActionBarSchema = findSchema(currentSchema, 'x-component', 'ActionBar');
+  const currentActionBarDN = useMemo(() => {
+    return createDesignable({ t, api, refresh, current: currentActionBarSchema });
+  }, [t, api, refresh, currentActionBarSchema]);
+  useEffect(() => {
+    currentActionBarDN.loadAPIClientEvents();
+  }, [currentActionBarDN]);
   const handleSave = async () => {
     for (const field of fields || []) {
       if (field.target === '__temp__') {
@@ -49,16 +63,19 @@ export const EditorHeader = ({ onCancel, schema }) => {
       }
     }
     if (title && title !== collectionTitle) {
-      api.resource('collections').update({
-        filterByTk: key,
-        value: { title: title },
+      await api.resource('collections').update({
+        filterByTk: name,
+        values: { title: title },
       });
     }
     patchSchemaToolbars(schema);
     const cardSchema = findSchema(schema, 'x-decorator', 'FormBlockProvider');
-    const currentSchema = dn.current;
+    const newActionBarSchema = findSchema(cardSchema, 'x-component', 'ActionBar');
+
     try {
       if (cardSchema.name === currentSchema.name) {
+        await currentActionBarDN.remove(null);
+        newActionBarSchema.properties = currentActionBarSchema.properties;
         const newSchema = cloneDeep(cardSchema.toJSON());
         newSchema.name = newSchema['x-uid'];
         await dn.insertAdjacent('afterEnd', newSchema);
@@ -71,7 +88,8 @@ export const EditorHeader = ({ onCancel, schema }) => {
       message.error(t('Save failed due to schema update error'));
       return;
     }
-
+    await refreshCM();
+    await refresh();
     await onCancel();
   };
 

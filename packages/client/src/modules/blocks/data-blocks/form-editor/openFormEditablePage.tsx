@@ -74,6 +74,7 @@ function unpatchSchemaToolbars(schema) {
     }
     if (node['x-component'] === 'ActionBar' && node['x-initializer'] === 'createForm:configureActions') {
       node['x-initializer'] = undefined;
+      node['properties'] = undefined;
     }
 
     if (node.properties) {

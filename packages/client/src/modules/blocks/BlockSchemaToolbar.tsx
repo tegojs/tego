@@ -11,8 +11,10 @@ import { useSchemaTemplate } from '../../schema-templates';
 export const BlockSchemaToolbar = (props) => {
   const { t } = useTranslation();
   const cm = useCollectionManager();
-  const collecttion = useCollection();
-  let { name: currentCollectionName, title: currentCollectionTitle } = collecttion || {};
+  const collection = useCollection();
+  const { name: tempCollectionName, title: tempCollectionTitle, key } = collection || {};
+  const currentCollection = cm?.getCollection(tempCollectionName);
+  let { name: currentCollectionName, title: currentCollectionTitle } = currentCollection || {};
   const template = useSchemaTemplate();
   const { association } = useDataBlockProps() || {};
   const compile = useCompile();
