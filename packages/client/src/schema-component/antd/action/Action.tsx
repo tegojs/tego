@@ -144,7 +144,22 @@ export const Action: ComposedAction = withDynamicSchemaProps(
         collection: collection.name,
         filterByTk: record[collectionKey],
       });
-      navigate('./sub/' + containerSchema['x-uid'] + '/' + target);
+
+      const findMPageSchema = (schema) => {
+        if (!schema) return;
+        if (schema['x-component'] === 'MPage') {
+          return schema['x-uid'];
+        }
+        return findMPageSchema(schema?.parent);
+      };
+
+      const MPageUID = findMPageSchema(fieldSchema);
+
+      const finalPath = isMobile
+        ? `./${MPageUID}/sub/${containerSchema['x-uid']}/${target}`
+        : `./sub/${containerSchema['x-uid']}/${target}`;
+
+      navigate(finalPath);
     }, [fieldSchema, record, collectionKey, collection?.name, navigate]);
 
     const handleButtonClick = useCallback(
