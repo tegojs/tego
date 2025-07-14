@@ -377,16 +377,16 @@ export class Designable {
     }
   }
 
-  insertAdjacent(position: Position, schema: ISchema, options: InsertAdjacentOptions = {}) {
+  async insertAdjacent(position: Position, schema: ISchema, options: InsertAdjacentOptions = {}) {
     switch (position) {
       case 'beforeBegin':
-        return this.insertBeforeBegin(schema, options);
+        return await this.insertBeforeBegin(schema, options);
       case 'afterBegin':
-        return this.insertAfterBegin(schema, options);
+        return await this.insertAfterBegin(schema, options);
       case 'beforeEnd':
-        return this.insertBeforeEnd(schema, options);
+        return await this.insertBeforeEnd(schema, options);
       case 'afterEnd':
-        return this.insertAfterEnd(schema, options);
+        return await this.insertAfterEnd(schema, options);
     }
   }
 
@@ -419,7 +419,7 @@ export class Designable {
     return removed;
   }
 
-  remove(schema?: Schema, options: RemoveOptions = {}) {
+  async remove(schema?: Schema, options: RemoveOptions = {}) {
     const { breakRemoveOn, removeParentsIfNoChildren } = options;
     const s = schema || this.current;
     let removed = s.parent.removeProperty(s.name);
@@ -429,7 +429,7 @@ export class Designable {
         removed = parent;
       }
     }
-    return this.emit('remove', { removed });
+    return await this.emit('remove', { removed });
   }
 
   removeWithoutEmit(schema?: Schema, options: RemoveOptions = {}) {
@@ -445,7 +445,7 @@ export class Designable {
     return removed;
   }
 
-  insertBeforeBeginOrAfterEnd(schema: ISchema, options: InsertAdjacentOptions = {}) {
+  async insertBeforeBeginOrAfterEnd(schema: ISchema, options: InsertAdjacentOptions = {}) {
     if (!Schema.isSchemaInstance(this.current)) {
       return;
     }
@@ -465,13 +465,15 @@ export class Designable {
         fromIndex = index;
       }
     });
-    return fromIndex > toIndex ? this.insertBeforeBegin(schema, options) : this.insertAfterEnd(schema, options);
+    return fromIndex > toIndex
+      ? await this.insertBeforeBegin(schema, options)
+      : await this.insertAfterEnd(schema, options);
   }
 
   /**
    * Before the current schema itself.
    */
-  insertBeforeBegin(schema: ISchema, options: InsertAdjacentOptions = {}) {
+  async insertBeforeBegin(schema: ISchema, options: InsertAdjacentOptions = {}) {
     if (!Schema.isSchemaInstance(this.current)) {
       return;
     }
@@ -516,7 +518,7 @@ export class Designable {
     s.parent = this.current.parent;
     this.current.parent.setProperties(properties);
     const [schema1, schema2] = splitWrapSchema(s, schema);
-    this.emit('insertAdjacent', {
+    await this.emit('insertAdjacent', {
       position: 'beforeBegin',
       schema: schema2,
       wrapped,
@@ -531,7 +533,7 @@ export class Designable {
    * @param schema
    * @returns
    */
-  insertAfterBegin(schema: ISchema, options: InsertAdjacentOptions = {}) {
+  async insertAfterBegin(schema: ISchema, options: InsertAdjacentOptions = {}) {
     if (!Schema.isSchemaInstance(this.current)) {
       return;
     }
@@ -567,7 +569,7 @@ export class Designable {
     s.parent = this.current;
     this.current.setProperties(properties);
     const [schema1, schema2] = splitWrapSchema(s, schema);
-    this.emit('insertAdjacent', {
+    await this.emit('insertAdjacent', {
       position: 'afterBegin',
       schema: schema2,
       wrap: schema1,
@@ -582,7 +584,7 @@ export class Designable {
    * @param schema
    * @returns
    */
-  insertBeforeEnd(schema: ISchema, options: InsertAdjacentOptions = {}) {
+  async insertBeforeEnd(schema: ISchema, options: InsertAdjacentOptions = {}) {
     if (!Schema.isSchemaInstance(this.current)) {
       return;
     }
@@ -591,7 +593,7 @@ export class Designable {
     const { wrap = defaultWrap, breakRemoveOn, removeParentsIfNoChildren } = options;
     if (Schema.isSchemaInstance(schema)) {
       if (this.parentsIn(schema)) {
-        this.emit('error', {
+        await this.emit('error', {
           code: 'parent_is_not_allowed',
           schema,
         });
@@ -609,7 +611,7 @@ export class Designable {
     const s = this.current.addProperty(wrapped.name || uid(), wrapped);
     s.parent = this.current;
     const [schema1, schema2] = splitWrapSchema(s, schema);
-    return this.emit('insertAdjacent', {
+    return await this.emit('insertAdjacent', {
       position: 'beforeEnd',
       schema: schema2,
       wrap: schema1,
@@ -621,7 +623,7 @@ export class Designable {
   /**
    * After the current schema itself.
    */
-  insertAfterEnd(schema: ISchema, options: InsertAdjacentOptions = {}) {
+  async insertAfterEnd(schema: ISchema, options: InsertAdjacentOptions = {}) {
     if (!Schema.isSchemaInstance(this.current)) {
       return;
     }
@@ -671,7 +673,7 @@ export class Designable {
     s['x-index'] = newOrder;
     this.current.parent.setProperties(properties);
     const [schema1, schema2] = splitWrapSchema(s, schema);
-    this.emit('insertAdjacent', {
+    await this.emit('insertAdjacent', {
       position: 'afterEnd',
       schema: schema2,
       wrap: schema1,

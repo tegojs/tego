@@ -7,6 +7,7 @@ export class EncryptionFieldInterface extends CollectionFieldInterface {
   name = 'encryption';
   type = 'object';
   group = 'advanced';
+  icon = 'LockOutlined';
   order = 10;
   title = tval('Encryption');
 

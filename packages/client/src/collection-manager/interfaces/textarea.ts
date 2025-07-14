@@ -7,6 +7,7 @@ import { defaultProps, operators } from './properties';
 export class TextareaFieldInterface extends CollectionFieldInterface {
   name = 'textarea';
   type = 'object';
+  icon = 'textAreaField';
   group = 'basic';
   order = 2;
   title = '{{t("Long text")}}';

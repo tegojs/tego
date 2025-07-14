@@ -6,6 +6,7 @@ import { NAMESPACE } from '../locale';
 export class AttachmentFieldInterface extends CollectionFieldInterface {
   name = 'attachment';
   type = 'object';
+  icon = 'attachmentField';
   group = 'media';
   title = `{{t("Attachment", { ns: "${NAMESPACE}" })}}`;
   isAssociation = true;

@@ -7,6 +7,7 @@ import { defaultProps, operators } from './properties';
 export class RichTextFieldInterface extends CollectionFieldInterface {
   name = 'richText';
   type = 'object';
+  icon = 'AlignLeftOutlined';
   group = 'media';
   order = 2;
   title = '{{t("Rich Text")}}';

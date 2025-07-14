@@ -103,9 +103,17 @@ function renderHTML(exp: string, keyLabelMap) {
 function createOptionsValueLabelMap(options: any[]) {
   const map = new Map<string, string[]>();
   for (const option of options) {
+    if (!option.label) {
+      option['label'] = option.title;
+      option['value'] = option.name;
+    }
     map.set(option.value, [option.label]);
     if (option.children) {
       for (const [value, labels] of createOptionsValueLabelMap(option.children)) {
+        if (!option.label) {
+          option['label'] = option.title;
+          option['value'] = option.name;
+        }
         map.set(`${option.value}.${value}`, [option.label, ...labels]);
       }
     }
@@ -201,13 +209,17 @@ export function TextArea(props) {
   const [html, setHtml] = useState(() => renderHTML(value ?? '', keyLabelMap));
   // NOTE: e.g. [startElementIndex, startOffset, endElementIndex, endOffset]
   const [range, setRange] = useState<[number, number, number, number]>([-1, 0, -1, 0]);
+  let propsScope = scope;
+  if (typeof scope !== 'object') {
+    propsScope = scope() || [];
+  }
   useEffect(() => {
-    preloadOptions(scope, value)
+    preloadOptions(propsScope, value)
       .then((preloaded) => {
         setOptions(preloaded);
       })
       .catch((err) => console.error);
-  }, [scope, value]);
+  }, [propsScope, value]);
 
   useEffect(() => {
     setHtml(renderHTML(value ?? '', keyLabelMap));

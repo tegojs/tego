@@ -18,6 +18,7 @@ export abstract class CollectionFieldInterface {
   constructor(public collectionFieldInterfaceManager: CollectionFieldInterfaceManager) {}
   name: string;
   group: string;
+  icon?: string;
   title?: string;
   description?: string;
   order?: number;
@@ -56,19 +57,19 @@ export abstract class CollectionFieldInterface {
   addComponentOption(componentOption: CollectionFieldInterfaceComponentOption) {
     if (!this.componentOptions) {
       this.componentOptions = [];
-      const xComponent = this.default?.uiSchema?.['x-component'];
-      const componentProps = this.default?.uiSchema?.['x-component-props'];
-      if (xComponent) {
-        this.componentOptions = [
-          {
-            label: xComponent.split('.').pop(),
-            value: xComponent,
-            useProps() {
-              return componentProps || {};
-            },
-          },
-        ];
-      }
+      //   const xComponent = this.default?.uiSchema?.['x-component'];
+      //   const componentProps = this.default?.uiSchema?.['x-component-props'];
+      //   if (xComponent) {
+      //     this.componentOptions = [
+      //       {
+      //         label: xComponent.split('.').pop(),
+      //         value: xComponent,
+      //         useProps() {
+      //           return componentProps || {};
+      //         },
+      //       },
+      //     ];
+      //   }
     }
     this.componentOptions.push(componentOption);
   }

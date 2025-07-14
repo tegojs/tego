@@ -131,6 +131,9 @@ const useLabelOptions = (others) => {
     () => getField(fieldSchema['x-collection-field']),
     [fieldSchema['x-collection-field']],
   );
+  if (!collectionField?.target && !fieldSchema['collectionName']) {
+    return others;
+  }
   const request = {
     resource: collectionField?.target || fieldSchema['collectionName'],
     action: 'list',
@@ -138,6 +141,7 @@ const useLabelOptions = (others) => {
       paginate: false,
     },
   };
+
   const regex = /{{(.*?)}}/g;
   const matches = [];
   let match;
@@ -195,8 +199,9 @@ const FormulaSelect = (props) => {
   const filterField = others?.['params'];
   const [options, setOptions] = useState([]);
   const [collectionName, setCollectionName] = useState('');
+  const fieldSchema = useFieldSchema();
   const api = useAPIClient();
-  if (mode && !['multiple', 'tags'].includes(mode)) {
+  if (mode && !['multiple', 'tags', 'CustomTitle'].includes(mode)) {
     mode = undefined;
   }
   const fieldProps = { ...others };
@@ -221,8 +226,11 @@ const FormulaSelect = (props) => {
     fieldProps['options'] = options.map((option) => {
       return { ...option };
     });
+  } else {
+    fieldProps['options'] = getFormulaValue(props.fieldNames['formula'], props?.options || [], fieldSchema);
   }
   const modifiedProps = useLabelOptions(fieldProps);
+
   return (
     <ObjectSelect
       rawOptions={rawOptions}
@@ -236,3 +244,11 @@ const FormulaSelect = (props) => {
 };
 
 export default FormulaSelect;
+
+const getFormulaValue = (template, options, fieldSchema) => {
+  return options.map((item) => {
+    const label = item.label;
+    const customLabel = template.replace(new RegExp(`{{${fieldSchema['name']}}}`, 'g'), label);
+    return { ...item, label: customLabel };
+  });
+};

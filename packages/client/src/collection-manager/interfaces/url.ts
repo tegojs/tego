@@ -6,6 +6,7 @@ import { defaultProps, operators } from './properties';
 export class UrlFieldInterface extends CollectionFieldInterface {
   name = 'url';
   type = 'string';
+  icon = 'GlobalOutlined';
   group = 'basic';
   order = 5;
   title = '{{t("URL")}}';
@@ -16,6 +17,16 @@ export class UrlFieldInterface extends CollectionFieldInterface {
       'x-component': 'Input.URL',
     },
   };
+  componentOptions = [
+    {
+      label: 'URL',
+      value: 'Input.URL',
+    },
+    {
+      label: 'Preview',
+      value: 'Input.Preview',
+    },
+  ];
   availableTypes = ['string', 'text'];
   schemaInitialize(schema: ISchema, { block }) {}
   properties = {

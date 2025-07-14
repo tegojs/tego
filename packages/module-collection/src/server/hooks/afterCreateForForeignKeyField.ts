@@ -117,6 +117,7 @@ export function afterCreateForForeignKeyField(db: Database) {
     } = model.get();
 
     if (source) return;
+    if (target === '__temp__') return;
 
     // foreign key in target collection
     if (['oho', 'o2m'].includes(interfaceType)) {

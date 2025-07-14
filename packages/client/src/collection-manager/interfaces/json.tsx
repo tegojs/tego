@@ -22,6 +22,7 @@ registerValidateRules({
 export class JsonFieldInterface extends CollectionFieldInterface {
   name = 'json';
   type = 'object';
+  icon = 'CodeOutlined';
   group = 'advanced';
   order = 4;
   title = '{{t("JSON")}}';

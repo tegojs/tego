@@ -50,6 +50,7 @@ registerValidateRules({
 export class PercentFieldInterface extends CollectionFieldInterface {
   name = 'percent';
   type = 'object';
+  icon = 'PercentageOutlined';
   group = 'basic';
   order = 8;
   title = '{{t("Percent")}}';
@@ -71,7 +72,7 @@ export class PercentFieldInterface extends CollectionFieldInterface {
   schemaInitialize(schema: ISchema, { field, block, readPretty, action }) {
     const props = (schema['x-component-props'] = schema['x-component-props'] || {});
     schema['x-component-props'].style = {
-      ...(props.style || {}),
+      ...props.style,
       width: '100%',
     };
   }

@@ -17,6 +17,7 @@ import {
   beforeDestroyForeignKey,
   beforeInitOptions,
 } from './hooks';
+import { afterUpdateForForeignKeyField } from './hooks/afterUpdateForForeignKeyField';
 import { beforeCreateForValidateField } from './hooks/beforeCreateForValidateField';
 import { beforeCreateForViewCollection } from './hooks/beforeCreateForViewCollection';
 import { CollectionModel, FieldModel } from './models';
@@ -156,6 +157,8 @@ export class CollectionManagerPlugin extends Plugin {
         model.set('sortBy', model.get('foreignKey') + 'Sort');
       }
     });
+
+    this.app.db.on('fields.afterUpdate', afterUpdateForForeignKeyField(this.app.db));
 
     this.app.db.on('fields.afterUpdate', async (model: FieldModel, { context, transaction }) => {
       const prevOptions = model.previous('options');
