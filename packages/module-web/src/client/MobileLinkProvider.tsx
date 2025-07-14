@@ -1,11 +1,9 @@
 import React from 'react';
-import { css, PinnedPluginListProvider, SchemaComponentOptions, useToken } from '@tachybase/client';
+import { css, PinnedPluginListProvider, SchemaComponentOptions, useToken, useTranslation } from '@tachybase/client';
 
 import { MobileOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import { useNavigate } from 'react-router-dom';
-
-import { useTranslation } from './locale';
 
 const MobileLink = () => {
   const navigate = useNavigate();

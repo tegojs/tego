@@ -1,12 +1,12 @@
 import React, { useRef, useState } from 'react';
-import { css } from '@tachybase/client';
+import { css, useTranslation } from '@tachybase/client';
 import { dayjs } from '@tachybase/utils/client';
 
 import { ActionSheet, Button, Calendar, Divider, Grid, Input, Picker, Popup } from 'antd-mobile';
 import { DownOutline } from 'antd-mobile-icons';
 import type { Action } from 'antd-mobile/es/components/action-sheet';
 
-import { lang, useTranslation } from '../../../../../../locale';
+import { lang } from '../../../../../../locale';
 import { convertFormat } from '../../utils';
 
 export const ISelect = (props) => {

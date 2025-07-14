@@ -1,6 +1,6 @@
-import { useParams } from 'react-router';
+import { RemoteSchemaComponent } from '@tachybase/client';
 
-import { RemoteSchemaComponent } from '../../schema-component';
+import { useParams } from 'react-router';
 
 export function ShareSchemaComponent() {
   const params = useParams();

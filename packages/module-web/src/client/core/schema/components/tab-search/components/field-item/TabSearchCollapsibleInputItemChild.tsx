@@ -1,11 +1,9 @@
 import React from 'react';
-import { css } from '@tachybase/client';
+import { css, useTranslation } from '@tachybase/client';
 import { DatePicker } from '@tachybase/components';
 import { dayjs } from '@tachybase/utils/client';
 
 import { Button, Col, Divider, Input, Select } from 'antd';
-
-import { useTranslation } from '../../../../../../locale';
 
 export const ISelect = (props) => {
   const { options, onChange } = props;

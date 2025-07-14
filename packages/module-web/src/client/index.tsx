@@ -10,6 +10,7 @@ import {
   ImageSearchConfigureFields,
   ImageSearchItemFieldSettings,
   mBlockInitializers,
+  MPageSettings,
   SwiperFieldSettings,
   SwiperPage,
   TabSearchFieldSchemaInitializer,
@@ -42,6 +43,7 @@ export class ModuleWeb extends Plugin {
     this.app.schemaSettingsManager.add(SwiperFieldSettings);
     this.app.schemaSettingsManager.add(ImageSearchItemFieldSettings);
     this.app.schemaSettingsManager.add(TabSearchItemFieldSettings);
+    this.app.schemaSettingsManager.add(MPageSettings);
   }
 
   setMobileRouter() {

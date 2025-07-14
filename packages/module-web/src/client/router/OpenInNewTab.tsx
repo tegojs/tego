@@ -1,10 +1,8 @@
 import React from 'react';
-import { css, useApp } from '@tachybase/client';
+import { css, useApp, useTranslation } from '@tachybase/client';
 
 import { LinkOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-
-import { useTranslation } from '../locale';
 
 export const OpenInNewTab = () => {
   const { t } = useTranslation();

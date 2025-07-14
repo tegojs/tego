@@ -1,12 +1,12 @@
 import React from 'react';
-import { SchemaSettingsDropdown, SchemaSettingsSwitchItem, useDesignable } from '@tachybase/client';
+import { SchemaSettingsDropdown, SchemaSettingsSwitchItem, useDesignable, useTranslation } from '@tachybase/client';
 import { uid, useField, useFieldSchema } from '@tachybase/schema';
 
 import { MenuOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-import { generateNTemplate, useTranslation } from '../../../../locale';
+import { generateNTemplate } from '../../../../locale';
 import { findSchema } from '../../helpers';
 import { useSchemaPatch } from '../../hooks';
 

@@ -40,7 +40,8 @@ import { SystemSettingsPlugin } from './system-settings';
 import { PluginSystemVersion } from './system-version';
 import { UserSettingsPlugin } from './user-settings';
 
-export { AdminProvider, NoticeArea, AdminLayout } from './admin-layout';
+export { AdminProvider, NoticeArea, AdminLayout, MenuEditor, AdminTabs } from './admin-layout';
+export * from './pinned-list';
 export * from './context-menu/useContextMenu';
 
 interface AppStatusProps {

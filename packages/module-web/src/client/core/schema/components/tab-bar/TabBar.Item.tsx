@@ -7,12 +7,12 @@ import {
   SchemaSettingsRemove,
   SortableItem,
   useDesigner,
+  useTranslation,
 } from '@tachybase/client';
 import { useField, useFieldSchema } from '@tachybase/schema';
 
 import { TabBarItemProps } from 'antd-mobile';
 
-import { useTranslation } from '../../../../locale';
 import { useSchemaPatch } from '../../hooks';
 import { tabItemSchema } from './schema';
 

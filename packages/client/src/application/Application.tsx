@@ -20,7 +20,7 @@ import { CSSVariableProvider } from '../style/css-variable';
 import { AntdAppProvider, GlobalThemeProvider } from '../style/theme';
 import { AppSchemaComponentProvider } from './AppSchemaComponentProvider';
 import { AttachmentPreviewManager, PluginAttachmentItemsOptions } from './AttachmentPreviewManager';
-import { AppComponent, BlankComponent, defaultAppComponents, SharePage, ShareSchemaComponent } from './components';
+import { AppComponent, BlankComponent, defaultAppComponents } from './components';
 import { NoticeManager } from './NoticesManager';
 import type { Plugin } from './Plugin';
 import { PluginContextMenu, PluginItemsOptions } from './PluginContextMenu';
@@ -187,11 +187,6 @@ export class Application {
       path: '*',
       Component: this.components['AppNotFound'],
     });
-    this.router.add('share', {
-      path: '/share',
-      Component: SharePage,
-    });
-    this.router.add('share.page', { path: '/share/:name', Component: ShareSchemaComponent });
     this.router.add('share.notAuthorized', { path: '/share/not-authorized', element: null });
   }
 

@@ -7,12 +7,12 @@ import {
   SortableItem,
   useDesignable,
   useDesigner,
+  useTranslation,
 } from '@tachybase/client';
 import { useFieldSchema } from '@tachybase/schema';
 
 import { List } from 'antd-mobile';
 
-import { useTranslation } from '../../../../locale';
 import { PageSchema } from '../../common';
 import { MenuDesigner } from './Menu.Designer';
 import { MenuItem } from './Menu.Item';

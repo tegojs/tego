@@ -1,11 +1,20 @@
 import React from 'react';
-import { SchemaSettingsDropdown, SchemaSettingsSwitchItem, useDesignable, useSchemaToolbar } from '@tachybase/client';
+import {
+  SchemaComponent,
+  SchemaSettingsDropdown,
+  SchemaSettingsSwitchItem,
+  useApp,
+  useDesignable,
+  useSchemaSettingsItem,
+  useSchemaToolbar,
+  useTranslation,
+} from '@tachybase/client';
 import { uid, useField, useFieldSchema } from '@tachybase/schema';
 
 import { MenuOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
-import { generateNTemplate, useTranslation } from '../../../../locale';
+import { generateNTemplate } from '../../../../locale';
 import { findGridSchema } from '../../helpers';
 import { useSchemaPatch } from '../../hooks';
 
@@ -20,12 +29,13 @@ export const PageDesigner = (props) => {
   const isHeaderEnabled = !!headerSchema && field.componentProps?.headerEnabled !== false;
   const tabsSchema = fieldSchema?.properties?.['tabs'];
   const isTabsEnabled = !!tabsSchema && field.componentProps?.tabsEnabled !== false;
-  const { title } = useSchemaToolbar();
   const schemaSettingsProps = {
     dn,
     field,
     fieldSchema,
   };
+  const app = useApp();
+  const MPageSettings = app.schemaSettingsManager.get('MPage:Dropdown')?.options;
 
   return (
     <SchemaSettingsDropdown
@@ -61,6 +71,7 @@ export const PageDesigner = (props) => {
             });
           }
           await onUpdateComponentProps({
+            ...fieldSchema['x-component-props'],
             headerEnabled: v,
           });
         }}
@@ -104,25 +115,18 @@ export const PageDesigner = (props) => {
           });
         }}
       />
-      <SchemaSettingsSwitchItem
-        checked={fieldSchema['x-component-props']?.enableSharePage}
-        title={t('Enable Share page')}
-        onChange={async (v) => {
-          fieldSchema['x-component-props'] = fieldSchema['x-component-props'] || {};
-          fieldSchema['x-component-props']['enableSharePage'] = v;
-          if (!fieldSchema.title) {
-            fieldSchema.title = title;
-          }
-          dn.emit('patch', {
-            schema: {
-              ['x-uid']: fieldSchema['x-uid'],
-              ['x-component-props']: fieldSchema['x-component-props'],
-              title: fieldSchema.title,
-            },
-          });
-          dn.refresh();
-        }}
-      />
+      {MPageSettings.items.map((item: any) => {
+        const schema = {
+          name: item.name,
+          type: 'void',
+          'x-component': item.Component,
+          'x-component-props': {
+            fieldSchema,
+          },
+        };
+        const visible = item.useVisible();
+        return visible && <SchemaComponent schema={schema} />;
+      })}
     </SchemaSettingsDropdown>
   );
 };

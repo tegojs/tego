@@ -9,13 +9,13 @@ import {
   SortableItem,
   useCompile,
   useDesigner,
+  useTranslation,
 } from '@tachybase/client';
 import { useField, useFieldSchema } from '@tachybase/schema';
 
 import { List, ListItemProps } from 'antd-mobile';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
-import { useTranslation } from '../../../../locale';
 import { useSchemaPatch } from '../../hooks';
 import { menuItemSchema } from './schema';
 

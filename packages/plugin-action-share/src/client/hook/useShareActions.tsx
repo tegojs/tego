@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
+import { useCompile, useCurrentUserVariable, useIsMobile, useTranslation } from '@tachybase/client';
 import { useFieldSchema } from '@tachybase/schema';
 
 import { Button, message } from 'antd';
 import QRCode from 'qrcode';
-import { useTranslation } from 'react-i18next';
 import { useMatch } from 'react-router';
-
-import { useIsMobile } from '../../../../block-provider';
-import { useCompile } from '../../../../schema-component';
-import { useCurrentUserVariable } from '../../../../schema-settings';
 
 export const useShareActions = ({ title, uid }) => {
   const fieldSchema = useFieldSchema();
@@ -135,11 +131,11 @@ const ImageModal = (props) => {
           pointerEvents: 'none',
         }}
       />
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', marginTop: '10px', gap: '15px' }}>
-        <Button onClick={saveImage} style={{ flex: 1 }}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', marginTop: '10px' }}>
+        <Button onClick={saveImage} style={{ width: '49%' }}>
           {t('Save Picture')}
         </Button>
-        <Button onClick={copyImage} style={{ flex: 1 }}>
+        <Button onClick={copyImage} style={{ width: '49%' }}>
           {t('Copy QR code')}
         </Button>
       </div>

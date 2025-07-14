@@ -1,23 +1,27 @@
-import { useEffect, useRef } from 'react';
-import { useFieldSchema } from '@tachybase/schema';
+import { useRef } from 'react';
+import {
+  AdminProvider,
+  AdminTabs,
+  CurrentUser,
+  MenuEditor,
+  PinnedPluginList,
+  useAPIClient,
+  useApp,
+  useSystemSettings,
+} from '@tachybase/client';
 
 import { css } from '@emotion/css';
-import { Layout, Result } from 'antd';
-import { Navigate, useLocation, useMatch, useNavigate } from 'react-router';
+import { Layout } from 'antd';
+import { Navigate, useLocation } from 'react-router';
 import { Outlet } from 'react-router-dom';
 
-import { useAPIClient } from '../../api-client';
-import { AdminProvider, AdminTabs, MenuEditor, useStyles } from '../../built-in/admin-layout';
-import { PinnedPluginList } from '../../built-in/pinned-list';
-import { useSystemSettings } from '../../built-in/system-settings';
-import { CurrentUser } from '../../user';
-import { useApp } from '../hooks';
+import { useStyles } from './style';
 
 export function useShareToken() {
   const url = new URL(window.location.href);
   const api = useAPIClient();
   const token = url.searchParams.get('token');
-  return token && api.auth.setToken(token), api.auth.getToken();
+  return (token && api.auth.setToken(token), api.auth.getToken());
 }
 
 export const ShareLayout = () => {

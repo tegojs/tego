@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   cx,
+  PageExtendComponentProvider,
+  SchemaComponent,
   SortableItem,
   useCompile,
   useDesigner,
   useDocumentTitle,
-  useShareActions,
   useToken,
   useTranslation,
 } from '@tachybase/client';
@@ -18,7 +19,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { generateNTemplate } from '../../../../locale';
 import { HeaderDesigner } from './Header.Designer';
-import { ShareModal } from './HeaderShareModal';
 import { useStyles } from './style';
 
 export interface HeaderProps extends NavBarProps {
@@ -35,9 +35,10 @@ const InternalHeader = (props: HeaderProps) => {
   const { setTitle } = useDocumentTitle();
   const { token } = useToken();
   const { styles } = useStyles();
-  const [open, setOpen] = useState(false);
   const fieldSchema = useFieldSchema();
-
+  const parentFieldSchema = fieldSchema.parent;
+  const extendComponents = parentFieldSchema['x-extend-components'];
+  const enabledSharePage = parentFieldSchema['x-component-props']?.['enableSharePage'];
   useEffect(() => {
     // sync title
     setTitle(compiledTitle);
@@ -54,15 +55,30 @@ const InternalHeader = (props: HeaderProps) => {
     <SortableItem className={cx('tb-mobile-header')} style={style}>
       <NavBar backArrow={showBack} onBack={() => navigate(-1)} className={styles.mobileNav}>
         <div>{compiledTitle}</div>
-        <Button
-          icon={<ShareAltOutlined />}
-          onClick={() => {
-            setOpen(true);
-          }}
-        />
+        <>
+          {Object.values(extendComponents)?.map((item: any) => {
+            const schema = {
+              type: 'void',
+              name: item.name,
+              'x-component': item.component,
+              'x-comonent-props': {},
+            };
+            const componentProps = {
+              ...props,
+              isHeaderEnabled: true,
+              fieldSchema: parentFieldSchema,
+              title,
+              enabledSharePage,
+            };
+            return (
+              <PageExtendComponentProvider {...componentProps}>
+                <SchemaComponent schema={schema} />
+              </PageExtendComponentProvider>
+            );
+          })}
+        </>
       </NavBar>
       <Designer />
-      <ShareModal open={open} setOpen={setOpen} title={title} uid={fieldSchema.parent?.['x-uid']} />
     </SortableItem>
   );
 };

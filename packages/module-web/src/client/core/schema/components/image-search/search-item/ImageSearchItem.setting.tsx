@@ -6,12 +6,12 @@ import {
   useCompile,
   useDesignable,
   useFormBlockContext,
+  useTranslation,
 } from '@tachybase/client';
 import { useField, useFieldSchema } from '@tachybase/schema';
 
 import _ from 'lodash';
 
-import { useTranslation } from '../../../../../locale';
 import { isTabSearchCollapsibleInputItem } from '../../tab-search/utils';
 
 export const ImageSearchItemFieldSettings = new SchemaSettings({

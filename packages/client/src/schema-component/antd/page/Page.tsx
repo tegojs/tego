@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { FormLayout } from '@tachybase/components';
-import { Schema, SchemaOptionsContext, useFieldSchema } from '@tachybase/schema';
+import { ISchema, Schema, SchemaOptionsContext, useFieldSchema } from '@tachybase/schema';
 
 import { PlusOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { PageHeader as AntdPageHeader } from '@ant-design/pro-layout';
@@ -12,7 +12,7 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 import { useMatch, useSearchParams } from 'react-router-dom';
 
-import { FormDialog, ScrollArea } from '..';
+import { FormDialog, PageExtendComponentProvider, ScrollArea } from '..';
 import { useToken } from '../__builtins__';
 import { useStyles as useAClStyles } from '../../../built-in/acl/style';
 import { useContextMenu } from '../../../built-in/context-menu/useContextMenu';
@@ -25,15 +25,14 @@ import { DndContext } from '../../common';
 import { SortableItem } from '../../common/sortable-item';
 import { DragHandleMenu } from '../../common/sortable-item/DragHandleMenu';
 import { DragHandlePageTab } from '../../common/sortable-item/DragHandlePageTab';
-import { SchemaComponent, SchemaComponentOptions } from '../../core';
+import { SchemaComponent, SchemaComponentOptions, SchemaComponentProvider } from '../../core';
 import { useCompile, useDesignable } from '../../hooks';
 import { ErrorFallback } from '../error-fallback';
 import FixedBlock from './FixedBlock';
-import { useShareActions } from './hooks/useShareActions';
 import { useStyles } from './Page.style';
 import { PageDesigner } from './PageDesigner';
 import { PageTabDesigner } from './PageTabDesigner';
-import { getStyles, useStyles as modalStyle } from './style';
+import { getStyles } from './style';
 
 export const Page = (props) => {
   const { children, ...others } = props;
@@ -109,25 +108,18 @@ const PageHeader = (props) => {
   const { theme } = useGlobalTheme();
   const options = useContext(SchemaOptionsContext);
   const compile = useCompile();
-  const [open, setOpen] = useState(false);
-  const [imageOpen, setImageOpen] = useState(false);
   const { showScrollArea } = useContextMenu();
 
   const hidePageTitle = fieldSchema['x-component-props']?.hidePageTitle;
+  const extendComponents = fieldSchema['x-extend-components'] || {};
 
   const pageHeaderTitle = hidePageTitle ? undefined : fieldSchema.title || compile(title);
-  const isShare = useMatch('/share/:name');
 
   // THINK: 思考下这里怎么缓存, 直接用 useMemo 是不行的
   const items = fieldSchema.mapProperties((schema) => ({
     key: schema.name as string,
     label: <TabItem schema={schema} />,
   }));
-  const { t } = useTranslation();
-
-  const { styles } = modalStyle();
-
-  const { copyLink, imageAction } = useShareActions({ title: pageHeaderTitle, uid: '' });
 
   return (
     <div
@@ -144,13 +136,23 @@ const PageHeader = (props) => {
           title={pageHeaderTitle || ' '}
           {...parentProps}
           extra={
-            <HeaderExtra
-              enablePageTabs={enablePageTabs}
-              showScrollArea={showScrollArea}
-              isShare={isShare}
-              setOpen={setOpen}
-              enableSharePage={enableSharePage}
-            />
+            <>
+              {Object.values(extendComponents)?.map((item: any, index) => {
+                const schema = {
+                  type: 'void',
+                  name: item.name,
+                  'x-component': item.component,
+                  'x-component-props': {},
+                } as ISchema;
+                const componentProps = { ...props, isExtra: true, fieldSchema };
+                return (
+                  <PageExtendComponentProvider {...componentProps}>
+                    <SchemaComponent schema={schema} />
+                  </PageExtendComponentProvider>
+                );
+              })}
+              {!enablePageTabs && showScrollArea && <ScrollArea />}
+            </>
           }
           footer={
             enablePageTabs && (
@@ -167,72 +169,21 @@ const PageHeader = (props) => {
           }
         ></AntdPageHeader>
       )}
-      {disablePageHeader && enableSharePage && !isShare && (
-        <div className="tb-page-header-button">
-          <Button
-            icon={<ShareAltOutlined />}
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            {t('Share')}
-          </Button>
-        </div>
-      )}
-      <Modal
-        open={open}
-        className={styles.firstmodal}
-        title={t('Share')}
-        footer={null}
-        width={500}
-        onCancel={() => {
-          setOpen(false);
-        }}
-      >
-        <div className={styles.secondmodal}>
-          <div className="tb-header-modal-list" onClick={copyLink}>
-            <Icon type="PaperClipOutlined" />
-            {t('Copy link')}
-          </div>
-          <div
-            className="tb-header-modal-list"
-            onClick={() => {
-              setImageOpen(true);
-            }}
-          >
-            <Icon type="QrcodeOutlined" />
-            {t('Generate QR code')}
-          </div>
-        </div>
-        <Modal
-          className={styles.imageModal}
-          open={imageOpen}
-          footer={null}
-          onCancel={() => {
-            setImageOpen(false);
-          }}
-        >
-          {imageAction()}
-        </Modal>
-      </Modal>
+      {Object.values(extendComponents)?.map((item: any, index) => {
+        const schema = {
+          type: 'void',
+          name: 'icon' + item.name,
+          'x-component': item.component,
+          'x-component-props': {},
+        } as ISchema;
+        const componentProps = { ...props, fieldSchema };
+        return (
+          <PageExtendComponentProvider {...componentProps}>
+            <SchemaComponent schema={schema} />
+          </PageExtendComponentProvider>
+        );
+      })}
     </div>
-  );
-};
-
-const HeaderExtra = ({ enablePageTabs, showScrollArea, isShare, setOpen, enableSharePage }) => {
-  return (
-    <>
-      {!isShare && (
-        <Button
-          icon={<ShareAltOutlined />}
-          onClick={() => {
-            setOpen(true);
-          }}
-          style={{ visibility: `${enableSharePage ? 'visible' : 'hidden'}` }}
-        />
-      )}
-      {!enablePageTabs && showScrollArea && <ScrollArea />}
-    </>
   );
 };
 

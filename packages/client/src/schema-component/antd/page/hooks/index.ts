@@ -1,1 +1,1 @@
-export * from './useShareActions';
+export * from './useIsBlockInPage';

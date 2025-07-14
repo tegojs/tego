@@ -1,9 +1,7 @@
 import React, { useMemo } from 'react';
-import { useApp } from '@tachybase/client';
+import { useApp, useTranslation } from '@tachybase/client';
 
 import { Card, Form, Input } from 'antd';
-
-import { useTranslation } from '../locale';
 
 export const AppConfiguration = () => {
   const app = useApp();

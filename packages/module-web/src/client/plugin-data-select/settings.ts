@@ -1,9 +1,15 @@
-import { compatibleDataId, SchemaSettings, useCollectionManager, useCompile, useDesignable } from '@tachybase/client';
+import {
+  compatibleDataId,
+  SchemaSettings,
+  useCollectionManager,
+  useCompile,
+  useDesignable,
+  useTranslation,
+} from '@tachybase/client';
 import { Field, useField, useFieldSchema } from '@tachybase/schema';
 
 import { SelectProps } from 'antd';
 
-import { useTranslation } from '../locale';
 import { useDataTemplates } from './DataSelect';
 
 export type CollectionSelectProps = SelectProps<any, any> & {
