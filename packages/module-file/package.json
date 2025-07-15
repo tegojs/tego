@@ -15,7 +15,7 @@
   "dependencies": {},
   "devDependencies": {
     "@ant-design/icons": "^5.5.2",
-    "@aws-sdk/client-s3": "^3.717.0",
+    "@aws-sdk/client-s3": "^3.844.0",
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",
     "@types/koa-multer": "^1.0.4",
