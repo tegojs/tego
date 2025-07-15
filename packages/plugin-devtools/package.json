@@ -16,7 +16,7 @@
     "ahooks": "^3.9.0",
     "antd": "5.22.5",
     "react-i18next": "^15.2.0",
-    "swagger-ui-dist": "^5.18.2"
+    "swagger-ui-dist": "^5.26.2"
   },
   "peerDependencies": {
     "@tachybase/actions": "workspace:*",

@@ -3793,8 +3793,8 @@ importers:
         specifier: ^15.2.0
         version: 15.2.0(i18next@25.1.2(typescript@5.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       swagger-ui-dist:
-        specifier: ^5.18.2
-        version: 5.18.2
+        specifier: ^5.26.2
+        version: 5.26.2
 
   packages/plugin-field-china-region:
     dependencies:
@@ -17490,8 +17490,8 @@ packages:
   svg-path-parser@1.1.0:
     resolution: {integrity: sha512-jGCUqcQyXpfe38R7RFfhrMyfXcBmpMNJI/B+4CE9/Unkh98UporAc461GTthv+TVDuZXsBx7/WiwJb1Oh4tt4A==}
 
-  swagger-ui-dist@5.18.2:
-    resolution: {integrity: sha512-J+y4mCw/zXh1FOj5wGJvnAajq6XgHOyywsa9yITmwxIlJbMqITq3gYRZHaeqLVH/eV/HOPphE6NjF+nbSNC5Zw==}
+  swagger-ui-dist@5.26.2:
+    resolution: {integrity: sha512-WmMS9iMlHQejNm/Uw5ZTo4e3M2QMmEavRz7WLWVsq7Mlx4PSHJbY+VCrLsAz9wLxyHVgrJdt7N8+SdQLa52Ykg==}
 
   swr@2.2.4:
     resolution: {integrity: sha512-njiZ/4RiIhoOlAaLYDqwz5qH/KZXVilRLvomrx83HjzCWTfa+InyfAjv05PSFxnmLzZkNO9ZfvgoqzAaEI4sGQ==}
@@ -34021,7 +34021,7 @@ snapshots:
 
   svg-path-parser@1.1.0: {}
 
-  swagger-ui-dist@5.18.2:
+  swagger-ui-dist@5.26.2:
     dependencies:
       '@scarf/scarf': 1.4.0
 
