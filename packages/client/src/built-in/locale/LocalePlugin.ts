@@ -37,7 +37,7 @@ export class LocalePlugin extends Plugin {
       setValidateLanguage(data?.data?.lang);
       loadConstrueLocale(data?.data);
       const dayjsLang = dayjsLocale[data?.data?.lang] || 'en';
-      await import(`dayjs/locale/${dayjsLang}`);
+      await import(`dayjs/locale/${dayjsLang}.js`);
       dayjs.locale(dayjsLang);
 
       // 防止数据源没有日期值的时候, 界面显示 Invalid Date
