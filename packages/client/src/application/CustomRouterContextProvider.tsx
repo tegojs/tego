@@ -43,6 +43,9 @@ MatchAdminNameContext.displayName = 'MatchAdminNameContext';
 const IsInSettingsPageContext = React.createContext<boolean>(false);
 IsInSettingsPageContext.displayName = 'IsInSettingsPageContext';
 
+const IsSystemPageContext = React.createContext<boolean>(false);
+IsSystemPageContext.displayName = 'IsSystemPageContext';
+
 /**
  * @internal
  */
@@ -113,6 +116,11 @@ const SearchParamsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 const IsInSettingsPageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const isInSettingsPage = useLocation().pathname.includes('/settings');
   return <IsInSettingsPageContext.Provider value={isInSettingsPage}>{children}</IsInSettingsPageContext.Provider>;
+};
+
+const IsSystemPageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isSystemPage = useLocation().pathname.includes('/_admin');
+  return <IsSystemPageContext.Provider value={isSystemPage}>{children}</IsSystemPageContext.Provider>;
 };
 
 const MatchAdminProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -225,6 +233,10 @@ export const useIsInSettingsPage = () => {
   return React.useContext(IsInSettingsPageContext);
 };
 
+export const useIsSystemPage = () => {
+  return React.useContext(IsSystemPageContext);
+};
+
 /**
  * @internal
  */
@@ -264,7 +276,9 @@ export const CustomRouterContextProvider: FC<{ children: React.ReactNode }> = ({
               <MatchAdminNameProvider>
                 <SearchParamsProvider>
                   <RouterBasenameProvider>
-                    <IsInSettingsPageProvider>{children}</IsInSettingsPageProvider>
+                    <IsInSettingsPageProvider>
+                      <IsSystemPageProvider>{children}</IsSystemPageProvider>
+                    </IsInSettingsPageProvider>
                   </RouterBasenameProvider>
                 </SearchParamsProvider>
               </MatchAdminNameProvider>

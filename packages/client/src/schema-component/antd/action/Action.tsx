@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { StablePopover, useActionContext } from '../..';
 import { useDesignable } from '../../';
 import { useApp } from '../../../application';
+import { useIsSystemPage } from '../../../application/CustomRouterContextProvider';
 import { withDynamicSchemaProps } from '../../../application/hoc/withDynamicSchemaProps';
 import { useIsMobile } from '../../../block-provider';
 import { useACLActionParamsContext } from '../../../built-in/acl';
@@ -93,16 +94,22 @@ export const Action: ComposedAction = withDynamicSchemaProps(
     const collectionKey = collection?.getPrimaryKey();
     const pageStyle = usePageStyle();
     const isMobile = useIsMobile();
-
+    const isSystemPage = useIsSystemPage();
     // NOTE:page mode 在多标签页状态默认打开，在手机状态默认打开，
     const isPageMode = useMemo(() => {
-      // 全局 Page mode 模式优先
-      if (pageMode?.enable) {
+      // 明确指定为 PAGE 模式
+
+      if (openMode === OpenMode.PAGE) {
         return true;
       }
 
-      // 明确指定为 PAGE 模式
-      if (openMode === OpenMode.PAGE) {
+      // 系统页面不支持默认的 Page 模式
+      if (isSystemPage) {
+        return false;
+      }
+
+      // 全局 Page mode 模式优先
+      if (pageMode?.enable) {
         return true;
       }
 
@@ -113,7 +120,7 @@ export const Action: ComposedAction = withDynamicSchemaProps(
       }
 
       return false;
-    }, [pageMode?.enable, openMode, isMobile, pageStyle]);
+    }, [pageMode?.enable, openMode, isMobile, pageStyle, isSystemPage]);
 
     useEffect(() => {
       field.stateOfLinkageRules = {};
