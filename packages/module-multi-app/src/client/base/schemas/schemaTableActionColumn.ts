@@ -1,6 +1,6 @@
 import { ISchema } from '@tachybase/schema';
 
-import { formSchema, shareForm } from './schemaForm.js';
+import { formSchema } from './schemaForm.js';
 
 export const tableActionColumnSchema: ISchema = {
   properties: {
@@ -72,13 +72,17 @@ export const tableActionColumnSchema: ISchema = {
         drawer: {
           type: 'void',
           'x-component': 'Action.Drawer',
-          'x-decorator': 'Form',
+          'x-decorator': 'FormV2',
           'x-decorator-props': {
             useValues: '{{ cm.useValuesFromRecord }}',
           },
           title: '{{t("Share")}}',
           properties: {
-            shareForm,
+            partners: {
+              'x-component': 'CollectionField',
+              'x-decorator': 'FormItem',
+              'x-collection-field': 'applications.partners',
+            },
             footer: {
               type: 'void',
               'x-component': 'Action.Drawer.Footer',

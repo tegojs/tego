@@ -84,11 +84,11 @@ export const collectionMultiApp = {
       uiSchema: {
         type: 'array',
         title: '{{t("Partners")}}',
-        'x-component': 'RecordPicker',
+        'x-component': 'AssociationField',
         'x-component-props': {
           multiple: true,
           fieldNames: {
-            label: 'nickname',
+            label: 'userName',
             value: 'id',
           },
         },

@@ -127,13 +127,14 @@ export const formSchema: ISchema = {
   },
 };
 
-export const shareForm: ISchema = {
-  type: 'void',
-  'x-component': 'div',
-  properties: {
-    partners: {
-      'x-component': 'CollectionField',
-      'x-decorator': 'FormItem',
-    },
-  },
-};
+// export const shareForm: ISchema = {
+//   type: 'void',
+//   'x-component': 'div',
+//   properties: {
+//     partners: {
+//       'x-component': 'CollectionField',
+//       'x-decorator': 'FormItem',
+//       'x-collection-field': 'applications.partners',
+//     },
+//   },
+// };
