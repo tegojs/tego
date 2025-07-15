@@ -571,8 +571,8 @@ importers:
         specifier: 0.26.28
         version: 0.26.28(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@js-preview/excel':
-        specifier: ^1.7.12
-        version: 1.7.12
+        specifier: ^1.7.14
+        version: 1.7.14
       '@lottiefiles/dotlottie-react':
         specifier: ^0.9.3
         version: 0.9.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -7466,8 +7466,8 @@ packages:
   '@jridgewell/trace-mapping@0.3.29':
     resolution: {integrity: sha512-uw6guiW/gcAGPDhLmd77/6lW8QLeiV5RUTsAX46Db6oLhGaVj4lhnPwb184s1bkc8kdVg/+h988dro8GRDpmYQ==}
 
-  '@js-preview/excel@1.7.12':
-    resolution: {integrity: sha512-sO2B+SEeBz12NydiOzC9ZiwxyVSQbnFHIO0g7u+AHX4VziGVMT2krAL+oRzoyfgG4jChp0I18nlkpZtbEP/y6Q==}
+  '@js-preview/excel@1.7.14':
+    resolution: {integrity: sha512-7QHtuRalWQzWIKARc/IRN8+kj1S5eWV4+cAQipzZngE3mVxMPL1RHXKJt/ONmpcKZ410egYkaBuOOs9+LctBkA==}
 
   '@js-sdsl/ordered-map@4.4.2':
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
@@ -22004,7 +22004,7 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.4
 
-  '@js-preview/excel@1.7.12': {}
+  '@js-preview/excel@1.7.14': {}
 
   '@js-sdsl/ordered-map@4.4.2': {}
 

@@ -22,7 +22,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@emotion/css": "^11.13.5",
     "@floating-ui/react": "0.26.28",
-    "@js-preview/excel": "^1.7.12",
+    "@js-preview/excel": "^1.7.14",
     "@lottiefiles/dotlottie-react": "^0.9.3",
     "@tachybase/components": "workspace:*",
     "@tachybase/evaluators": "workspace:*",
