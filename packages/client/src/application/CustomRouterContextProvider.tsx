@@ -46,6 +46,9 @@ IsInSettingsPageContext.displayName = 'IsInSettingsPageContext';
 const IsSystemPageContext = React.createContext<boolean>(false);
 IsSystemPageContext.displayName = 'IsSystemPageContext';
 
+const IsSubPageContext = React.createContext<boolean>(false);
+IsSubPageContext.displayName = 'IsSubPageContext';
+
 /**
  * @internal
  */
@@ -121,6 +124,11 @@ const IsInSettingsPageProvider: FC<{ children: React.ReactNode }> = ({ children 
 const IsSystemPageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const isSystemPage = useLocation().pathname.includes('/_admin');
   return <IsSystemPageContext.Provider value={isSystemPage}>{children}</IsSystemPageContext.Provider>;
+};
+
+const IsSubPageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isSubPage = useLocation().pathname.includes('/sub');
+  return <IsSubPageContext.Provider value={isSubPage}>{children}</IsSubPageContext.Provider>;
 };
 
 const MatchAdminProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -237,6 +245,11 @@ export const useIsSystemPage = () => {
   return React.useContext(IsSystemPageContext);
 };
 
+// 是否是独立子页面
+export const useIsSubPage = () => {
+  return React.useContext(IsSubPageContext);
+};
+
 /**
  * @internal
  */
@@ -277,7 +290,9 @@ export const CustomRouterContextProvider: FC<{ children: React.ReactNode }> = ({
                 <SearchParamsProvider>
                   <RouterBasenameProvider>
                     <IsInSettingsPageProvider>
-                      <IsSystemPageProvider>{children}</IsSystemPageProvider>
+                      <IsSystemPageProvider>
+                        <IsSubPageProvider>{children}</IsSubPageProvider>
+                      </IsSystemPageProvider>
                     </IsInSettingsPageProvider>
                   </RouterBasenameProvider>
                 </SearchParamsProvider>

@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { StablePopover, useActionContext } from '../..';
 import { useDesignable } from '../../';
 import { useApp } from '../../../application';
-import { useIsSystemPage } from '../../../application/CustomRouterContextProvider';
+import { useIsSubPage, useIsSystemPage } from '../../../application/CustomRouterContextProvider';
 import { withDynamicSchemaProps } from '../../../application/hoc/withDynamicSchemaProps';
 import { useIsMobile } from '../../../block-provider';
 import { useACLActionParamsContext } from '../../../built-in/acl';
@@ -95,6 +95,8 @@ export const Action: ComposedAction = withDynamicSchemaProps(
     const pageStyle = usePageStyle();
     const isMobile = useIsMobile();
     const isSystemPage = useIsSystemPage();
+    const isPageTabStyle = pageStyle === PageStyle.TAB_STYLE;
+
     // NOTE:page mode 在多标签页状态默认打开，在手机状态默认打开，
     const isPageMode = useMemo(() => {
       switch (openMode) {
@@ -109,7 +111,7 @@ export const Action: ComposedAction = withDynamicSchemaProps(
         case OpenMode.DEFAULT:
         case OpenMode.DRAWER:
         default: {
-          if (isMobile || pageStyle === PageStyle.TAB_STYLE) {
+          if (isMobile || isPageTabStyle) {
             return true;
           }
           if (isSystemPage) {
@@ -159,9 +161,14 @@ export const Action: ComposedAction = withDynamicSchemaProps(
 
       const MPageUID = findMPageSchema(fieldSchema);
 
-      const finalPath = isMobile
-        ? `./${MPageUID}/sub/${containerSchema['x-uid']}/${target}`
-        : `./sub/${containerSchema['x-uid']}/${target}`;
+      const subPath = containerSchema?.['x-uid'] ? `sub/${containerSchema?.['x-uid']}` : '';
+
+      // 如果 containerSchema 没有 x-uid, 不进行跳转
+      if (!subPath) {
+        return;
+      }
+
+      const finalPath = isMobile ? `./${MPageUID}/${subPath}/${target}` : `./${subPath}/${target}`;
 
       navigate(finalPath);
     }, [fieldSchema, record, collectionKey, collection?.name, navigate]);
@@ -176,11 +183,16 @@ export const Action: ComposedAction = withDynamicSchemaProps(
 
         if (!disabled && aclCtx) {
           const onOk = () => {
-            onClick?.(e);
-            if (isPageMode) {
-              openPage();
+            if (onClick) {
+              // 如果 onClick 存在, 由应用方自行处理, 不进行跳转
+              onClick(e);
             } else {
-              openModal();
+              // 如果 onClick 不存在, 根据 openMode 决定是打开弹窗还是跳转页面
+              if (isPageMode) {
+                openPage();
+              } else {
+                openModal();
+              }
             }
             run();
           };
