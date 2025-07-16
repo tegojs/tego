@@ -11,6 +11,7 @@ export const ViewMultiAppPane = () => {
       schema={schemaViewMultiAppPane}
       scope={{
         userId,
+        admin: false,
       }}
       components={{
         AppList,

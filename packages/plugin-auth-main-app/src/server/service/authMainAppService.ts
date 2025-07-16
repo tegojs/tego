@@ -62,13 +62,12 @@ export class AuthMainAppService {
         if (resourceName === 'authenticators' && actionName === 'publicList') {
           if (!this.selfSignIn) {
             ctx.body = [];
-          } else {
-            ctx.body.unshift({
-              name: ctx.t('Main app signIn', { ns: NAMESPACE }),
-              authType: 'mainApp',
-              authTypeTitle: 'main app',
-            });
           }
+          ctx.body.unshift({
+            name: ctx.t('Main app signIn', { ns: NAMESPACE }),
+            authType: 'mainApp',
+            authTypeTitle: 'main app',
+          });
         }
       },
       {
