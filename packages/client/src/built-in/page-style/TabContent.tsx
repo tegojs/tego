@@ -31,6 +31,7 @@ export const TabContent = () => {
   const location = useLocation();
   const { items, setItems } = useContext(PageStyleContext);
   const targetKey = location.pathname;
+
   const outlet = useOutlet();
   useEffect(() => {
     if (targetKey) {
@@ -41,8 +42,7 @@ export const TabContent = () => {
           ...items,
           {
             key: targetKey,
-            // TODO: 这里title计算需要处理
-            label: title || t('Unnamed'),
+            label: title || `${t('tabs')}`,
             children: outlet,
           },
         ]);

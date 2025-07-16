@@ -23,6 +23,7 @@ import { useAPIClient, useRequest } from '../../api-client';
 import { useIsSubPage } from '../../application/CustomRouterContextProvider';
 import { PathHandler } from '../../built-in/dynamic-page/utils';
 import { PageStyle } from '../../built-in/page-style/PageStyle.provider';
+import { useCloseTab } from '../../built-in/page-style/useCloseTab';
 import { usePageStyle } from '../../built-in/page-style/usePageStyle';
 import { useCollection_deprecated, useCollectionManager_deprecated } from '../../collection-manager';
 import { useFilterBlock } from '../../filter-provider/FilterProvider';
@@ -342,6 +343,7 @@ export const useCreateActionProps = () => {
   const pageStyle = usePageStyle();
   const isPageTabStyle = pageStyle === PageStyle.TAB_STYLE;
   const isSubPage = useIsSubPage();
+  const { handleCloseTab } = useCloseTab();
 
   return {
     async onClick() {
@@ -410,8 +412,8 @@ export const useCreateActionProps = () => {
       }
 
       if (isPageTabStyle && isSubPage) {
-        // TODO:如果当前是独立子页面, 且是多标签页模式, 则创建完成后关闭当前标签页
-        return;
+        // 如果当前是独立子页面, 且是多标签页模式, 则创建完成后关闭当前标签页
+        handleCloseTab(null, { key: location.pathname });
       }
     },
   };
@@ -883,6 +885,7 @@ export const useUpdateActionProps = () => {
   const pageStyle = usePageStyle();
   const isPageTabStyle = pageStyle === PageStyle.TAB_STYLE;
   const isSubPage = useIsSubPage();
+  const { handleCloseTab } = useCloseTab();
 
   return {
     async onClick() {
@@ -997,8 +1000,8 @@ export const useUpdateActionProps = () => {
       }
 
       if (isPageTabStyle && isSubPage) {
-        // TODO:如果当前是独立子页面, 且是多标签页模式, 则更新完成后关闭当前标签页
-        return;
+        // 如果当前是独立子页面, 且是多标签页模式, 则更新完成后关闭当前标签页
+        handleCloseTab(null, { key: location.pathname });
       }
     },
   };
