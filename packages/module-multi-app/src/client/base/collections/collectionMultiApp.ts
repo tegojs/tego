@@ -83,7 +83,7 @@ export const collectionMultiApp = {
       sourceKey: 'name',
       uiSchema: {
         type: 'array',
-        title: '{{t("Partners")}}',
+        title: '{{t("Collaborator")}}',
         'x-component': 'AssociationField',
         'x-component-props': {
           multiple: true,
