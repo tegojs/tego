@@ -19,7 +19,7 @@ export const schemaAppManager: ISchema = {
         params: {
           pageSize: 20,
           sort: ['-createdAt'],
-          appends: ['partners.id'],
+          appends: ['partners.id', 'partners.username'],
           filter: "{{ admin ? {} : { '$or': [ { createdById: userId }, { 'partners.id': { '$in': [userId] } } ] } }}",
         },
         rowKey: 'name',
