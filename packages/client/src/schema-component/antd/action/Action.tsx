@@ -97,30 +97,28 @@ export const Action: ComposedAction = withDynamicSchemaProps(
     const isSystemPage = useIsSystemPage();
     // NOTE:page mode 在多标签页状态默认打开，在手机状态默认打开，
     const isPageMode = useMemo(() => {
-      // 明确指定为 PAGE 模式
-      if (openMode === OpenMode.PAGE) {
-        return true;
+      switch (openMode) {
+        // 明确指定为 PAGE 模式
+        case OpenMode.PAGE:
+          return true;
+        // 明确指定为 MODAL 模式和 DRAWER_MODE 模式
+        case OpenMode.MODAL:
+        case OpenMode.DRAWER_MODE:
+          return false;
+        // 默认情况,默认模式和 Drawer(兼容旧版,作为默认模式) 模式下, 移动端或多标签页模式下默认为 PAGE 模式
+        case OpenMode.DEFAULT:
+        case OpenMode.DRAWER:
+        default: {
+          if (isMobile || pageStyle === PageStyle.TAB_STYLE) {
+            return true;
+          }
+          if (isSystemPage) {
+            return false;
+          }
+          return pageMode?.enable;
+        }
       }
-
-      // 默认情况, 系统页面不支持 Page 模式
-      if (isSystemPage) {
-        return false;
-      }
-
-      // 默认情况,全局 Page mode 模式优先
-      if (pageMode?.enable) {
-        return true;
-      }
-
-      // 默认情况,默认模式和 Drawer 模式下, 移动端或多标签页模式下默认为 PAGE 模式
-      if (!openMode || [OpenMode.DEFAULT, OpenMode.DRAWER].includes(openMode)) {
-        // 移动端或多标签页模式下默认为 PAGE 模式
-        return isMobile || pageStyle === PageStyle.TAB_STYLE;
-      }
-
-      return false;
     }, [pageMode?.enable, openMode, isMobile, pageStyle, isSystemPage]);
-
     useEffect(() => {
       field.stateOfLinkageRules = {};
       linkageRules

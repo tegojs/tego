@@ -10,7 +10,7 @@ export const ViewActionInitializer = (props) => {
     'x-settings': 'actionSettings:view',
     'x-component': 'Action',
     'x-component-props': {
-      openMode: OpenMode.DRAWER_MODE,
+      openMode: OpenMode.DEFAULT,
     },
     properties: {
       drawer: {
