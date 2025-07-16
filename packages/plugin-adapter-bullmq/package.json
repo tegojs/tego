@@ -12,7 +12,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@bull-board/api": "^6.5.3",
+    "@bull-board/api": "^6.11.1",
     "@bull-board/koa": "^6.5.3",
     "bullmq": "^5.56.4"
   },

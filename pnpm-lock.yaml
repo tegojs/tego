@@ -2652,8 +2652,8 @@ importers:
         version: link:../test
     devDependencies:
       '@bull-board/api':
-        specifier: ^6.5.3
-        version: 6.5.3(@bull-board/ui@6.5.3)
+        specifier: ^6.11.1
+        version: 6.11.1(@bull-board/ui@6.5.3)
       '@bull-board/koa':
         specifier: ^6.5.3
         version: 6.5.3(@babel/core@7.27.4)(@types/koa@2.15.0)(handlebars@4.7.8)(lodash@4.17.21)(mustache@4.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(underscore@1.13.7)
@@ -4449,8 +4449,8 @@ importers:
         version: link:../test
     devDependencies:
       '@bull-board/api':
-        specifier: ^6.5.3
-        version: 6.5.3(@bull-board/ui@6.5.3)
+        specifier: ^6.11.1
+        version: 6.11.1(@bull-board/ui@6.5.3)
       '@bull-board/koa':
         specifier: ^6.5.3
         version: 6.5.3(@babel/core@7.27.4)(@types/koa@2.15.0)(handlebars@4.7.8)(lodash@4.17.21)(mustache@4.2.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(underscore@1.13.7)
@@ -6494,6 +6494,11 @@ packages:
 
   '@bloomberg/record-tuple-polyfill@0.0.3':
     resolution: {integrity: sha512-sBnCqW0nqofE47mxFnw+lvx6kzsQstwaQMVkh66qm/A6IlsnH7WsyGuVXTou8RF2wL4W7ybOoHPvP2WgIo6rhQ==}
+
+  '@bull-board/api@6.11.1':
+    resolution: {integrity: sha512-pe397z8LVPZGLnY6yCboDg/zVUQIXBTanfNRDMxDAwZp0HARfQgoK4tGyX96KsEpDARWEmp4xeFyuaBBb0erlg==}
+    peerDependencies:
+      '@bull-board/ui': 6.11.1
 
   '@bull-board/api@6.5.3':
     resolution: {integrity: sha512-k58OlCheALXaoN+5l8U0VfLo9jQvl2nSR3/6vUmFQV8wcNBPfRtQRxUBh9/SbTDmFvtvmzvMkc+J3yWGMCDrAw==}
@@ -21053,6 +21058,11 @@ snapshots:
       '@babel/helper-validator-identifier': 7.27.1
 
   '@bloomberg/record-tuple-polyfill@0.0.3': {}
+
+  '@bull-board/api@6.11.1(@bull-board/ui@6.5.3)':
+    dependencies:
+      '@bull-board/ui': 6.5.3
+      redis-info: 3.1.0
 
   '@bull-board/api@6.5.3(@bull-board/ui@6.5.3)':
     dependencies:
