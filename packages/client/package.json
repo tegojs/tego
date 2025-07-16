@@ -81,7 +81,7 @@
     "@types/flat": "^5.0.5",
     "@types/lodash": "^4.17.13",
     "@types/markdown-it": "12.2.3",
-    "@types/markdown-it-highlightjs": "3.3.4",
+    "@types/markdown-it-highlightjs": "4.0.1",
     "@types/react-big-calendar": "^1.16.0"
   },
   "peerDependencies": {

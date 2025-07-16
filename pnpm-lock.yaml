@@ -752,8 +752,8 @@ importers:
         specifier: 12.2.3
         version: 12.2.3
       '@types/markdown-it-highlightjs':
-        specifier: 3.3.4
-        version: 3.3.4
+        specifier: 4.0.1
+        version: 4.0.1
       '@types/react-big-calendar':
         specifier: ^1.16.0
         version: 1.16.0
@@ -9435,6 +9435,7 @@ packages:
   '@smithy/middleware-endpoint@4.1.14':
     resolution: {integrity: sha512-+BGLpK5D93gCcSEceaaYhUD/+OCGXM1IDaq/jKUQ+ujB0PTWlWN85noodKw/IPFZhIKFCNEe19PGd/reUMeLSQ==}
     engines: {node: '>=18.0.0'}
+    deprecated: Please upgrade to @smithy/middleware-endpoint@4.1.15 or higher to fix a bug preventing the resolution of ENV and config file custom endpoints https://github.com/smithy-lang/smithy-typescript/issues/1645
 
   '@smithy/middleware-retry@4.1.15':
     resolution: {integrity: sha512-iKYUJpiyTQ33U2KlOZeUb0GwtzWR3C0soYcKuCnTmJrvt6XwTPQZhMfsjJZNw7PpQ3TU4Ati1qLSrkSJxnnSMQ==}
@@ -9977,8 +9978,9 @@ packages:
   '@types/luxon@3.4.2':
     resolution: {integrity: sha512-TifLZlFudklWlMBfhubvgqTXRzLDI5pCbGa4P8a3wPyUQSW+1xQ5eDsreP9DWHX3tjq1ke96uYG/nwundroWcA==}
 
-  '@types/markdown-it-highlightjs@3.3.4':
-    resolution: {integrity: sha512-hERRPIvWifT0006DIjg1IvuoBzlksk97kPmWjynejzTW9AISS92b/mpu3PFkAWlXYNFC52RqdhNKjdJZ6GC4wg==}
+  '@types/markdown-it-highlightjs@4.0.1':
+    resolution: {integrity: sha512-NMxIqlUFmLj9X+1ddh5ibSDIPZRf32m5PwcW42M2FPoe2s2XI5l+mgSSpffv6wBjgV8cpzKsKHDPwXXk2vhNjA==}
+    deprecated: This is a stub types definition. markdown-it-highlightjs provides its own type definitions, so you do not need this installed.
 
   '@types/markdown-it@12.2.3':
     resolution: {integrity: sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==}
@@ -13097,9 +13099,6 @@ packages:
   help-me@5.0.0:
     resolution: {integrity: sha512-7xgomUX6ADmcYzFik0HzAxh/73YlKR9bmFzf51CZwR+b6YtzU2m0u49hQCqV6SvlqIqsaxovfwdvbnsw3b/zpg==}
 
-  highlight.js@10.7.3:
-    resolution: {integrity: sha512-tzcUFauisWKNHaRkN4Wjl/ZA07gENAjFl3J/c480dprkGTg5EQstgaNFqBfUqCq54kZRIEcreTsAgF/m2quD7A==}
-
   highlight.js@11.11.0:
     resolution: {integrity: sha512-6ErL7JlGu2CNFHyRQEuDogOyGPNiqcuWdt4iSSFUPyferNTGlNTPFqeV36Y/XwA4V/TJ8l0sxp6FTnxud/mf8g==}
     engines: {node: '>=12.0.0'}
@@ -14302,6 +14301,9 @@ packages:
   mariadb@2.5.6:
     resolution: {integrity: sha512-zBx7loYY5GzLl8Y6AKxGXfY9DUYIIdGrmEORPOK9FEu0pg5ZLBKCGJuucHwKADxTBxKY7eM4rxndqxRcnMZKIw==}
     engines: {node: '>= 10.13'}
+
+  markdown-it-highlightjs@4.2.0:
+    resolution: {integrity: sha512-NC7pXE8KkOl6xWJVRNt8p6wgJVznXKsE0HgYGdk6DD2tn1l4L9f0ALf3VIoGVkotNU1uGQatSxfBF1zZPUMmuQ==}
 
   markdown-it@13.0.2:
     resolution: {integrity: sha512-FtwnEuuK+2yVU7goGn/MJ0WBZMM9ZPgU9spqlFs7/A/pDIUNSOQZhUgOqYCficIuR2QaFnrt8LHqBWsbTAoI5w==}
@@ -24950,10 +24952,9 @@ snapshots:
 
   '@types/luxon@3.4.2': {}
 
-  '@types/markdown-it-highlightjs@3.3.4':
+  '@types/markdown-it-highlightjs@4.0.1':
     dependencies:
-      '@types/markdown-it': 12.2.3
-      highlight.js: 10.7.3
+      markdown-it-highlightjs: 4.2.0
 
   '@types/markdown-it@12.2.3':
     dependencies:
@@ -28854,8 +28855,6 @@ snapshots:
 
   help-me@5.0.0: {}
 
-  highlight.js@10.7.3: {}
-
   highlight.js@11.11.0: {}
 
   hmac-drbg@1.0.1:
@@ -30191,6 +30190,10 @@ snapshots:
       long: 5.2.3
       moment-timezone: 0.5.46
       please-upgrade-node: 3.2.0
+
+  markdown-it-highlightjs@4.2.0:
+    dependencies:
+      highlight.js: 11.11.0
 
   markdown-it@13.0.2:
     dependencies:
