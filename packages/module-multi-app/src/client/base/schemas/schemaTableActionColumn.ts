@@ -72,7 +72,7 @@ export const tableActionColumnSchema: ISchema = {
         drawer: {
           type: 'void',
           'x-component': 'Action.Drawer',
-          'x-decorator': 'FormV2',
+          'x-decorator': 'Form',
           'x-decorator-props': {
             useValues: '{{ cm.useValuesFromRecord }}',
           },

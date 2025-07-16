@@ -83,12 +83,17 @@ export const collectionMultiApp = {
       sourceKey: 'name',
       uiSchema: {
         type: 'array',
-        title: '{{t("Collaborator")}}',
+        title: i18nText('Collaborator'),
         'x-component': 'AssociationField',
         'x-component-props': {
+          service: {
+            params: {
+              fields: ['id', 'username', 'nickname'],
+            },
+          },
           multiple: true,
           fieldNames: {
-            label: 'userName',
+            label: 'username',
             value: 'id',
           },
         },
