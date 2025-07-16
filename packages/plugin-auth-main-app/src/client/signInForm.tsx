@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { SchemaComponent, useAPIClient } from '@tachybase/client';
+import { SchemaComponent, useAPIClient, useCurrentUserContext } from '@tachybase/client';
 import { Authenticator, useRedirect } from '@tachybase/module-auth/client';
 import { ISchema } from '@tachybase/schema';
 
@@ -59,9 +59,11 @@ export const SignInForm = (props) => {
   const useMainAppSignIn = () => {
     const api = useAPIClient();
     const redirect = useRedirect();
+    const { refreshAsync } = useCurrentUserContext();
     return {
       async run() {
         api.auth.setToken(mainUser.token);
+        await refreshAsync();
         redirect();
       },
     };
