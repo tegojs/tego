@@ -98,22 +98,21 @@ export const Action: ComposedAction = withDynamicSchemaProps(
     // NOTE:page mode 在多标签页状态默认打开，在手机状态默认打开，
     const isPageMode = useMemo(() => {
       // 明确指定为 PAGE 模式
-
       if (openMode === OpenMode.PAGE) {
         return true;
       }
 
-      // 系统页面不支持默认的 Page 模式
+      // 默认情况, 系统页面不支持 Page 模式
       if (isSystemPage) {
         return false;
       }
 
-      // 全局 Page mode 模式优先
+      // 默认情况,全局 Page mode 模式优先
       if (pageMode?.enable) {
         return true;
       }
 
-      // 默认模式下的判断逻辑
+      // 默认情况,默认模式和 Drawer 模式下, 移动端或多标签页模式下默认为 PAGE 模式
       if (!openMode || [OpenMode.DEFAULT, OpenMode.DRAWER].includes(openMode)) {
         // 移动端或多标签页模式下默认为 PAGE 模式
         return isMobile || pageStyle === PageStyle.TAB_STYLE;
