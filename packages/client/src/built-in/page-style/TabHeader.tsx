@@ -73,7 +73,7 @@ export const TabHeader = () => {
           onClick={() => {
             navigate(item.key);
           }}
-          onClose={useCallback((e) => handleCloseTab(e, item), [handleCloseTab, item])}
+          onClose={(e) => handleCloseTab(e, item)}
         >
           {item.label}
         </Tag>
