@@ -101,7 +101,7 @@ export const getExecutionSchema = (params?) => {
           dataSource: 'main',
           action: 'list',
           params: {
-            appends: ['workflow.id', 'workflo–w.title'],
+            appends: ['workflow.id', 'workflow.title'],
             pageSize: 20,
             sort: ['-createdAt'],
           },
