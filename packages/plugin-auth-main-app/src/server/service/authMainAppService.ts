@@ -27,8 +27,8 @@ export class AuthMainAppService {
       await this.checkInstall();
       const config = await this.db.getRepository(COLLECTION_AUTH_MAIN_APP_CONFIG).findOne();
       if (config) {
-        this.selfSignIn = config.selfSignIn;
-        this.authMainApp = config.authMainApp;
+        this.selfSignIn = config.selfSignIn ?? true;
+        this.authMainApp = config.authMainApp ?? true;
       }
     });
 

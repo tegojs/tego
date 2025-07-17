@@ -20,7 +20,7 @@ class PluginAuthMainAppClient extends Plugin {
         aclSnippet: `pm.system-services.auth-main-app`,
       });
       const auth = this.app.pm.get(AuthPlugin);
-      auth.registerType('mainApp', {
+      auth?.registerType('mainApp', {
         components: {
           SignInForm: SignInForm,
         },

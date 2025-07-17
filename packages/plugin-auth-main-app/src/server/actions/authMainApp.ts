@@ -33,7 +33,12 @@ export class AuthMainAppController {
       },
     });
     if (!multiApp) {
-      ctx.throw(403, 'Unable to manage this application, please exit the main application and change to a new account');
+      ctx.throw(
+        403,
+        ctx.t('Unable to manage this application, please exit the main application and change to a new account', {
+          ns: NAMESPACE,
+        }),
+      );
     }
 
     const repo = ctx.db.getRepository('users');

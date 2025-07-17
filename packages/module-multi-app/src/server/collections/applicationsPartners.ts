@@ -8,5 +8,16 @@ export default defineCollection({
   autoGenId: false,
   createdBy: true,
   updatedBy: true,
-  fields: [],
+  fields: [
+    {
+      name: 'applicationName',
+      type: 'string',
+      primaryKey: true,
+    },
+    {
+      name: 'userId',
+      type: 'bigInt',
+      primaryKey: true,
+    },
+  ],
 });

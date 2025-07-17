@@ -12,7 +12,7 @@ export const useAuthMainAppValues = () => {
       .then((res) => res.data?.data),
   );
   const form = createForm({
-    values: data,
+    values: data || {},
   });
   return { form };
 };
