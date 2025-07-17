@@ -16,10 +16,7 @@ export const schemaViewMultiAppPane = {
         params: {
           pageSize: 20,
           sort: ['-createdAt'],
-          appends: [],
-          filter: {
-            createdById: '{{ userId }}',
-          },
+          filter: "{{ admin ? {} : { '$or': [ { createdById: userId }, { 'partners.id': { '$in': [userId] } } ] } }}",
         },
         rowKey: 'name',
       },

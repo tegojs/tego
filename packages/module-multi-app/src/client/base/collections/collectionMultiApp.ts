@@ -70,5 +70,34 @@ export const collectionMultiApp = {
         'x-component': 'Checkbox',
       },
     },
+    {
+      interface: 'm2m',
+      type: 'belongsToMany',
+      name: 'partners',
+      target: 'users',
+      through: 'applicationsPartners',
+      foreignKey: 'applicationName',
+      otherKey: 'userId',
+      collectionName: 'applications',
+      targetKey: 'id',
+      sourceKey: 'name',
+      uiSchema: {
+        type: 'array',
+        title: i18nText('Collaborator'),
+        'x-component': 'AssociationField',
+        'x-component-props': {
+          service: {
+            params: {
+              fields: ['id', 'username', 'nickname'],
+            },
+          },
+          multiple: true,
+          fieldNames: {
+            label: 'username',
+            value: 'id',
+          },
+        },
+      },
+    },
   ],
 };
