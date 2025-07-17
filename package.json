@@ -65,20 +65,5 @@
   "packageManager": "pnpm@10.12.4",
   "engines": {
     "node": ">=20.19.0"
-  },
-  "pnpm": {
-    "neverBuiltDependencies": [
-      "canvas"
-    ],
-    "overrides": {
-      "@types/node": "20.17.10",
-      "antd": "5.22.5",
-      "dayjs": "1.11.13",
-      "react-router": "6.28.1",
-      "react-router-dom": "6.28.1",
-      "string-width": "4.2.3",
-      "strip-ansi": "6.0.1",
-      "wrap-ansi": "7.0.0"
-    }
   }
 }

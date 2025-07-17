@@ -1,12 +1,14 @@
 import React from 'react';
-import { SchemaComponent, useAPIClient, useTranslation } from '@tachybase/client';
+import { SchemaComponent, useAPIClient, useCurrentUserContext, useTranslation } from '@tachybase/client';
 import { ISchema, useForm } from '@tachybase/schema';
 import { uid } from '@tachybase/utils/client';
 
 import { App } from 'antd';
 
 export const ChangePassword = () => {
-  return <SchemaComponent schema={schema} scope={{ useSaveCurrentUserValues }} />;
+  const currentUser = useCurrentUserContext();
+  const hideOldPassword = currentUser?.data?.data?.password === null;
+  return <SchemaComponent schema={schema} scope={{ useSaveCurrentUserValues, hideOldPassword }} />;
 };
 
 const useSaveCurrentUserValues = () => {
@@ -14,6 +16,8 @@ const useSaveCurrentUserValues = () => {
   const api = useAPIClient();
   const { message } = App.useApp();
   const { t } = useTranslation();
+  const currentUser = useCurrentUserContext();
+  const hideOldPassword = currentUser?.data?.data?.password === null;
   return {
     async run() {
       await form.submit();
@@ -22,6 +26,14 @@ const useSaveCurrentUserValues = () => {
       });
       if (result.status === 200) {
         message.success(t('Edited successfully'));
+        if (hideOldPassword) {
+          currentUser.mutate({
+            data: {
+              ...currentUser.data.data,
+              password: '',
+            },
+          });
+        }
       }
       await form.reset();
     },
@@ -57,6 +69,7 @@ const schema: ISchema = {
           required: true,
           'x-component': 'Password',
           'x-decorator': 'FormItem',
+          'x-hidden': '{{ hideOldPassword }}',
         },
         newPassword: {
           type: 'string',

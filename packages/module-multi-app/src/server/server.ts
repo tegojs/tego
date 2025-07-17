@@ -208,7 +208,7 @@ export class PluginMultiAppManager extends Plugin {
           context: options.context,
         });
 
-        if ((options as any).values.options.autoStart) {
+        if ((options as any).values.options?.autoStart) {
           const startPromise = subApp.runCommand('start', '--quickstart');
 
           if (options?.context?.waitSubAppInstall) {
