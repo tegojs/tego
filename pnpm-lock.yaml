@@ -4661,8 +4661,8 @@ importers:
         specifier: ^1.6.0
         version: 1.6.0
       use-debouncy:
-        specifier: ^4.6.0
-        version: 4.6.0(react@18.3.1)
+        specifier: ^5.1.6
+        version: 5.1.6(react@18.3.1)
 
   packages/plugin-workflow-analysis:
     dependencies:
@@ -18033,8 +18033,9 @@ packages:
       proxy-agent:
         optional: true
 
-  use-debouncy@4.6.0:
-    resolution: {integrity: sha512-5N3n/oQYMuU3QKLXDa9p/xtdPKBcNbGQdLqJJPrkT164IMpHdke5xqoehDZCmgDciy+wJC+iqyE3g8c+k03lGg==}
+  use-debouncy@5.1.6:
+    resolution: {integrity: sha512-QuZ9+GU16cae6mLsSovbjpzPhx9OO3Ib8JM9anw47vvZZJbpS6vhlm4IoSiSM0tO3JfK/tmIaCmXNttOgPISKg==}
+    engines: {node: '>=20.0.0', npm: '>=10.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
 
@@ -34791,7 +34792,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  use-debouncy@4.6.0(react@18.3.1):
+  use-debouncy@5.1.6(react@18.3.1):
     dependencies:
       react: 18.3.1
 
