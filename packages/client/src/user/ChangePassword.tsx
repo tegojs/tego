@@ -12,6 +12,7 @@ import {
   useCurrentUserContext,
 } from '../';
 import { useAPIClient } from '../api-client';
+import VerificationCode from './VerificationCode';
 
 const useCloseAction = () => {
   const { setVisible } = useActionContext();
@@ -61,6 +62,38 @@ const schema: ISchema = {
       type: 'void',
       title: '{{t("Change password")}}',
       properties: {
+        phone: {
+          type: 'string',
+          required: true,
+          title: '{{t("Phone")}}',
+          'x-value': '{{phoneNumber}}',
+          'x-component': 'Input',
+          'x-validator': 'phone',
+          'x-decorator': 'FormItem',
+          'x-editable': false,
+          'x-component-props': { placeholder: '{{t("Phone")}}', style: {} },
+        },
+        code: {
+          type: 'string',
+          title: '{{t("Verification code")}}',
+          description: '{{codeDescription}}',
+          'x-component': 'VerificationCode',
+          'x-component-props': {
+            actionType: 'auth:changePassword',
+            targetFieldName: 'phone',
+          },
+          'x-decorator': 'FormItem',
+          'x-reactions': [
+            {
+              dependencies: ['.oldPassword'],
+              fulfill: {
+                state: {
+                  hidden: '{{$deps[0]}}',
+                },
+              },
+            },
+          ],
+        },
         oldPassword: {
           type: 'string',
           title: '{{t("Old password")}}',
@@ -68,6 +101,16 @@ const schema: ISchema = {
           'x-component': 'Password',
           'x-decorator': 'FormItem',
           'x-hidden': '{{ hideOldPassword }}',
+          'x-reactions': [
+            {
+              dependencies: ['.code'],
+              fulfill: {
+                state: {
+                  hidden: '{{$deps[0]}}',
+                },
+              },
+            },
+          ],
         },
         newPassword: {
           type: 'string',
@@ -137,7 +180,8 @@ export const useChangePassword = () => {
   const { t } = useTranslation();
   const currentUser = useCurrentUserContext();
   const hideOldPassword = currentUser?.data?.data?.password === null;
-
+  const phoneNumber = currentUser?.data?.data?.phone;
+  const codeDescription = phoneNumber ? `将发送验证码给手机${phoneNumber}` : '请先在个人资料填写手机号';
   return useMemo<MenuProps['items'][0]>(() => {
     return {
       key: 'password',
@@ -151,7 +195,11 @@ export const useChangePassword = () => {
           {t('Change password')}
           <ActionContextProvider value={{ visible, setVisible }}>
             <div onClick={(e) => e.stopPropagation()}>
-              <SchemaComponent scope={{ useCloseAction, useSaveCurrentUserValues, hideOldPassword }} schema={schema} />
+              <SchemaComponent
+                scope={{ useCloseAction, useSaveCurrentUserValues, hideOldPassword, codeDescription, phoneNumber }}
+                components={{ VerificationCode }}
+                schema={schema}
+              />
             </div>
           </ActionContextProvider>
         </>
