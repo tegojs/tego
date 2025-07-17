@@ -3,7 +3,7 @@ import { EXECUTION_STATUS, PluginWorkflow, Processor } from '@tachybase/module-w
 import { Application, Logger } from '@tachybase/server';
 import { App, Db, InjectLog, Service } from '@tachybase/utils';
 
-import parser from 'cron-parser';
+import CronExpressionParser from 'cron-parser';
 
 import { DATABASE_CRON_JOBS, SCHEDULE_MODE } from '../../constants';
 import { CronJobModel } from '../model/CronJobModel';
@@ -131,7 +131,7 @@ export class StaticScheduleTrigger {
         return null;
       }
       if (cronJob.repeat && isNaN(+cronJob.repeat)) {
-        const interval = parser.parseExpression(cronJob.repeat, { currentDate });
+        const interval = CronExpressionParser.parse(cronJob.repeat, { currentDate });
         const next = interval.next();
         return next.getTime();
       } else if (!isNaN(+cronJob.repeat)) {
