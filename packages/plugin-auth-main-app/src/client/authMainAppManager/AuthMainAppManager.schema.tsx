@@ -5,7 +5,7 @@ export const authMainAppManagerSchema = {
   properties: {
     authMainApp: {
       type: 'void',
-      title: tval('Auth main'),
+      title: tval('Auth by main app'),
       'x-decorator': 'CardItem',
       'x-component': 'FormV2',
       'x-use-component-props': 'useAuthMainAppValues',

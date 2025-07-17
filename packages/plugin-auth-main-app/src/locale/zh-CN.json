@@ -1,5 +1,6 @@
 {
   "Allow the validator of this system to log in.": "允许本系统验证器登录",
+  "Auth by main app": "通过主应用登录",
   "Can not manage this sub app!": "没有权限管理此应用",
   "Enable Single Sign-On (SSO)": "允许统一登录(SSO)",
   "It is impossible to delete all login verification methods.": "无法删除所有登录验证方式",
