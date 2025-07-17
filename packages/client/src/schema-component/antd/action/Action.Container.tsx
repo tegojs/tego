@@ -13,7 +13,6 @@ import { ComposedActionDrawer } from './types';
 export const ActionContainer: ComposedActionDrawer = observer(
   (props: any) => {
     const { openMode } = useActionContext();
-
     const isMobile = useIsMobile();
     const pageStyle = usePageStyle();
 

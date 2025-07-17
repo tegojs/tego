@@ -48,7 +48,7 @@ export const ActionPage: ComposedActionDrawer = observer(
             <div data-testid="action-page" className="tb-action-page">
               <RecursionField
                 basePath={field.address}
-                schema={schema}
+                schema={{}}
                 onlyRenderProperties
                 filterProperties={(s) => {
                   return s['x-component'] !== footerNodeName;
