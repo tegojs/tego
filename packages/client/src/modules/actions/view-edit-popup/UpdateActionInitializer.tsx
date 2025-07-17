@@ -14,18 +14,24 @@ export const UpdateActionInitializer = (props) => {
       icon: 'EditOutlined',
     },
     properties: {
-      subContainer: {
+      actionContainer: {
         type: 'void',
         title: '{{ t("Edit record") }}',
-        'x-component': 'ContentContainer',
+        'x-component': 'Action.Container',
         'x-component-props': {
           className: 'tb-action-popup',
         },
         properties: {
-          grid: {
+          page: {
             type: 'void',
-            'x-component': 'Grid',
-            'x-initializer': 'popup:common:addBlock',
+            'x-component': 'Page',
+            properties: {
+              grid: {
+                type: 'void',
+                'x-component': 'Grid',
+                'x-initializer': 'popup:common:addBlock',
+              },
+            },
           },
         },
       },

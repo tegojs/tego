@@ -12,9 +12,10 @@ import { ComposedActionDrawer } from './types';
 
 export const ActionContainer: ComposedActionDrawer = observer(
   (props: any) => {
-    const { openMode } = useActionContext();
     const isMobile = useIsMobile();
     const pageStyle = usePageStyle();
+
+    const { openMode } = useActionContext();
 
     if (openMode === OpenMode.DRAWER_MODE) {
       return <ActionDrawer footerNodeName={'Action.Container.Footer'} {...props} />;

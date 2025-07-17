@@ -37,7 +37,6 @@ import { getStyles, useStyles as modalStyle } from './style';
 export const ContentContainer = (props) => {
   const { children, ...others } = props;
   const { t } = useTranslation();
-
   const { title, setTitle } = useDocumentTitle();
   const fieldSchema = useFieldSchema();
   const disablePageHeader = fieldSchema['x-component-props']?.disablePageHeader;
@@ -49,7 +48,6 @@ export const ContentContainer = (props) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // NOTE: 是否有其他路由模式?
   const match = useMatch('/:entry/:entryId/page-tab/:pageTabId/*');
 
   const pageTabActiveKey = useMemo(() => {
@@ -75,6 +73,7 @@ export const ContentContainer = (props) => {
       setTitle(t(fieldSchema.title));
     }
   }, [fieldSchema.title, title]);
+
   return wrapSSR(
     <FilterBlockProvider>
       <div className={`${componentCls} ${hashId} ${aclStyles.styles}`}>
