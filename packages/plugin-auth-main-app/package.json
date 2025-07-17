@@ -11,9 +11,15 @@
     "antd": "5.22.5"
   },
   "peerDependencies": {
+    "@tachybase/actions": "workspace:*",
+    "@tachybase/auth": "workspace:*",
     "@tachybase/client": "workspace:*",
+    "@tachybase/database": "workspace:*",
+    "@tachybase/module-auth": "workspace:*",
+    "@tachybase/schema": "workspace:*",
     "@tachybase/server": "workspace:*",
-    "@tachybase/test": "workspace:*"
+    "@tachybase/test": "workspace:*",
+    "@tachybase/utils": "workspace:*"
   },
   "description.zh-CN": "通过主应用登录子应用,子应用可关闭登录",
   "displayName.zh-CN": "多应用统一登录"
