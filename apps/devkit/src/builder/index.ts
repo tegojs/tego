@@ -36,6 +36,7 @@ export class TachybaseBuilder {
       });
 
       console.log('build failed');
+      process.exit(1);
     }
   }
 }

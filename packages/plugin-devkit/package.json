@@ -1,6 +1,6 @@
 {
   "name": "@tachybase/plugin-devkit",
-  "version": "1.3.17",
+  "version": "1.3.18",
   "main": "dist/server/index.js",
   "dependencies": {
     "@rsbuild/core": "^1.4.7",

@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-action-duplicate",
   "displayName": "Action: Duplicate record",
-  "version": "1.3.17",
+  "version": "1.3.18",
   "description": "Duplicate a record, you can either duplicate it into a form and edit it before saving it, or you can duplicate it directly to generate a new record.",
   "keywords": [
     "Actions"

@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-backup",
   "displayName": "App backup & restore",
-  "version": "1.3.17",
+  "version": "1.3.18",
   "description": "Backup and restore applications for scenarios such as application replication, migration, and upgrades.",
   "keywords": [
     "System management"
@@ -22,7 +22,7 @@
     "antd": "5.22.5",
     "archiver": "^5.3.2",
     "content-disposition": "^0.5.4",
-    "cron-parser": "5.3.0",
+    "cron-parser": "4.9.0",
     "dayjs": "1.11.13",
     "decompress": "^4.2.1",
     "file-saver": "^2.0.5",

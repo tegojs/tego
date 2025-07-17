@@ -21,3 +21,5 @@ overrides:
 neverBuiltDependencies:
 - canvas
 
+# force isolated to keep sync with partners
+nodeLinker: isolated

@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-block-charts",
   "displayName": "Block: charts",
-  "version": "1.3.17",
+  "version": "1.3.18",
   "description": "Provides data visualization feature, including chart block and chart filter block, support line charts, area charts, bar charts and more than a dozen kinds of charts, you can also extend more chart types.",
   "keywords": [
     "Blocks"
