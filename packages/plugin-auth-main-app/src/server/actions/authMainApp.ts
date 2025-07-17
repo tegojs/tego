@@ -33,7 +33,7 @@ export class AuthMainAppController {
       },
     });
     if (!multiApp) {
-      ctx.throw(403, 'Can not manage this sub app!');
+      ctx.throw(403, 'Unable to manage this application, please exit the main application and change to a new account');
     }
 
     const repo = ctx.db.getRepository('users');
@@ -85,6 +85,11 @@ export class AuthMainAppController {
     if (ctx.app.name === 'main' && !selfSignIn) {
       ctx.throw(400, ctx.t('Unable to disable all authenticators in the main application.', { ns: NAMESPACE }));
     }
+
+    if (!selfSignIn && !authMainApp) {
+      ctx.throw(400, ctx.t('It is impossible to delete all login verification methods.', { ns: NAMESPACE }));
+    }
+
     const repo = ctx.db.getRepository(COLLECTION_AUTH_MAIN_APP_CONFIG);
     const existOne = await repo.findOne();
     if (!existOne) {

@@ -16,9 +16,9 @@ export class AuthMainAppService {
   @InjectLog()
   private logger: Logger;
 
-  private selfSignIn: boolean = true;
+  private selfSignIn: boolean = true; //子应用本身登录
 
-  private authMainApp: boolean = true;
+  private authMainApp: boolean = true; //通过主应用登录
 
   async load() {
     this.addMiddleWare();
@@ -60,14 +60,19 @@ export class AuthMainAppService {
         const { resourceName, actionName } = ctx.action.params;
         await next();
         if (resourceName === 'authenticators' && actionName === 'publicList') {
+          if (!this.selfSignIn && !this.authMainApp) {
+            return;
+          }
           if (!this.selfSignIn) {
             ctx.body = [];
           }
-          ctx.body.unshift({
-            name: ctx.t('Main app signIn', { ns: NAMESPACE }),
-            authType: 'mainApp',
-            authTypeTitle: 'main app',
-          });
+          if (this.authMainApp) {
+            ctx.body.unshift({
+              name: ctx.t('Main app signIn', { ns: NAMESPACE }),
+              authType: 'mainApp',
+              authTypeTitle: 'main app',
+            });
+          }
         }
       },
       {

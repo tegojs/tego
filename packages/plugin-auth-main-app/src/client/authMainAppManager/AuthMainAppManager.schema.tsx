@@ -12,7 +12,7 @@ export const authMainAppManagerSchema = {
       properties: {
         selfSignIn: {
           type: 'boolean',
-          title: tval('Allow sign in'),
+          title: tval('Allow the validator of this system to log in.'),
           'x-decorator': 'FormItem',
           'x-component': 'Checkbox',
         },
