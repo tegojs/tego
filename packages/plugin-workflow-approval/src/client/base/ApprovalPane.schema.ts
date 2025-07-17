@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  OpenMode,
   useActionContext,
   useAPIClient,
   useCollectionRecordData,
@@ -82,7 +81,7 @@ const createApproval: ISchema = {
   title: tval('Add new'),
   'x-component': 'Action',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',
@@ -158,7 +157,7 @@ const updateApproval: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

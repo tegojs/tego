@@ -1,5 +1,3 @@
-import { OpenMode } from '@tachybase/client';
-
 import { tval } from '../locale';
 import { fieldsets } from './CloudLibraryManager.fields';
 
@@ -29,7 +27,7 @@ const create = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',
@@ -114,7 +112,7 @@ const edit = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.SHEET,
+    openMode: 'sheet',
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

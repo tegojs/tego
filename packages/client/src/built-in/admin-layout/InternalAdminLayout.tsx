@@ -15,7 +15,6 @@ export const InternalAdminLayout = (props: any) => {
   const app = useApp();
   const params = useParams<any>();
   const { styles } = useStyles();
-
   return (
     <Layout className={styles.layout}>
       <Layout.Header className={styles.header}>

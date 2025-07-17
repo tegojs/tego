@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-collection",
   "displayName": "Data source: Main",
-  "version": "1.3.18",
+  "version": "1.3.19",
   "description": "TachyBase main database, supports relational databases such as MySQL, PostgreSQL, SQLite and so on.",
   "keywords": [
     "Data sources"

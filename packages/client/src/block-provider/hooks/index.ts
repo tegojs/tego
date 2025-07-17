@@ -226,9 +226,7 @@ const viewerSchema: ISchema = {
       title: '{{t("Detail page")}}',
       'x-designer': 'Page.Designer',
       'x-component': 'Page',
-      'x-component-props': {
-        disablePageHeader: true,
-      },
+      'x-component-props': { disablePageHeader: true },
       properties: {
         grid: {
           type: 'void',
@@ -291,7 +289,7 @@ const useJumpDetails = () => {
     });
     if (targetSchema) {
       navigate(
-        `./sub/${targetSchema['x-uid']}/${PathHandler.getInstance().toWildcardPath({
+        `../${targetSchema['x-uid']}/${PathHandler.getInstance().toWildcardPath({
           collection: collection.name,
           filterByTk,
         })}`,

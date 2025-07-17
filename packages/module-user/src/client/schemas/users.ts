@@ -1,4 +1,3 @@
-import { OpenMode } from '@tachybase/client';
 import { ISchema, uid } from '@tachybase/schema';
 
 export const userCollection = {
@@ -125,7 +124,7 @@ const create: ISchema = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',
@@ -246,7 +245,7 @@ export const changePassword: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
   },
   'x-decorator': 'ACLActionProvider',
   properties: {

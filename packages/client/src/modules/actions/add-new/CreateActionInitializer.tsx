@@ -1,5 +1,6 @@
+import React from 'react';
+
 import { useSchemaInitializerItem } from '../../../application';
-import { OpenMode } from '../../../schema-component';
 import { ActionInitializer } from '../../../schema-initializer/items/ActionInitializer';
 
 export const CreateActionInitializer = () => {
@@ -13,7 +14,7 @@ export const CreateActionInitializer = () => {
     'x-component': 'Action',
     'x-decorator': 'ACLActionProvider',
     'x-component-props': {
-      openMode: OpenMode.DRAWER_MODE,
+      openMode: 'drawer',
       type: 'primary',
       component: 'CreateRecordAction',
       icon: 'PlusOutlined',

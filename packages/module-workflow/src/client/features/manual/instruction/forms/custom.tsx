@@ -4,7 +4,6 @@ import {
   CollectionProvider_deprecated,
   FormBlockContext,
   gridRowColWrap,
-  OpenMode,
   RecordProvider,
   SchemaComponent,
   SchemaInitializer,
@@ -243,7 +242,7 @@ const CustomItemsComponent = (props) => {
           <SchemaComponent
             schema={{
               type: 'void',
-              name: OpenMode.DRAWER_MODE,
+              name: 'drawer',
               title: '{{t("Configure field")}}',
               'x-decorator': 'FormV2',
               'x-decorator-props': {

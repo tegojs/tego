@@ -1,4 +1,3 @@
-import { OpenMode } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { notificationCollection } from '../collections/notification.collection';
@@ -13,7 +12,7 @@ export const createNotification: ISchema = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   AfterSuccess,
   findSchema,
-  OpenMode,
   SchemaSettingsModalItem,
   useActionContext,
   useDesignable,
@@ -111,7 +110,7 @@ export function CustomRequestAfter() {
   const component = fieldSchema.parent.parent['x-component'];
   const schema = { ...(afterSuccessSchema(t) as any) };
   if (
-    ((!openMode || openMode === OpenMode.PAGE) && (component as string).includes('Form')) ||
+    ((!openMode || openMode === 'page') && (component as string).includes('Form')) ||
     !(component as string).includes('Form')
   ) {
     delete schema.properties.popupClose;

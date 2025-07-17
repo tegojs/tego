@@ -1,4 +1,5 @@
-import { OpenMode } from '../../../schema-component';
+import React from 'react';
+
 import { ActionInitializer } from '../../../schema-initializer/items/ActionInitializer';
 
 export const ViewActionInitializer = (props) => {
@@ -10,7 +11,7 @@ export const ViewActionInitializer = (props) => {
     'x-settings': 'actionSettings:view',
     'x-component': 'Action',
     'x-component-props': {
-      openMode: OpenMode.DRAWER_MODE,
+      openMode: 'drawer',
     },
     properties: {
       drawer: {

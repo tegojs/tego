@@ -1,5 +1,5 @@
 import { useContext, useEffect } from 'react';
-import { OpenMode, useFilterFieldOptions, useFormBlockContext, VariableInput } from '@tachybase/client';
+import { useFilterFieldOptions, useFormBlockContext, VariableInput } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { RoleResourceCollectionContext } from '../RolesResourcesActions';
@@ -30,7 +30,7 @@ const useFormBlockProps = () => {
     ctx.form.setInitialValues({
       resourceName: name,
     });
-  }, [ctx.form, name]);
+  }, [name]);
   return {
     form: ctx.form,
   };
@@ -102,7 +102,7 @@ export const getScopesSchema = (dataSourceKey) => {
                         'x-component': 'Action',
                         'x-component-props': {
                           icon: 'PlusOutlined',
-                          openMode: OpenMode.DRAWER_MODE,
+                          openMode: 'drawer',
                           type: 'primary',
                         },
                         properties: {
@@ -228,7 +228,7 @@ export const getScopesSchema = (dataSourceKey) => {
                                 'x-decorator': 'ACLActionProvider',
                                 'x-component': 'Action.Link',
                                 'x-component-props': {
-                                  openMode: OpenMode.DRAWER_MODE,
+                                  openMode: 'drawer',
                                   icon: 'EditOutlined',
                                 },
                                 properties: {

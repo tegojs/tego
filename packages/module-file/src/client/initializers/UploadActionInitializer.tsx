@@ -1,4 +1,5 @@
-import { ActionInitializer, OpenMode, useCollection_deprecated } from '@tachybase/client';
+import React from 'react';
+import { ActionInitializer, useCollection_deprecated } from '@tachybase/client';
 
 export const UploadActionInitializer = (props) => {
   const collection = useCollection_deprecated();
@@ -11,7 +12,7 @@ export const UploadActionInitializer = (props) => {
     'x-component': 'Action',
     'x-decorator': 'ACLActionProvider',
     'x-component-props': {
-      openMode: OpenMode.DRAWER_MODE,
+      openMode: 'drawer',
       type: 'primary',
       icon: 'UploadOutlined',
     },

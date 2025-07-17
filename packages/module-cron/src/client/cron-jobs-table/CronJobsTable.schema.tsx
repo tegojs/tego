@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  OpenMode,
-  useCollectionRecordData,
-  useDataBlockRequest,
-  useDataBlockResource,
-  useRecord,
-} from '@tachybase/client';
+import { useCollectionRecordData, useDataBlockRequest, useDataBlockResource, useRecord } from '@tachybase/client';
 import { executionSchema } from '@tachybase/module-workflow/client';
 import { ISchema } from '@tachybase/schema';
 
@@ -144,7 +138,7 @@ const create = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',
@@ -174,7 +168,7 @@ const editAction: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

@@ -111,7 +111,7 @@ export const uiSchemaTemplatesSchema: ISchema = {
                       'x-action': 'update',
                       'x-component': 'Action.Link',
                       'x-component-props': {
-                        openMode: 'drawer-mode',
+                        openMode: 'drawer',
                         icon: 'EditOutlined',
                       },
                       properties: {

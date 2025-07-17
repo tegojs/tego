@@ -14,8 +14,6 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 
-import { OpenMode } from '../schema-component';
-
 const NavigateNoUpdateContext = React.createContext<NavigateFunction>(null);
 NavigateNoUpdateContext.displayName = 'NavigateNoUpdateContext';
 
@@ -74,7 +72,7 @@ export const IsSubPageClosedByPageMenuProvider: FC<{ children: React.ReactNode }
   const isSubPageClosedByPageMenu = useCallback(() => {
     const result =
       _.isEmpty(params['*']) &&
-      fieldSchema?.['x-component-props']?.openMode === OpenMode.PAGE &&
+      fieldSchema?.['x-component-props']?.openMode === 'page' &&
       !!prevParamsRef.current['*']?.includes(fieldSchema['x-uid']);
 
     prevParamsRef.current = params;

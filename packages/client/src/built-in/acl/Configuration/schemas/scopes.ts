@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { ISchema } from '@tachybase/schema';
 
 import { useFormBlockContext } from '../../../../block-provider';
-import { OpenMode, useFilterOptions } from '../../../../schema-component';
+import { useFilterOptions } from '../../../../schema-component';
 import { VariableInput } from '../../../../schema-settings/VariableInput/VariableInput';
 import { RoleResourceCollectionContext } from '../RolesResourcesActions';
 
@@ -30,7 +30,7 @@ const useFormBlockProps = () => {
     ctx.form.setInitialValues({
       resourceName: name,
     });
-  }, [name, ctx.form]);
+  }, [name]);
   return {
     form: ctx.form,
   };
@@ -100,7 +100,7 @@ export const scopesSchema: ISchema = {
                       'x-component': 'Action',
                       'x-component-props': {
                         icon: 'PlusOutlined',
-                        openMode: OpenMode.DRAWER_MODE,
+                        openMode: 'drawer',
                         type: 'primary',
                       },
                       properties: {
@@ -227,7 +227,7 @@ export const scopesSchema: ISchema = {
                               'x-decorator': 'ACLActionProvider',
                               'x-component': 'Action.Link',
                               'x-component-props': {
-                                openMode: OpenMode.DRAWER_MODE,
+                                openMode: 'drawer',
                                 icon: 'EditOutlined',
                               },
                               properties: {

@@ -1,52 +1,27 @@
-import { Card } from 'antd';
+import React from 'react';
+
 import { useParams } from 'react-router-dom';
 
 import { AppNotFound } from '..';
 import { DataBlockProvider } from '../../data-source';
-import { RecordContext_deprecated, RecordProvider } from '../../record-provider';
+import { RecordContext_deprecated } from '../../record-provider';
 import { RemoteSchemaComponent } from '../../schema-component';
-import { useStyles } from './DynamicPage.style';
-import { PageNavBar } from './PageNavBar';
-import { PathHandler, type ParsedPath } from './utils';
+import { PathHandler } from './utils';
 
 export const DynamicPage = () => {
-  const { styles } = useStyles();
   const params = useParams<{ '*': string; name: string }>();
-  const pathParams: ParsedPath | false = PathHandler.getInstance().parse(params['*'], params.name);
-
-  if (pathParams) {
-    if (!pathParams.sub || !pathParams.collection || !pathParams.filterByTk || !pathParams.schemaId) {
+  if (params['*']) {
+    const path = PathHandler.getInstance().parse(params['*'], params.name);
+    if (!path) {
       return <AppNotFound />;
     }
-
     return (
       // FIXME 这里是通过 DataBlock + RecordContext 来让它工作，实际上需要重构一个新的上下文，原来的卡片上下文用在这里无助于内部卡片判断
-      <div className={styles['dynamic-page']}>
-        <DataBlockProvider
-          params={{
-            filterByTk: pathParams.filterByTk,
-          }}
-          action="get"
-          collection={pathParams.collection}
-        >
-          <RecordContext_deprecated.Provider
-            value={{
-              id: pathParams.filterByTk,
-            }}
-          >
-            <RecordProvider
-              record={{
-                id: pathParams.filterByTk,
-              }}
-            >
-              <PageNavBar uid={pathParams.sub} />
-              <Card className="page-content">
-                <RemoteSchemaComponent uid={pathParams.sub} onlyRenderProperties />
-              </Card>
-            </RecordProvider>
-          </RecordContext_deprecated.Provider>
-        </DataBlockProvider>
-      </div>
+      <DataBlockProvider params={{ filterByTk: path.filterByTk }} action="get" collection={path.collection}>
+        <RecordContext_deprecated.Provider value={{ id: path.filterByTk }}>
+          <RemoteSchemaComponent uid={params.name} onlyRenderProperties />
+        </RecordContext_deprecated.Provider>
+      </DataBlockProvider>
     );
   } else {
     return <RemoteSchemaComponent uid={params.name} onlyRenderProperties />;

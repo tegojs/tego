@@ -1,7 +1,6 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import {
   CardItem,
-  OpenMode,
   SchemaComponent,
   SchemaComponentContext,
   TableBlockProvider,
@@ -260,7 +259,7 @@ export const createWorkflow: ISchema = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',
@@ -348,7 +347,7 @@ export const updateWorkflow: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',
@@ -671,7 +670,7 @@ const WorkflowTabCardItem = ({ children }) => {
     });
     setDataSource(data.data);
     setLoading(false);
-  }, [api]);
+  }, []);
 
   useEffect(() => {
     fetchData();

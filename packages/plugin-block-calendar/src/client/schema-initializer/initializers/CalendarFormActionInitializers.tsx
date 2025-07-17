@@ -1,4 +1,4 @@
-import { OpenMode, SchemaInitializer, SchemaInitializerItemType, useCollection_deprecated } from '@tachybase/client';
+import { SchemaInitializer, SchemaInitializerItemType, useCollection_deprecated } from '@tachybase/client';
 
 import { generateNTemplate } from '../../../locale';
 
@@ -87,7 +87,7 @@ export const CalendarFormActionInitializers = new SchemaInitializer({
             'x-settings': 'actionSettings:popup',
             'x-component': 'Action',
             'x-component-props': {
-              openMode: OpenMode.DRAWER_MODE,
+              openMode: 'drawer',
             },
             properties: {
               drawer: {

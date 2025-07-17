@@ -1,5 +1,5 @@
 import React from 'react';
-import { OpenMode, SchemaComponent } from '@tachybase/client';
+import { SchemaComponent } from '@tachybase/client';
 
 export const HomePageConfiguration = (props) => {
   return (
@@ -45,7 +45,7 @@ export const HomePageConfiguration = (props) => {
                 'x-component': 'Action',
                 'x-decorator': 'ACLActionProvider',
                 'x-component-props': {
-                  openMode: OpenMode.DRAWER_MODE,
+                  openMode: 'drawer',
                   type: 'primary',
                   component: 'CreateRecordAction',
                   icon: 'PlusOutlined',
@@ -323,7 +323,7 @@ export const HomePageConfiguration = (props) => {
 
                         'x-component': 'Action.Link',
                         'x-component-props': {
-                          openMode: OpenMode.DRAWER_MODE,
+                          openMode: 'drawer',
                           icon: 'EditOutlined',
                         },
                         'x-decorator': 'ACLActionProvider',

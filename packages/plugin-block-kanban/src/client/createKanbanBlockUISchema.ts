@@ -1,4 +1,3 @@
-import { OpenMode } from '@tachybase/client';
 import { ISchema, uid } from '@tachybase/schema';
 
 export const createKanbanBlockUISchema = (options: {
@@ -53,7 +52,7 @@ export const createKanbanBlockUISchema = (options: {
             'x-decorator': 'BlockItem',
             'x-component': 'Kanban.Card',
             'x-component-props': {
-              openMode: OpenMode.DRAWER_MODE,
+              openMode: 'drawer',
             },
             'x-designer': 'Kanban.Card.Designer',
             properties: {
@@ -71,7 +70,7 @@ export const createKanbanBlockUISchema = (options: {
             'x-component': 'Kanban.CardViewer',
             'x-action': 'view',
             'x-component-props': {
-              openMode: OpenMode.DRAWER_MODE,
+              openMode: 'drawer',
             },
             properties: {
               drawer: {

@@ -302,6 +302,7 @@ export const Menu: ComposedMenu = observer(
       } else {
         key = defaultSelectedKeys?.[0] || null;
       }
+
       if (mode === 'mix' && key) {
         const s = schema.properties?.[key];
         if (s?.['x-component'] === 'Menu.SubMenu') {
@@ -310,6 +311,7 @@ export const Menu: ComposedMenu = observer(
       }
       return null;
     }, [defaultSelectedKeys, mode, schema, selectedUid]);
+
     useEffect(() => {
       if (!selectedUid) {
         setSelectedKeys(undefined);

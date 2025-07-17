@@ -1,4 +1,3 @@
-import { OpenMode } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { historyConfigCollection } from '../collections/historyConfig.collection';
@@ -11,7 +10,7 @@ export const createHistoryConfig: ISchema = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     type: 'primary',
     icon: 'PlusOutlined',
   },

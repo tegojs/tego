@@ -1,9 +1,7 @@
+import React from 'react';
 import { observer, RecursionField, useField, useFieldSchema } from '@tachybase/schema';
 
-import { OpenMode, useActionContext } from '.';
-import { useIsMobile } from '../../../block-provider';
-import { PageStyle } from '../../../built-in/page-style/PageStyle.provider';
-import { usePageStyle } from '../../../built-in/page-style/usePageStyle';
+import { useActionContext } from '.';
 import { ActionDrawer } from './Action.Drawer';
 import { ActionModal } from './Action.Modal';
 import { ActionPage } from './Action.Page';
@@ -14,30 +12,15 @@ export const ActionContainer: ComposedActionDrawer = observer(
   (props: any) => {
     const { openMode } = useActionContext();
 
-    const isMobile = useIsMobile();
-    const pageStyle = usePageStyle();
-
-    if (openMode === OpenMode.DRAWER_MODE) {
+    if (openMode === 'drawer') {
       return <ActionDrawer footerNodeName={'Action.Container.Footer'} {...props} />;
     }
-    if (openMode === OpenMode.MODAL) {
+    if (openMode === 'modal') {
       return <ActionModal footerNodeName={'Action.Container.Footer'} {...props} />;
     }
-    if (openMode === OpenMode.SHEET) {
+    if (openMode === 'sheet') {
       return <ActionSheet footerNodeName={'Action.Container.Footer'} {...props} />;
     }
-
-    if (openMode === OpenMode.PAGE) {
-      return <ActionPage footerNodeName={'Action.Container.Footer'} {...props} />;
-    }
-
-    if (!openMode || [OpenMode.DEFAULT, OpenMode.DRAWER].includes(openMode)) {
-      if (isMobile || pageStyle === PageStyle.TAB_STYLE) {
-        return <ActionPage footerNodeName={'Action.Container.Footer'} {...props} />;
-      }
-      return <ActionDrawer footerNodeName={'Action.Container.Footer'} {...props} />;
-    }
-
     return <ActionPage footerNodeName={'Action.Container.Footer'} {...props} />;
   },
   { displayName: 'ActionContainer' },

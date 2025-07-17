@@ -1,5 +1,6 @@
+import React from 'react';
+
 import { useSchemaInitializerItem } from '../../../application';
-import { OpenMode } from '../../../schema-component';
 import { BlockInitializer } from '../../../schema-initializer/items';
 
 export const PopupActionInitializer = (props) => {
@@ -11,7 +12,7 @@ export const PopupActionInitializer = (props) => {
     'x-settings': 'actionSettings:popup',
     'x-component': props?.['x-component'] || 'Action.Link',
     'x-component-props': {
-      openMode: OpenMode.DRAWER_MODE,
+      openMode: 'drawer',
     },
     properties: {
       drawer: {

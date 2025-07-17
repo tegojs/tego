@@ -1,5 +1,3 @@
-import { OpenMode } from '@tachybase/client';
-
 export const getSchemaCheckLink = (params) => {
   const { record } = params;
   return {
@@ -10,7 +8,7 @@ export const getSchemaCheckLink = (params) => {
     'x-decorator': 'ACLActionProvider',
     'x-component': 'Action.Link',
     'x-component-props': {
-      openMode: OpenMode.DRAWER_MODE,
+      openMode: 'drawer',
     },
     'x-use-component-props': 'usePropsCheckLink',
     properties: {

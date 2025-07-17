@@ -1,4 +1,3 @@
-import { OpenMode } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { trackingLogCollection } from '../collections/trackingLog.collection';
@@ -10,7 +9,7 @@ export const viewTrackingLog: ISchema = {
   'x-action': 'view',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
   },
   'x-decorator': 'ACLActionProvider',
   properties: {
@@ -19,7 +18,7 @@ export const viewTrackingLog: ISchema = {
       title: `{{ t("View instrumentation", { ns: "${NAMESPACE}" }) }}`,
       'x-component': 'Action.Container',
       'x-component-props': {
-        openMode: OpenMode.DRAWER_MODE,
+        openMode: 'drawer',
         className: 'tb-action-popup',
       },
       properties: {

@@ -3,5 +3,5 @@ import { useContext } from 'react';
 import { PageStyleContext } from './PageStyle.provider';
 
 export const usePageStyle = () => {
-  return useContext(PageStyleContext).pageStyle;
+  return useContext(PageStyleContext).style;
 };

@@ -5,12 +5,12 @@ import { Schema, SchemaOptionsContext, useFieldSchema } from '@tachybase/schema'
 import { PlusOutlined, ShareAltOutlined } from '@ant-design/icons';
 import { PageHeader as AntdPageHeader } from '@ant-design/pro-layout';
 import { PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
-import { Button, Modal, Tabs } from 'antd';
+import { Button, Divider, Modal, Tabs } from 'antd';
 import { cx } from 'antd-style';
 import classNames from 'classnames';
 import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useMatch, useNavigate } from 'react-router-dom';
+import { useMatch, useSearchParams } from 'react-router-dom';
 
 import { FormDialog, ScrollArea } from '..';
 import { useToken } from '../__builtins__';
@@ -23,6 +23,7 @@ import { useGetAriaLabelOfSchemaInitializer } from '../../../schema-initializer/
 import { useGlobalTheme } from '../../../style/theme';
 import { DndContext } from '../../common';
 import { SortableItem } from '../../common/sortable-item';
+import { DragHandleMenu } from '../../common/sortable-item/DragHandleMenu';
 import { DragHandlePageTab } from '../../common/sortable-item/DragHandlePageTab';
 import { SchemaComponent, SchemaComponentOptions } from '../../core';
 import { useCompile, useDesignable } from '../../hooks';
@@ -44,28 +45,12 @@ export const Page = (props) => {
   const enablePageTabs = fieldSchema['x-component-props']?.enablePageTabs;
   const enableSharePage = fieldSchema['x-component-props']?.enableSharePage;
 
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  // NOTE: 是否有其他路由模式?
-  const match = useMatch('/:entry/:entryId/page-tab/:pageTabId/*');
-
-  const pageTabActiveKey = useMemo(() => {
-    return match?.params?.pageTabId || Object.keys(fieldSchema.properties || {}).shift();
-  }, [match?.params?.pageTabId, fieldSchema.properties]);
-
-  const setPageTabUrl = (pageTabId) => {
-    const currentPath = location.pathname;
-    const newPath = currentPath.replace(/\/page-tab\/[^/]*/, `/page-tab/${pageTabId}`);
-    if (!newPath.includes('/page-tab/')) {
-      navigate(`${currentPath}/page-tab/${pageTabId}`, { replace: true });
-    } else {
-      navigate(newPath, { replace: true });
-    }
-  };
-
+  const activeKey = useMemo(
+    () => searchParams.get('tab') || Object.keys(fieldSchema.properties || {}).shift(),
+    [fieldSchema.properties, searchParams],
+  );
   const [height, setHeight] = useState(0);
   const aclStyles = useAClStyles();
   const { wrapSSR, hashId, componentCls } = getStyles();
@@ -75,6 +60,7 @@ export const Page = (props) => {
       setTitle(t(fieldSchema.title));
     }
   }, [fieldSchema.title, title]);
+
   return wrapSSR(
     <FilterBlockProvider>
       <div className={`${componentCls} ${hashId} ${aclStyles.styles}`}>
@@ -82,21 +68,21 @@ export const Page = (props) => {
         <PageHeader
           disablePageHeader={disablePageHeader}
           enablePageTabs={enablePageTabs}
-          activeKey={pageTabActiveKey}
+          activeKey={activeKey}
           title={title}
           fieldSchema={fieldSchema}
           parentProps={others}
           setHeight={setHeight}
           setLoading={setLoading}
           enableSharePage={enableSharePage}
-          setPageTabUrl={setPageTabUrl}
+          setSearchParams={setSearchParams}
         />
         <PageContentComponent
           loading={loading}
           disablePageHeader={disablePageHeader}
           enablePageTabs={enablePageTabs}
           fieldSchema={fieldSchema}
-          activeKey={pageTabActiveKey}
+          activeKey={activeKey}
           height={height}
         >
           {children}
@@ -113,7 +99,7 @@ const PageHeader = (props) => {
     setHeight,
     activeKey,
     setLoading,
-    setPageTabUrl,
+    setSearchParams,
     fieldSchema,
     title,
     parentProps,
@@ -171,7 +157,7 @@ const PageHeader = (props) => {
               <TabComponent
                 activeKey={activeKey}
                 setLoading={setLoading}
-                setPageTabUrl={setPageTabUrl}
+                setSearchParams={setSearchParams}
                 showScrollArea={showScrollArea}
                 options={options}
                 theme={theme}
@@ -251,7 +237,7 @@ const HeaderExtra = ({ enablePageTabs, showScrollArea, isShare, setOpen, enableS
 };
 
 const TabComponent = (props) => {
-  const { activeKey, setLoading, setPageTabUrl, showScrollArea, options, theme, items } = props;
+  const { activeKey, setLoading, setSearchParams, showScrollArea, options, theme, items } = props;
 
   const { styles } = useStyles();
 
@@ -268,7 +254,11 @@ const TabComponent = (props) => {
   );
 
   const handleTabClick = (activeKey) => {
-    setPageTabUrl(activeKey);
+    setLoading(true);
+    setSearchParams([['tab', activeKey]]);
+    setTimeout(() => {
+      setLoading(false);
+    }, 50);
   };
 
   useEffect(() => {
@@ -276,6 +266,7 @@ const TabComponent = (props) => {
       setHasMounted(true);
     });
   }, []);
+
   return (
     <DndContext sensors={sensors}>
       <Tabs

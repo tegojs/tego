@@ -1,4 +1,3 @@
-import { OpenMode } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { trackingConfigCollection } from '../collections/trackingConfig.collection';
@@ -9,7 +8,7 @@ export const updateTrackingConfig: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

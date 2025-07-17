@@ -1,5 +1,6 @@
+import React from 'react';
+
 import { useSchemaInitializerItem } from '../../../application';
-import { OpenMode } from '../../../schema-component';
 import { BlockInitializer } from '../../../schema-initializer/items/BlockInitializer';
 
 export const CustomizeAddRecordActionInitializer = () => {
@@ -11,7 +12,7 @@ export const CustomizeAddRecordActionInitializer = () => {
     'x-component': 'Action',
     'x-action': 'customize:create',
     'x-component-props': {
-      openMode: OpenMode.DRAWER_MODE,
+      openMode: 'drawer',
       icon: 'PlusOutlined',
     },
     properties: {

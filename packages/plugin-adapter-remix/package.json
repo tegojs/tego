@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-adapter-remix",
   "displayName": "Adapter remix",
-  "version": "1.3.18",
+  "version": "1.3.19",
   "description": "integrate and manage remix server.",
   "keywords": [
     "System management"

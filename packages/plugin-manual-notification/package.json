@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-manual-notification",
   "displayName": "Manual Notification",
-  "version": "1.3.18",
+  "version": "1.3.19",
   "description": "Used to send notifications to all online users, including system updates and important events",
   "keywords": [
     "System management"

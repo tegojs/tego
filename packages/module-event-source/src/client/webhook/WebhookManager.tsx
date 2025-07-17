@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import {
   ExtendCollectionsProvider,
-  OpenMode,
   SchemaComponent,
   TableBlockProvider,
   useBlockRequestContext,
@@ -189,7 +188,7 @@ const editAction: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',
@@ -288,7 +287,7 @@ const testAction: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',
@@ -450,7 +449,7 @@ const schema: ISchema = {
               'x-component': 'Action',
               'x-decorator': 'ACLActionProvider',
               'x-component-props': {
-                openMode: OpenMode.DRAWER_MODE,
+                openMode: 'drawer',
                 type: 'primary',
                 component: 'CreateRecordAction',
                 icon: 'PlusOutlined',

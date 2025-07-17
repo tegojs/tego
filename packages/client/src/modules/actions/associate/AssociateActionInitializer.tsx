@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { useSchemaInitializerItem } from '../../../application';
-import { OpenMode } from '../../../schema-component';
 import { ActionInitializer } from '../../../schema-initializer/items/ActionInitializer';
 
 export const AssociateActionInitializer = () => {
@@ -15,7 +14,7 @@ export const AssociateActionInitializer = () => {
     'x-component': 'Action',
     'x-component-props': {
       actionType: 'associations',
-      openMode: OpenMode.DRAWER_MODE,
+      openMode: 'drawer',
       type: 'primary',
       icon: 'PlusOutlined',
     },

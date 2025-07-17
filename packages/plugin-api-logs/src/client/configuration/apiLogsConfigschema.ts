@@ -1,4 +1,3 @@
-import { OpenMode } from '@tachybase/client';
 import { ISchema, uid } from '@tachybase/schema';
 
 import { NAMESPACE, tval } from '../locale';
@@ -63,7 +62,7 @@ export const createApiConfig: ISchema = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: OpenMode.DRAWER_MODE,
+    openMode: 'drawer',
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',
