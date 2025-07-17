@@ -1,3 +1,4 @@
+import { OpenMode } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { notificationCollection } from '../collections/notification.collection';
@@ -10,7 +11,7 @@ export const updateNotificationConfig: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',
@@ -20,7 +21,7 @@ export const updateNotificationConfig: ISchema = {
       title: `{{ t("Edit notification", { ns: "${NAMESPACE}" }) }}`,
       'x-component': 'Action.Container',
       'x-component-props': {
-        openMode: 'drawer',
+        openMode: OpenMode.DRAWER_MODE,
         className: 'tb-action-popup',
       },
       properties: {

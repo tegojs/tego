@@ -4,6 +4,7 @@ import {
   css,
   cx,
   DndContext,
+  OpenMode,
   RecordProvider,
   SchemaComponentOptions,
   useCollectionParentRecordData,
@@ -103,7 +104,7 @@ export const KanbanCard: any = observer(
         {cardViewerSchema && (
           <ActionContextProvider
             value={{
-              openMode: fieldSchema['x-component-props']?.['openMode'] || 'drawer',
+              openMode: fieldSchema['x-component-props']?.['openMode'] || OpenMode.DRAWER_MODE,
               openSize: fieldSchema['x-component-props']?.['openSize'],
               visible,
               setVisible,

@@ -1,5 +1,4 @@
-import React from 'react';
-
+import { OpenMode } from '../../schema-component';
 import { ActionInitializer } from './ActionInitializer';
 
 export const SelectActionInitializer = (props) => {
@@ -10,7 +9,7 @@ export const SelectActionInitializer = (props) => {
     'x-designer': 'Action.Designer',
     'x-component': 'Action',
     'x-component-props': {
-      openMode: 'drawer',
+      openMode: OpenMode.DRAWER_MODE,
     },
     properties: {
       drawer: {

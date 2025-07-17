@@ -2,6 +2,7 @@ import React, { createContext, useContext } from 'react';
 import {
   ExtendCollectionsProvider,
   FormProvider,
+  OpenMode,
   SchemaComponent,
   TableBlockProvider,
   useCollection_deprecated,
@@ -189,7 +190,7 @@ export const AuditLogs: any = () => {
                         'x-settings': 'actionSettings:view',
                         'x-component': 'Action.Link',
                         'x-component-props': {
-                          openMode: 'drawer',
+                          openMode: OpenMode.DRAWER_MODE,
                         },
                         properties: {
                           drawer: {

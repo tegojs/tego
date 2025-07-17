@@ -1,5 +1,4 @@
-import React from 'react';
-import { ActionInitializer } from '@tachybase/client';
+import { ActionInitializer, OpenMode } from '@tachybase/client';
 
 export const DuplicateActionInitializer = (props) => {
   const schema = {
@@ -10,7 +9,7 @@ export const DuplicateActionInitializer = (props) => {
     'x-component': 'Action.Link',
     'x-decorator': 'ACLActionProvider',
     'x-component-props': {
-      openMode: 'drawer',
+      openMode: OpenMode.DRAWER_MODE,
       component: 'DuplicateAction',
     },
     properties: {

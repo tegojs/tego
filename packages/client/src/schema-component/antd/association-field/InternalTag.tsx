@@ -7,7 +7,7 @@ import { CollectionProvider_deprecated, useCollectionManager_deprecated } from '
 import { RecordProvider, useRecord } from '../../../record-provider';
 import { FormProvider } from '../../core';
 import { useCompile } from '../../hooks';
-import { ActionContextProvider, useActionContext } from '../action';
+import { ActionContextProvider, OpenMode, useActionContext } from '../action';
 import { EllipsisWithTooltip } from '../input/EllipsisWithTooltip';
 import { useAssociationFieldContext, useFieldNames, useInsertSchema } from './hooks';
 import { transformNestedData } from './InternalCascadeSelect';
@@ -124,7 +124,12 @@ export const ReadPrettyInternalTag: React.FC = observer(
               {renderRecords()}
             </EllipsisWithTooltip>
             <ActionContextProvider
-              value={{ visible, setVisible, openMode: 'drawer', snapshot: collectionField?.interface === 'snapshot' }}
+              value={{
+                visible,
+                setVisible,
+                openMode: OpenMode.DEFAULT,
+                snapshot: collectionField?.interface === 'snapshot',
+              }}
             >
               {renderRecordProvider()}
             </ActionContextProvider>

@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   css,
+  OpenMode,
   SchemaInitializerSwitch,
   useCollection_deprecated,
   useDesignable,
@@ -63,7 +64,7 @@ export const ImportActionInitializer = () => {
     'x-component': 'Action',
     'x-component-props': {
       icon: 'CloudUploadOutlined',
-      openMode: 'modal',
+      openMode: OpenMode.MODAL,
     },
     properties: {
       modal: {

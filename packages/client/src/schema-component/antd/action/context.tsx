@@ -18,11 +18,27 @@ export const ActionContextProvider = (props: ActionContextProps & { value?: Acti
 };
 
 export type OpenSize = 'small' | 'middle' | 'large';
+
+export enum OpenMode {
+  // 默认模式DEFAULT，在经典模式默认行为为 PAGE,在多标签页状态默认行为为PAGE，在手机状态默认行为为 PAGE
+  DEFAULT = 'default',
+  // 旧版抽屉模式DRAWER，表现行为同 DEFAULT,是为了兼容旧版,旧版没有 DEFAULT 概念.
+  DRAWER = 'drawer',
+  // 模态模式MODAL
+  MODAL = 'modal',
+  // 页面模式PAGE
+  PAGE = 'page',
+  // 弹窗模式SHEET
+  SHEET = 'sheet',
+  // 新版抽屉模式DRAWER_MODE, 新版 DRAWER
+  DRAWER_MODE = 'drawer-mode',
+}
+
 export interface ActionContextProps {
   button?: any;
   visible?: boolean;
   setVisible?: (v: boolean) => void;
-  openMode?: 'drawer' | 'modal' | 'page' | 'sheet';
+  openMode?: OpenMode;
   snapshot?: boolean;
   openSize?: OpenSize;
   containerRefKey?: string;

@@ -4,7 +4,13 @@ import { ISchema, uid, useForm } from '@tachybase/schema';
 import { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { ActionContextProvider, DropdownVisibleContext, SchemaComponent, useActionContext } from '../';
+import {
+  ActionContextProvider,
+  DropdownVisibleContext,
+  SchemaComponent,
+  useActionContext,
+  useCurrentUserContext,
+} from '../';
 import { useAPIClient } from '../api-client';
 
 const useCloseAction = () => {
@@ -24,12 +30,22 @@ const useSaveCurrentUserValues = () => {
   const { setVisible } = useActionContext();
   const form = useForm();
   const api = useAPIClient();
+  const currentUser = useCurrentUserContext();
+  const hideOldPassword = currentUser?.data?.data?.password === null;
   return {
     async run() {
       await form.submit();
       await api.resource('auth').changePassword({
         values: form.values,
       });
+      if (hideOldPassword) {
+        currentUser.mutate({
+          data: {
+            ...currentUser.data.data,
+            password: '',
+          },
+        });
+      }
       await form.reset();
       setVisible(false);
     },
@@ -51,6 +67,7 @@ const schema: ISchema = {
           required: true,
           'x-component': 'Password',
           'x-decorator': 'FormItem',
+          'x-hidden': '{{ hideOldPassword }}',
         },
         newPassword: {
           type: 'string',
@@ -118,6 +135,8 @@ export const useChangePassword = () => {
   const ctx = useContext(DropdownVisibleContext);
   const [visible, setVisible] = useState(false);
   const { t } = useTranslation();
+  const currentUser = useCurrentUserContext();
+  const hideOldPassword = currentUser?.data?.data?.password === null;
 
   return useMemo<MenuProps['items'][0]>(() => {
     return {
@@ -132,11 +151,11 @@ export const useChangePassword = () => {
           {t('Change password')}
           <ActionContextProvider value={{ visible, setVisible }}>
             <div onClick={(e) => e.stopPropagation()}>
-              <SchemaComponent scope={{ useCloseAction, useSaveCurrentUserValues }} schema={schema} />
+              <SchemaComponent scope={{ useCloseAction, useSaveCurrentUserValues, hideOldPassword }} schema={schema} />
             </div>
           </ActionContextProvider>
         </>
       ),
     };
-  }, [visible]);
+  }, [visible, hideOldPassword]);
 };

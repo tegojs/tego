@@ -13,7 +13,7 @@
   "dependencies": {},
   "devDependencies": {
     "antd": "5.22.5",
-    "cron-parser": "4.9.0",
+    "cron-parser": "5.3.0",
     "react-js-cron": "^3.2.0"
   },
   "peerDependencies": {

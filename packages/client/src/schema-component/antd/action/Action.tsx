@@ -12,8 +12,11 @@ import { StablePopover, useActionContext } from '../..';
 import { useDesignable } from '../../';
 import { useApp } from '../../../application';
 import { withDynamicSchemaProps } from '../../../application/hoc/withDynamicSchemaProps';
+import { useIsMobile } from '../../../block-provider';
 import { useACLActionParamsContext } from '../../../built-in/acl';
 import { PathHandler } from '../../../built-in/dynamic-page/utils';
+import { PageStyle } from '../../../built-in/page-style/PageStyle.provider';
+import { usePageStyle } from '../../../built-in/page-style/usePageStyle';
 import { useCollection, useCollectionRecordData } from '../../../data-source';
 import { Icon } from '../../../icon';
 import { RecordProvider } from '../../../record-provider';
@@ -29,7 +32,7 @@ import { ActionLink } from './Action.Link';
 import { ActionModal } from './Action.Modal';
 import { ActionPage } from './Action.Page';
 import useStyles from './Action.style';
-import { ActionContextProvider } from './context';
+import { ActionContextProvider, OpenMode } from './context';
 import { useA } from './hooks';
 import { useGetAriaLabelOfAction } from './hooks/useGetAriaLabelOfAction';
 import { ComposedAction } from './types';
@@ -78,7 +81,7 @@ export const Action: ComposedAction = withDynamicSchemaProps(
     const openMode = fieldSchema?.['x-component-props']?.['openMode'];
     const openSize = fieldSchema?.['x-component-props']?.['openSize'];
     const disabled = form.disabled || field.disabled || field.data?.disabled || propsDisabled;
-    const linkageRules = fieldSchema?.['x-linkage-rules'] || [];
+    const linkageRules = useMemo(() => fieldSchema?.['x-linkage-rules'] || [], [fieldSchema]);
     const { designable } = useDesignable();
     const tarComponent = useComponent(component) || component;
     const { modal } = App.useApp();
@@ -87,6 +90,30 @@ export const Action: ComposedAction = withDynamicSchemaProps(
     const { getAriaLabel } = useGetAriaLabelOfAction(title);
     let actionTitle = title || compile(fieldSchema.title);
     actionTitle = lodash.isString(actionTitle) ? t(actionTitle) : actionTitle;
+    const collectionKey = collection?.getPrimaryKey();
+    const pageStyle = usePageStyle();
+    const isMobile = useIsMobile();
+
+    // NOTE:page mode 在多标签页状态默认打开，在手机状态默认打开，
+    const isPageMode = useMemo(() => {
+      // 全局 Page mode 模式优先
+      if (pageMode?.enable) {
+        return true;
+      }
+
+      // 明确指定为 PAGE 模式
+      if (openMode === OpenMode.PAGE) {
+        return true;
+      }
+
+      // 默认模式下的判断逻辑
+      if (!openMode || [OpenMode.DEFAULT, OpenMode.DRAWER].includes(openMode)) {
+        // 移动端或多标签页模式下默认为 PAGE 模式
+        return isMobile || pageStyle === PageStyle.TAB_STYLE;
+      }
+
+      return false;
+    }, [pageMode?.enable, openMode, isMobile, pageStyle]);
 
     useEffect(() => {
       field.stateOfLinkageRules = {};
@@ -105,31 +132,51 @@ export const Action: ComposedAction = withDynamicSchemaProps(
         });
     }, [field, linkageRules, localVariables, record, variables]);
 
+    const openModal = useCallback(() => {
+      setVisible(true);
+    }, []);
+
+    const openPage = useCallback(() => {
+      const containerSchema = fieldSchema.reduceProperties((buf, s) =>
+        s['x-component'] === 'Action.Container' ? s : buf,
+      );
+      const target = PathHandler.getInstance().toWildcardPath({
+        collection: collection.name,
+        filterByTk: record[collectionKey],
+      });
+
+      const findMPageSchema = (schema) => {
+        if (!schema) return;
+        if (schema['x-component'] === 'MPage') {
+          return schema['x-uid'];
+        }
+        return findMPageSchema(schema?.parent);
+      };
+
+      const MPageUID = findMPageSchema(fieldSchema);
+
+      const finalPath = isMobile
+        ? `./${MPageUID}/sub/${containerSchema['x-uid']}/${target}`
+        : `./sub/${containerSchema['x-uid']}/${target}`;
+
+      navigate(finalPath);
+    }, [fieldSchema, record, collectionKey, collection?.name, navigate]);
+
     const handleButtonClick = useCallback(
       (e: React.MouseEvent) => {
         if (isPortalInBody(e.target as Element)) {
           return;
         }
-
         e.preventDefault();
         e.stopPropagation();
 
         if (!disabled && aclCtx) {
           const onOk = () => {
             onClick?.(e);
-            // TODO: 这块需要验证下插件的设置有没有问题
-            const containerSchema = fieldSchema.reduceProperties((buf, s) =>
-              s['x-component'] === 'Action.Container' ? s : buf,
-            );
-            // TODO: 增加上下文判断
-            if (pageMode?.enable && containerSchema) {
-              const target = PathHandler.getInstance().toWildcardPath({
-                collection: collection.name,
-                filterByTk: record[collection.getPrimaryKey()],
-              });
-              navigate('../' + containerSchema['x-uid'] + '/' + target);
+            if (isPageMode) {
+              openPage();
             } else {
-              setVisible(true);
+              openModal();
             }
             run();
           };
@@ -144,7 +191,7 @@ export const Action: ComposedAction = withDynamicSchemaProps(
           }
         }
       },
-      [confirm, disabled, modal, onClick, run],
+      [confirm, disabled, modal, onClick, run, isPageMode, openPage, openModal, actionTitle, t],
     );
 
     const buttonStyle = useMemo(() => {

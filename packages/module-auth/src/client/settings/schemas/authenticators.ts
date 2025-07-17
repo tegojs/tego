@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { i18n, useActionContext, useRequest } from '@tachybase/client';
+import { i18n, OpenMode, useActionContext, useRequest } from '@tachybase/client';
 import { ISchema, uid } from '@tachybase/schema';
 
 import { AuthTypeContext } from '../authType';
@@ -157,7 +157,7 @@ export const updateAuthenticator: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

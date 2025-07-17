@@ -1,5 +1,4 @@
-import React from 'react';
-
+import { OpenMode } from '../../../schema-component';
 import { ActionInitializer } from '../../../schema-initializer/items/ActionInitializer';
 
 export const CreateChildInitializer = (props) => {
@@ -12,7 +11,7 @@ export const CreateChildInitializer = (props) => {
     'x-component': 'Action',
     'x-visible': '{{treeTable}}',
     'x-component-props': {
-      openMode: 'drawer',
+      openMode: OpenMode.DRAWER_MODE,
       type: 'link',
       addChild: true,
       style: { padding: '0px', marginTop: '-5px' },

@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { AuthConfig, BaseAuth } from '@tachybase/auth';
 import { PasswordField } from '@tachybase/database';
 
@@ -140,9 +140,11 @@ export class BasicAuth extends BaseAuth {
       },
     });
     const pwd = this.userCollection.getField<PasswordField>('password');
-    const isValid = await pwd.verify(oldPassword, user.password);
-    if (!isValid) {
-      ctx.throw(401, ctx.t('The username, email or password is incorrect, please re-enter', { ns: namespace }));
+    if (user.password !== null) {
+      const isValid = await pwd.verify(oldPassword, user.password);
+      if (!isValid) {
+        ctx.throw(401, ctx.t('The username, email or password is incorrect, please re-enter', { ns: namespace }));
+      }
     }
     user.password = newPassword;
     await user.save();

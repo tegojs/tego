@@ -1,5 +1,4 @@
-import React from 'react';
-
+import { OpenMode } from '../../../schema-component';
 import { ActionInitializer } from '../../../schema-initializer/items/ActionInitializer';
 
 export const UpdateActionInitializer = (props) => {
@@ -11,7 +10,7 @@ export const UpdateActionInitializer = (props) => {
     'x-settings': 'actionSettings:edit',
     'x-component': 'Action',
     'x-component-props': {
-      openMode: 'drawer',
+      openMode: OpenMode.DRAWER_MODE,
       icon: 'EditOutlined',
     },
     properties: {

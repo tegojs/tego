@@ -51,6 +51,9 @@ export default defineConfig({
     define: {
       ...rsDefined,
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.REACT_APP_CLICK_TO_COMPONENT_EDITOR': JSON.stringify(
+        process.env.REACT_APP_CLICK_TO_COMPONENT_EDITOR,
+      ),
     },
   },
   dev: {
@@ -80,6 +83,9 @@ export default defineConfig({
   resolve: {
     alias: {
       ...config.alias,
+      // TODO：暂时只对这个库做处理
+      i18next: require.resolve('i18next'),
+      'react-i18next': require.resolve('react-i18next'),
     },
   },
 });

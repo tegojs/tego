@@ -1,5 +1,5 @@
 import React from 'react';
-import { BlockInitializer, useSchemaInitializerItem } from '@tachybase/client';
+import { BlockInitializer, OpenMode, useSchemaInitializerItem } from '@tachybase/client';
 
 export const BulkEditActionInitializer = () => {
   const schema = {
@@ -11,7 +11,7 @@ export const BulkEditActionInitializer = () => {
       updateMode: 'selected',
     },
     'x-component-props': {
-      openMode: 'drawer',
+      openMode: OpenMode.DRAWER_MODE,
       icon: 'EditOutlined',
     },
     properties: {

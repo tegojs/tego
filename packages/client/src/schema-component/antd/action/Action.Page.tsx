@@ -30,14 +30,16 @@ export const ActionPage: ComposedActionDrawer = observer(
     const { containerRefKey, visible, setVisible } = useActionContext();
     const containerRef = useScope(containerRefKey);
     const { styles } = useStyles();
-    const schema = useFieldSchema();
+
     const field = useField();
+    const schema = useFieldSchema();
     const footerSchema = schema.reduceProperties((buf, s) => {
       if (s['x-component'] === footerNodeName) {
         return s;
       }
       return buf;
     });
+
     return (
       <>
         {containerRef?.current &&

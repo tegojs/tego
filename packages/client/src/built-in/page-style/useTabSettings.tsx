@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { error } from '@tachybase/utils/client';
 
 import { useTranslation } from 'react-i18next';
@@ -6,11 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { useAPIClient } from '../../api-client';
 import { SelectWithTitle } from '../../common';
 import { useCurrentUserContext } from '../../user';
+import { PageStyle } from './PageStyle.provider';
 
 export const useTabSettings = () => {
   return {
-    key: 'tab',
-    eventKey: 'tab',
+    key: PageStyle.TAB_STYLE,
+    eventKey: PageStyle.TAB_STYLE,
     label: <Label />,
   };
 };
@@ -23,15 +24,15 @@ export function Label() {
   return (
     <SelectWithTitle
       title={t('Page style')}
-      defaultValue={currentUser.data.data.systemSettings?.pageStyle || 'classical'}
+      defaultValue={currentUser.data.data.systemSettings?.pageStyle || PageStyle.CLASSICAL}
       options={[
         {
           label: t('classical'),
-          value: 'classical',
+          value: PageStyle.CLASSICAL,
         },
         {
           label: t('tabs'),
-          value: 'tab',
+          value: PageStyle.TAB_STYLE,
         },
       ]}
       onChange={updateUserPageStyle}
@@ -44,7 +45,7 @@ export function useUpdatePageStyleSettings() {
   const currentUser = useCurrentUserContext();
 
   const updateUserPageStyle = useCallback(
-    async (pageStyle: string | null) => {
+    async (pageStyle: PageStyle | null) => {
       if (pageStyle === currentUser.data.data.systemSettings?.pageStyle) {
         return;
       }
@@ -52,7 +53,7 @@ export function useUpdatePageStyleSettings() {
         await api.resource('users').updateProfile({
           values: {
             systemSettings: {
-              ...(currentUser.data.data.systemSettings || {}),
+              ...currentUser.data.data.systemSettings,
               pageStyle,
             },
           },
@@ -61,7 +62,7 @@ export function useUpdatePageStyleSettings() {
           data: {
             ...currentUser.data.data,
             systemSettings: {
-              ...(currentUser.data.data.systemSettings || {}),
+              ...currentUser.data.data.systemSettings,
               pageStyle,
             },
           },

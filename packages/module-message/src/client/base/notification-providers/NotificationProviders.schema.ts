@@ -1,4 +1,4 @@
-import { useActionContext, useRequest } from '@tachybase/client';
+import { OpenMode, useActionContext, useRequest } from '@tachybase/client';
 import { ISchema, uid } from '@tachybase/schema';
 
 import { Card } from 'antd';
@@ -11,7 +11,7 @@ export const update: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

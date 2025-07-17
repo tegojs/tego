@@ -22,7 +22,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@emotion/css": "^11.13.5",
     "@floating-ui/react": "0.26.28",
-    "@js-preview/excel": "^1.7.12",
+    "@js-preview/excel": "^1.7.14",
     "@lottiefiles/dotlottie-react": "^0.9.3",
     "@tachybase/components": "workspace:*",
     "@tachybase/evaluators": "workspace:*",
@@ -52,7 +52,7 @@
     "mitt": "^3.0.1",
     "nanoid": "^3.3.8",
     "qrcode": "^1.5.4",
-    "rc-menu": "9.16.0",
+    "rc-menu": "9.16.1",
     "rc-tree-select": "^5.25.0",
     "rc-util": "^5.44.2",
     "react-beautiful-dnd": "^13.1.1",
@@ -81,7 +81,6 @@
     "@types/flat": "^5.0.5",
     "@types/lodash": "^4.17.13",
     "@types/markdown-it": "12.2.3",
-    "@types/markdown-it-highlightjs": "3.3.4",
     "@types/react-big-calendar": "^1.16.0"
   },
   "peerDependencies": {

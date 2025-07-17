@@ -15,7 +15,7 @@ import {
 import { Alert, Flex, ModalProps, Tag } from 'antd';
 import { useTranslation } from 'react-i18next';
 
-import { ActionContext, RemoteSelect, useCompile, useDesignable } from '../..';
+import { ActionContext, OpenMode, RemoteSelect, useCompile, useDesignable } from '../..';
 import { useApp } from '../../../application';
 import { withDynamicSchemaProps } from '../../../application/hoc/withDynamicSchemaProps';
 import { usePlugin } from '../../../application/hooks';
@@ -265,7 +265,7 @@ export function AfterSuccess() {
   const component = fieldSchema.parent.parent['x-component'];
   const schema = { ...(afterSuccessSchema(t) as any) };
   if (
-    ((!openMode || openMode === 'page') && (component as string).includes('Form')) ||
+    ((!openMode || openMode === OpenMode.PAGE) && (component as string).includes('Form')) ||
     !(component as string).includes('Form')
   ) {
     delete schema.properties.popupClose;
@@ -670,7 +670,7 @@ export const SetFilterScope = (props) => {
         },
       },
     }),
-    [],
+    [fieldSchema, gridSchema, t, type, collectionName, form, variables, localVariables, record, formBlockType],
   );
   const { getTemplateById } = useSchemaTemplateManager();
   const { dn } = useDesignable();

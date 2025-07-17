@@ -3,6 +3,7 @@ import { createRouterManager, Plugin, RouterManager } from '@tachybase/client';
 
 import { Navigate } from 'react-router-dom';
 
+import { DynamicPage } from '../../../client/src/built-in/dynamic-page/DynamicPage';
 import PluginCalculator from './assistant-tool/calculator/plugin';
 import PluginDesignableButton from './assistant-tool/Designable/plugin';
 import PluginSearchAndJump from './assistant-tool/search-and-jump/plugin';
@@ -77,6 +78,10 @@ export class ModuleWeb extends Plugin {
     this.app.router.add('mobile.page', {
       path: '/mobile/:name',
       Component: 'RouteSchemaComponent',
+    });
+    this.app.router.add('mobile.view.page', {
+      path: '/mobile/:name/*',
+      Component: DynamicPage,
     });
     this.app.router.add('mobile.swiper.page', {
       path: '/mobile/:name/image/:collection/:field/:fieldParams',

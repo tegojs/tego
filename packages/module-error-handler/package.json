@@ -15,7 +15,7 @@
   "devDependencies": {
     "@tachybase/schema": "workspace:*",
     "lodash": "4.17.21",
-    "supertest": "^6.3.4"
+    "supertest": "^7.1.3"
   },
   "peerDependencies": {
     "@tachybase/client": "workspace:*",

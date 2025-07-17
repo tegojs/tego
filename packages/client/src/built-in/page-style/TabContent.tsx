@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 import { css } from '@emotion/css';
 import { Outlet, useLocation, useOutlet, useParams } from 'react-router-dom';
 
+import { useTranslation } from '../..';
 import { useDocumentTitle } from '../document-title';
-import { PageStyleContext } from './PageStyle.provider';
+import { PageStyle, PageStyleContext } from './PageStyle.provider';
 import { usePageStyle } from './usePageStyle';
 
 export const TabContentInternal = ({ items, activeKey }) => {
@@ -25,14 +26,14 @@ export const TabContentInternal = ({ items, activeKey }) => {
 };
 
 export const TabContent = () => {
+  const { t } = useTranslation();
   const { title, setTitle } = useDocumentTitle();
   const location = useLocation();
   const { items, setItems } = useContext(PageStyleContext);
   const targetKey = location.pathname;
   const outlet = useOutlet();
-
   useEffect(() => {
-    if (targetKey && title) {
+    if (targetKey) {
       const targetItem = items.find((value) => value.key === targetKey);
       if (!targetItem) {
         // 现有tab页数组里,不存在之前浏览的tab页面,添加新的tab页进数组
@@ -41,13 +42,13 @@ export const TabContent = () => {
           {
             key: targetKey,
             // TODO: 这里title计算需要处理
-            label: title,
+            label: title || t('Unnamed'),
             children: outlet,
           },
         ]);
       } else {
         // 如果存在之前浏览的tab页面,只用更新页面标题
-        setTitle(targetItem.label);
+        setTitle(targetItem?.label);
       }
     }
   }, [targetKey, title]);
@@ -58,5 +59,5 @@ export const TabContent = () => {
 export const CustomAdminContent = () => {
   const params = useParams<any>();
   const pageStyle = usePageStyle();
-  return params.name && pageStyle === 'tab' ? <TabContent /> : <Outlet />;
+  return params.name && pageStyle === PageStyle.TAB_STYLE ? <TabContent /> : <Outlet />;
 };

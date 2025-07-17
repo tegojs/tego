@@ -38,7 +38,7 @@ export const AppComponent = observer(
           {app.maintained && app.maintaining && app.renderComponent('AppMaintainingDialog', { app })}
           {app.renderComponent('AppMain')}
         </ApplicationContext.Provider>
-        <ClickToComponent />
+        <ClickToComponent editor={process.env.REACT_APP_CLICK_TO_COMPONENT_EDITOR || 'vscode'} />
       </ErrorBoundary>
     );
   },

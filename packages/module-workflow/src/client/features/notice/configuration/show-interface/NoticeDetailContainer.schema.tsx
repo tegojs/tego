@@ -1,5 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
-import { SchemaComponent, SchemaComponentContext } from '@tachybase/client';
+import { OpenMode, SchemaComponent, SchemaComponentContext } from '@tachybase/client';
 import { uid } from '@tachybase/utils/client';
 
 import { useFlowContext } from '../../../../FlowContext';
@@ -28,7 +28,7 @@ export const NoticeDetailContainer = () => {
 };
 
 const schema = {
-  name: 'drawer',
+  name: OpenMode.DRAWER_MODE,
   type: 'void',
   title: tval('The interface of show notice detail'),
   'x-component': 'Action.Drawer',

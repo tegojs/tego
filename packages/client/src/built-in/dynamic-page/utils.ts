@@ -1,12 +1,13 @@
 interface PathParams {
   schemaId: string; // 必需字段
+  sub?: string; // 可选字段 subSchemaId
   collection?: string; // 可选字段
   filterByTk?: string; // 可选字段
   sourceId?: string; // 可选字段
   tab?: string; // 可选字段
 }
 
-interface ParsedPath extends PathParams {} // 直接扩展 PathParams，可灵活调整需求
+export interface ParsedPath extends PathParams {} // 直接扩展 PathParams，可灵活调整需求
 
 export class PathHandler {
   private static instance: PathHandler;
@@ -44,6 +45,9 @@ export class PathHandler {
 
       let validKey = true;
       switch (key) {
+        case 'sub':
+          result.sub = value;
+          break;
         case 'collection':
           result.collection = value;
           break;

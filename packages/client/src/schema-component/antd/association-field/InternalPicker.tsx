@@ -17,7 +17,7 @@ import {
   useTableSelectorProps as useTsp,
 } from '../../../block-provider/TableSelectorProvider';
 import { useCompile } from '../../hooks';
-import { ActionContextProvider } from '../action';
+import { ActionContextProvider, OpenMode } from '../action';
 import { useAssociationFieldContext, useFieldNames, useInsertSchema } from './hooks';
 import schema from './schema';
 import { flatData, getLabelFormatValue, useLabelUiSchema } from './util';
@@ -187,7 +187,7 @@ export const InternalPicker = observer(
         <ActionContextProvider
           value={{
             openSize: fieldSchema['x-component-props']?.['openSize'] || openSize,
-            openMode: 'drawer',
+            openMode: OpenMode.DEFAULT,
             visible: visibleSelector,
             setVisible: setVisibleSelector,
           }}
