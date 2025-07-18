@@ -9,7 +9,7 @@
   "main": "dist/server/index.js",
   "devDependencies": {
     "@ant-design/icons": "^5.5.2",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "geoip-lite": "^1.4.9",
     "ipaddr.js": "^2.1.0"
   },

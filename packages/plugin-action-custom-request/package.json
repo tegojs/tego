@@ -15,7 +15,7 @@
   "devDependencies": {
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "axios": "1.7.7",
     "file-saver": "^2.0.5",
     "lodash": "~4.17.21",

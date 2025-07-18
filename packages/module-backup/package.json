@@ -19,7 +19,7 @@
     "@types/archiver": "^5.3.4",
     "@types/file-saver": "^2.0.7",
     "@types/lodash": "4.17.13",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "archiver": "^5.3.2",
     "content-disposition": "^0.5.4",
     "cron-parser": "4.9.0",

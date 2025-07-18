@@ -13,7 +13,7 @@
   "dependencies": {},
   "devDependencies": {
     "@types/lodash": "4.17.13",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "lodash": "4.17.21",
     "sequelize": "6.37.5"
   },

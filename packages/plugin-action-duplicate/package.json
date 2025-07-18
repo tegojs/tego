@@ -14,7 +14,7 @@
   "dependencies": {},
   "devDependencies": {
     "@tachybase/schema": "workspace:*",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "lodash": "4.17.21",
     "react-i18next": "^15.2.0"
   },

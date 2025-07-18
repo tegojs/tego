@@ -8,7 +8,7 @@
   ],
   "main": "dist/server/index.js",
   "devDependencies": {
-    "antd": "5.22.5"
+    "antd": "5.26.5"
   },
   "peerDependencies": {
     "@tachybase/actions": "workspace:*",
