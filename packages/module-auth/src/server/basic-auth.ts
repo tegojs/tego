@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import { AuthConfig, BaseAuth } from '@tachybase/auth';
 import { PasswordField } from '@tachybase/database';
+import VerificationPlugin from '@tachybase/plugin-otp';
 
 import { namespace } from '../preset';
 
@@ -122,7 +123,7 @@ export class BasicAuth extends BaseAuth {
   async changePassword() {
     const ctx = this.ctx;
     const {
-      values: { oldPassword, newPassword },
+      values: { oldPassword, newPassword, phone, code },
     } = ctx.action.params;
     const currentUser = ctx.auth.user;
     if (!currentUser) {
@@ -140,10 +141,18 @@ export class BasicAuth extends BaseAuth {
       },
     });
     const pwd = this.userCollection.getField<PasswordField>('password');
+    const verificationPlugin: VerificationPlugin = ctx.app.getPlugin('otp');
     if (user.password !== null) {
       const isValid = await pwd.verify(oldPassword, user.password);
       if (!isValid) {
         ctx.throw(401, ctx.t('The username, email or password is incorrect, please re-enter', { ns: namespace }));
+      }
+    }
+    if (code && phone) {
+      try {
+        await verificationPlugin.intercept(ctx, async () => {});
+      } catch (e) {
+        ctx.throw(401, ctx.t('The verification code is incorrect or expired', { ns: namespace }));
       }
     }
     user.password = newPassword;
