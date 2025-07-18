@@ -79,7 +79,6 @@ export const useTableBlockProps = () => {
             ? [sorter.field]
             : [`-${sorter.field}`]
           : parentSortReal;
-
       ctx.service.run(
         { ...ctx.service.params[0], page: current, pageSize, sort },
         { filters: ctx.service.params[1]?.filters },
@@ -128,14 +127,33 @@ export const useTableBlockProps = () => {
             delete items[key];
           }
         });
-        const mergedFilter = mergeFilter([
+        const mergeList = [
           ...Object.values(storedFilter).map((filter) => removeNullCondition(filter)),
           flat.unflatten(items),
           block.defaultFilter,
           prevMergedFilter,
-        ]);
+        ];
+
+        const mergedFilter = mergeFilter(mergeList);
         const currFilter = filterByCleanedFields(mergedFilter);
         prevMergedFilter = currFilter;
+        dataBlocks.forEach((item) => {
+          const targetsUidList = targets.map((targetItem) => targetItem.uid);
+          if (
+            targetsUidList.includes(item.uid) &&
+            !item.associatedFields.find(
+              (assItem) => assItem.name === target.field || target.field.includes(assItem.name),
+            )
+          ) {
+            const prevFlatItems = flat(prevMergedFilter);
+            Object.entries(prevFlatItems).forEach(([key, prevItem]) => {
+              if (key.split('.').includes(target.field)) {
+                delete prevFlatItems[key];
+              }
+            });
+            prevMergedFilter = flat.unflatten(prevFlatItems);
+          }
+        });
         return block.doFilter(
           {
             ...param,
