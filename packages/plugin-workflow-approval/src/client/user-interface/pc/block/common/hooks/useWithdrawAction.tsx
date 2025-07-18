@@ -22,7 +22,6 @@ export function useWithdrawAction() {
         await api.resource('approvals').withdraw({
           filterByTk: approval.id,
         });
-        // setSubmitted(true);
 
         field.data.loading = false;
         refreshTable();
