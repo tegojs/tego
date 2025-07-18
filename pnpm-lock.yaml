@@ -1213,8 +1213,8 @@ importers:
         specifier: 4.17.21
         version: 4.17.21
       mkdirp:
-        specifier: ^1.0.4
-        version: 1.0.4
+        specifier: ^3.0.1
+        version: 3.0.1
       object-path:
         specifier: ^0.11.8
         version: 0.11.8
@@ -1656,8 +1656,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       mkdirp:
-        specifier: ~0.5.6
-        version: 0.5.6
+        specifier: ~3.0.1
+        version: 3.0.1
       multer:
         specifier: 2.0.1
         version: 2.0.1
