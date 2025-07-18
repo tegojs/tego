@@ -31,9 +31,9 @@ const ApprovalTag = (props) => {
   const { record } = props;
   const { node, job, statusCount: statusCountMap, groupCount } = record;
 
-  const { branchMode, negotiation } = node?.config ? node : ({} as any);
-  const tag = branchMode ? approvalTodoStatusMap[job.result] : jobStatusOptions[job?.status];
-  const enums = VoteCategoryEnums[voteOption(negotiation)];
+  const { branchMode, negotiation } = node?.config || ({} as any);
+  const tag = branchMode ? approvalTodoStatusMap[job?.result] : jobStatusOptions[job?.status];
+  const enums = VoteCategoryEnums[voteOption(+negotiation)];
 
   return (
     <div
@@ -46,10 +46,10 @@ const ApprovalTag = (props) => {
         }
       `}
     >
-      <Tag key={'tag'} color={tag == null ? void 0 : tag.color}>
+      <Tag key={'tag'} color={tag?.color}>
         {typeof enums.label == 'function' ? enums.label(negotiation) : compile(enums.label)}
       </Tag>
-      {statusCountMap !== null ? <ProcessTag groupCount={groupCount} statusCount={statusCountMap} /> : null}
+      {!!statusCountMap && <ProcessTag groupCount={groupCount} statusCount={statusCountMap} />}
     </div>
   );
 };
