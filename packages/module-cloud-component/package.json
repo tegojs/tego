@@ -19,7 +19,7 @@
     "@babel/preset-react": "7.27.1",
     "@babel/preset-typescript": "7.27.1",
     "@babel/standalone": "7.27.6",
-    "@babel/traverse": "7.27.4",
+    "@babel/traverse": "7.28.0",
     "@bytemd/plugin-gemoji": "1.22.0",
     "@bytemd/plugin-gfm": "1.21.0",
     "@bytemd/plugin-highlight": "1.21.0",
