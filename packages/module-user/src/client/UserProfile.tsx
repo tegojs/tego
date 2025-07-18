@@ -5,8 +5,16 @@ import { uid } from '@tachybase/utils/client';
 
 import { App } from 'antd';
 
+import VerificationCode from '../../../client/src/user/VerificationCode';
+
 export const UserProfile = () => {
-  return <SchemaComponent schema={schema} scope={{ useCurrentUserValues, useSaveCurrentUserValues }} />;
+  return (
+    <SchemaComponent
+      schema={schema}
+      scope={{ useCurrentUserValues, useSaveCurrentUserValues }}
+      components={{ VerificationCode }}
+    />
+  );
 };
 
 const useCurrentUserValues = (options) => {
@@ -94,6 +102,27 @@ const schema: ISchema = {
           'x-decorator': 'FormItem',
           'x-component': 'Input',
           'x-validator': 'phone',
+        },
+        code: {
+          type: 'string',
+          title: '{{t("Verification code")}}',
+          'x-component': 'VerificationCode',
+          'x-component-props': {
+            actionType: 'users:updateProfile',
+            targetFieldName: 'phone',
+          },
+          required: true,
+          'x-decorator': 'FormItem',
+          'x-reactions': [
+            {
+              dependencies: ['.phone'],
+              fulfill: {
+                state: {
+                  hidden: `{{ $deps[0] === $form.initialValues?.phone }}`,
+                },
+              },
+            },
+          ],
         },
       },
     },
