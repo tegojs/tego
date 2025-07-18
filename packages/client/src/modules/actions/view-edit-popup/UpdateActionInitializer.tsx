@@ -1,5 +1,4 @@
-import React from 'react';
-
+import { OpenMode } from '../../../schema-component';
 import { ActionInitializer } from '../../../schema-initializer/items/ActionInitializer';
 
 export const UpdateActionInitializer = (props) => {
@@ -11,11 +10,11 @@ export const UpdateActionInitializer = (props) => {
     'x-settings': 'actionSettings:edit',
     'x-component': 'Action',
     'x-component-props': {
-      openMode: 'drawer',
+      openMode: OpenMode.DRAWER_MODE,
       icon: 'EditOutlined',
     },
     properties: {
-      drawer: {
+      actionContainer: {
         type: 'void',
         title: '{{ t("Edit record") }}',
         'x-component': 'Action.Container',
@@ -23,26 +22,14 @@ export const UpdateActionInitializer = (props) => {
           className: 'tb-action-popup',
         },
         properties: {
-          tabs: {
+          page: {
             type: 'void',
-            'x-component': 'Tabs',
-            'x-component-props': {},
-            'x-initializer': 'popup:addTab',
+            'x-component': 'Page',
             properties: {
-              tab1: {
+              grid: {
                 type: 'void',
-                title: '{{t("Edit")}}',
-                'x-component': 'Tabs.TabPane',
-                'x-designer': 'Tabs.Designer',
-                'x-component-props': {},
-                properties: {
-                  grid: {
-                    type: 'void',
-                    'x-component': 'Grid',
-                    'x-initializer': 'popup:common:addBlock',
-                    properties: {},
-                  },
-                },
+                'x-component': 'Grid',
+                'x-initializer': 'popup:common:addBlock',
               },
             },
           },

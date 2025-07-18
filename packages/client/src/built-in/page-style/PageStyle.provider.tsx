@@ -5,14 +5,19 @@ import { TabsProps } from 'antd';
 import { useCurrentUserContext, useCurrentUserSettingsMenu } from '../../user';
 import { useTabSettings } from './useTabSettings';
 
-export interface PageStyleContextValue {
-  style: string;
+export enum PageStyle {
+  CLASSICAL = 'classical',
+  TAB_STYLE = 'tab-style',
+}
+
+interface PageStyleContextValue {
+  pageStyle: PageStyle;
   items: TabsProps['items'];
   setItems: React.Dispatch<React.SetStateAction<TabsProps['items']>>;
 }
 
 export const PageStyleContext = createContext<Partial<PageStyleContextValue>>({
-  style: 'classical',
+  pageStyle: PageStyle.CLASSICAL,
 });
 
 export const PageStyleProvider = ({ children }) => {
@@ -26,7 +31,11 @@ export const PageStyleProvider = ({ children }) => {
 
   return (
     <PageStyleContext.Provider
-      value={{ style: currentUser?.data?.data?.systemSettings?.pageStyle || 'classical', items, setItems }}
+      value={{
+        pageStyle: currentUser?.data?.data?.systemSettings?.pageStyle || PageStyle.CLASSICAL,
+        items,
+        setItems,
+      }}
     >
       {children}
     </PageStyleContext.Provider>

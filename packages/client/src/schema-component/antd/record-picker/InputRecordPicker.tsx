@@ -11,7 +11,7 @@ import {
 import { CollectionProvider_deprecated, useCollection_deprecated } from '../../../collection-manager';
 import { FormProvider, SchemaComponentOptions } from '../../core';
 import { useCompile } from '../../hooks';
-import { ActionContextProvider, useActionContext } from '../action';
+import { ActionContextProvider, OpenMode, useActionContext } from '../action';
 import { FileSelector } from '../preview';
 import { useFieldNames } from './useFieldNames';
 import { getLabelFormatValue, useLabelUiSchema } from './util';
@@ -272,7 +272,7 @@ const Drawer: React.FunctionComponent<{
   return (
     <RecordPickerProvider {...recordPickerProps}>
       <CollectionProvider_deprecated allowNull name={collectionField?.target}>
-        <ActionContextProvider openMode="drawer" visible={visible} setVisible={setVisible}>
+        <ActionContextProvider openMode={OpenMode.DEFAULT} visible={visible} setVisible={setVisible}>
           <FormProvider>
             <TableSelectorParamsProvider params={{ filter: getFilter() }}>
               <SchemaComponentOptions scope={{ useTableSelectorProps, usePickActionProps }}>

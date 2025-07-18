@@ -51,6 +51,9 @@ export default defineConfig({
     define: {
       ...rsDefined,
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.REACT_APP_CLICK_TO_COMPONENT_EDITOR': JSON.stringify(
+        process.env.REACT_APP_CLICK_TO_COMPONENT_EDITOR,
+      ),
     },
   },
   dev: {

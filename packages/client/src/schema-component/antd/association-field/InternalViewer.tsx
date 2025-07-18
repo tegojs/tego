@@ -11,7 +11,7 @@ import { DeclareVariable } from '../../../modules/variable/DeclareVariable';
 import { RecordProvider, useRecord } from '../../../record-provider';
 import { FormProvider } from '../../core';
 import { useCompile } from '../../hooks';
-import { ActionContextProvider, useActionContext } from '../action';
+import { ActionContextProvider, OpenMode, useActionContext } from '../action';
 import { EllipsisWithTooltip } from '../input/EllipsisWithTooltip';
 import { useAssociationFieldContext, useFieldNames, useInsertSchema } from './hooks';
 import { transformNestedData } from './InternalCascadeSelect';
@@ -149,7 +149,7 @@ export const ReadPrettyInternalViewer = observer(
               value={{
                 visible,
                 setVisible,
-                openMode: 'drawer',
+                openMode: OpenMode.DEFAULT,
                 snapshot: collectionField?.interface === 'snapshot',
                 fieldSchema: fieldSchema,
               }}

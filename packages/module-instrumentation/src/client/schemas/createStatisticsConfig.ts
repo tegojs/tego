@@ -1,3 +1,4 @@
+import { OpenMode } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { statisticsConfigCollection } from '../collections/statisticsConfig.collection';
@@ -10,7 +11,7 @@ export const createStatisticsConfig: ISchema = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     type: 'primary',
     icon: 'PlusOutlined',
   },

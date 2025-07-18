@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom';
 import { Icon } from '../../icon';
 import { PageStyleContext } from './PageStyle.provider';
 import { useStyles } from './TabHeader.style';
+import { useCloseTab } from './useCloseTab';
 
 export const Tag = ({ onClick, onClose, children, active }) => {
   const { styles } = useStyles();
@@ -30,9 +31,11 @@ export const Tag = ({ onClick, onClose, children, active }) => {
 export const TabHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { items, setItems } = useContext(PageStyleContext);
+  const { items } = useContext(PageStyleContext);
   const targetKey = location.pathname;
   const { styles } = useStyles();
+
+  const { handleCloseTab } = useCloseTab();
 
   return (
     <div className={styles.tabWrapper}>
@@ -43,12 +46,7 @@ export const TabHeader = () => {
           onClick={() => {
             navigate(item.key);
           }}
-          onClose={(e) => {
-            e.stopPropagation();
-            setItems((items) => {
-              return items.filter((i) => i.key !== item.key);
-            });
-          }}
+          onClose={(e) => handleCloseTab(e, item)}
         >
           {item.label}
         </Tag>

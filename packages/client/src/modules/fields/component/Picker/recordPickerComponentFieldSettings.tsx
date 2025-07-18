@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { SchemaSettings } from '../../../../application/schema-settings/SchemaSettings';
 import { useFieldComponentName } from '../../../../common/useFieldComponentName';
 import { useCollectionField } from '../../../../data-source';
-import { useDesignable, useFieldModeOptions, useIsAddNewForm } from '../../../../schema-component';
+import { OpenMode, useDesignable, useFieldModeOptions, useIsAddNewForm } from '../../../../schema-component';
 import { isSubMode } from '../../../../schema-component/antd/association-field/util';
 import {
   useIsFieldReadPretty,
@@ -165,7 +165,7 @@ export const recordPickerComponentFieldSettings = new SchemaSettings({
           ],
           value:
             fieldSchema?.['x-component-props']?.['openSize'] ??
-            (fieldSchema?.['x-component-props']?.['openMode'] == 'modal' ? 'large' : 'middle'),
+            (fieldSchema?.['x-component-props']?.['openMode'] === OpenMode.MODAL ? 'large' : 'middle'),
           onChange: (value) => {
             field.componentProps.openSize = value;
             fieldSchema['x-component-props'] = { ...fieldSchema['x-component-props'], openSize: value };

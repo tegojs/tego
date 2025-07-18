@@ -1,5 +1,5 @@
 import React from 'react';
-import { ExtendCollectionsProvider, SchemaComponent, useTranslation } from '@tachybase/client';
+import { ExtendCollectionsProvider, OpenMode, SchemaComponent, useTranslation } from '@tachybase/client';
 
 import { userLockCollection } from './collections/userLocks';
 import { tval } from './locale';
@@ -112,7 +112,7 @@ const create = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     type: 'primary',
     icon: 'PlusOutlined',
   },
@@ -141,7 +141,7 @@ const editAction = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

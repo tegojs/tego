@@ -10,7 +10,13 @@ import { useCollection_deprecated, useCollectionManager_deprecated } from '../..
 import { useFieldComponentName } from '../../../../common/useFieldComponentName';
 import { useCollectionField } from '../../../../data-source';
 import { useRecord } from '../../../../record-provider';
-import { removeNullCondition, useDesignable, useFieldModeOptions, useIsAddNewForm } from '../../../../schema-component';
+import {
+  OpenMode,
+  removeNullCondition,
+  useDesignable,
+  useFieldModeOptions,
+  useIsAddNewForm,
+} from '../../../../schema-component';
 import { isSubMode } from '../../../../schema-component/antd/association-field/util';
 import { DynamicComponentProps } from '../../../../schema-component/antd/filter/DynamicComponent';
 import {
@@ -205,7 +211,7 @@ export const quickCreate: any = {
               'x-component': 'Action',
               'x-decorator': 'ACLActionProvider',
               'x-component-props': {
-                openMode: 'drawer',
+                openMode: OpenMode.DRAWER_MODE,
                 type: 'default',
                 component: 'CreateRecordAction',
               },

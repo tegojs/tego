@@ -1,4 +1,4 @@
-import { useActionContext, useRequest, useValuesFromRecord } from '@tachybase/client';
+import { OpenMode, useActionContext, useRequest, useValuesFromRecord } from '@tachybase/client';
 import { ISchema, uid } from '@tachybase/schema';
 
 import { PROVIDER_TYPE_TENCENT } from '../../constants';
@@ -60,7 +60,7 @@ export const update: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',
@@ -569,7 +569,7 @@ const providers: ISchema = {
                       title: lang('View'),
                       'x-component': 'Action.Link',
                       'x-component-props': {
-                        openMode: 'drawer',
+                        openMode: OpenMode.DRAWER_MODE,
                       },
                       properties: {
                         drawer: {
@@ -644,7 +644,7 @@ const providers: ISchema = {
                       title: lang('Edit'),
                       'x-component': 'Action.Link',
                       'x-component-props': {
-                        openMode: 'drawer',
+                        openMode: OpenMode.DRAWER_MODE,
                       },
                       properties: {
                         drawer: {

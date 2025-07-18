@@ -20,7 +20,11 @@ import {
   useFormBlockContext,
 } from '../..';
 import { useAPIClient, useRequest } from '../../api-client';
+import { useIsSubPage } from '../../application/CustomRouterContextProvider';
 import { PathHandler } from '../../built-in/dynamic-page/utils';
+import { PageStyle } from '../../built-in/page-style/PageStyle.provider';
+import { useCloseTab } from '../../built-in/page-style/useCloseTab';
+import { usePageStyle } from '../../built-in/page-style/usePageStyle';
 import { useCollection_deprecated, useCollectionManager_deprecated } from '../../collection-manager';
 import { useFilterBlock } from '../../filter-provider/FilterProvider';
 import { mergeFilter, transformToFilter } from '../../filter-provider/utils';
@@ -226,7 +230,9 @@ const viewerSchema: ISchema = {
       title: '{{t("Detail page")}}',
       'x-designer': 'Page.Designer',
       'x-component': 'Page',
-      'x-component-props': { disablePageHeader: true },
+      'x-component-props': {
+        disablePageHeader: true,
+      },
       properties: {
         grid: {
           type: 'void',
@@ -289,7 +295,7 @@ const useJumpDetails = () => {
     });
     if (targetSchema) {
       navigate(
-        `../${targetSchema['x-uid']}/${PathHandler.getInstance().toWildcardPath({
+        `./sub/${targetSchema['x-uid']}/${PathHandler.getInstance().toWildcardPath({
           collection: collection.name,
           filterByTk,
         })}`,
@@ -334,6 +340,11 @@ export const useCreateActionProps = () => {
   const collectValues = useCollectValuesToSubmit();
   const action = record.isNew ? actionField.componentProps.saveMode || 'create' : 'update';
   const filterKeys = actionField.componentProps.filterKeys?.checked || [];
+  const pageStyle = usePageStyle();
+  const isPageTabStyle = pageStyle === PageStyle.TAB_STYLE;
+  const isSubPage = useIsSubPage();
+  const { handleCloseTab } = useCloseTab();
+
   return {
     async onClick() {
       const { onSuccess, skipValidator, triggerWorkflows, pageMode } = actionSchema?.['x-action-settings'] ?? {};
@@ -398,6 +409,11 @@ export const useCreateActionProps = () => {
         }
       } catch (error) {
         actionField.data.loading = false;
+      }
+
+      if (isPageTabStyle && isSubPage) {
+        // 如果当前是独立子页面, 且是多标签页模式, 则创建完成后关闭当前标签页
+        handleCloseTab(null, { key: location.pathname });
       }
     },
   };
@@ -866,6 +882,10 @@ export const useUpdateActionProps = () => {
   const variables = useVariables();
   const localVariables = useLocalVariables({ currentForm: form });
   const { getActiveFieldsName } = useFormActiveFields() || {};
+  const pageStyle = usePageStyle();
+  const isPageTabStyle = pageStyle === PageStyle.TAB_STYLE;
+  const isSubPage = useIsSubPage();
+  const { handleCloseTab } = useCloseTab();
 
   return {
     async onClick() {
@@ -977,6 +997,11 @@ export const useUpdateActionProps = () => {
         }
       } catch (error) {
         actionField.data.loading = false;
+      }
+
+      if (isPageTabStyle && isSubPage) {
+        // 如果当前是独立子页面, 且是多标签页模式, 则更新完成后关闭当前标签页
+        handleCloseTab(null, { key: location.pathname });
       }
     },
   };

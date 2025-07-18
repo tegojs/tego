@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useSchemaToolbar } from '../../../application';
 import { SchemaSettings } from '../../../application/schema-settings/SchemaSettings';
 import { useCollection_deprecated } from '../../../collection-manager';
-import { useActionContext, useDesignable } from '../../../schema-component';
+import { OpenMode, useActionContext, useDesignable } from '../../../schema-component';
 import {
   AfterSuccess,
   ButtonEditor,
@@ -24,7 +24,7 @@ const Tree = connect(
   mapProps((props, field: any) => {
     useEffect(() => {
       field.value = props.defaultCheckedKeys || [];
-    }, []);
+    }, [field.value, props.defaultCheckedKeys]);
     const [checkedKeys, setCheckedKeys] = useState(props.defaultCheckedKeys || []);
     const onCheck = (checkedKeys) => {
       setCheckedKeys(checkedKeys);
@@ -151,7 +151,7 @@ export const createSubmitActionSettings = new SchemaSettings({
       useVisible() {
         const { fieldSchema } = useActionContext();
         const openMode = findSchema(fieldSchema);
-        return !openMode || openMode === 'page';
+        return !openMode || openMode === OpenMode.PAGE;
       },
       useComponentProps() {
         const { t } = useTranslation();
