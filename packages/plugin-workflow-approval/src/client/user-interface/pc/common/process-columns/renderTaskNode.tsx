@@ -49,7 +49,7 @@ const ApprovalTag = (props) => {
       <Tag key={'tag'} color={tag?.color}>
         {typeof enums.label == 'function' ? enums.label(negotiation) : compile(enums.label)}
       </Tag>
-      {statusCountMap && <ProcessTag groupCount={groupCount} statusCount={statusCountMap} />}
+      {!!statusCountMap && <ProcessTag groupCount={groupCount} statusCount={statusCountMap} />}
     </div>
   );
 };
