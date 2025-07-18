@@ -17,7 +17,7 @@
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",
     "@types/node-xlsx": "^0.15.3",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "file-saver": "^2.0.5",
     "lodash": "4.17.21",
     "mathjs": "^10.6.4",

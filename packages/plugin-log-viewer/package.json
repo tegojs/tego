@@ -16,7 +16,7 @@
     "@ant-design/icons": "^5.5.2",
     "@types/tar-fs": "^2.0.4",
     "ahooks": "^3.9.0",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "react-i18next": "^15.2.0",
     "tar-fs": "^3.1.0"
   },

@@ -13,7 +13,7 @@
     "@tachybase/schema": "workspace:*",
     "@tachybase/utils": "workspace:*",
     "@vercel/ncc": "0.38.3",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "axios": "1.7.7",
     "dayjs": "1.11.13",
     "docxtemplater": "^3.55.8",

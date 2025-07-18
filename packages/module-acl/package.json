@@ -18,7 +18,7 @@
     "@tachybase/schema": "workspace:*",
     "@types/jsonwebtoken": "^8.5.9",
     "ahooks": "^3.9.0",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "async-mutex": "^0.3.2",
     "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.21",

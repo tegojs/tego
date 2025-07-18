@@ -20,7 +20,7 @@
     "@tachybase/components": "workspace:*",
     "@tachybase/utils": "workspace:*",
     "ahooks": "3.9.0",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "jsonwebtoken": "8.5.1",
     "lodash": "^4.17.21",
     "react-i18next": "^15.2.0",

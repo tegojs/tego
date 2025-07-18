@@ -19,7 +19,7 @@
     "@types/react": "~18.3.18",
     "@types/react-dom": "~18.3.5",
     "ahooks": "~3.9.0",
-    "antd": "5.22.5",
+    "antd": "5.26.5",
     "antd-mobile": "^5.38.1",
     "antd-mobile-icons": "^0.3.0",
     "cronstrue": "^2.52.0",
