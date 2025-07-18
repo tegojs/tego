@@ -5,10 +5,20 @@ import { uid } from '@tachybase/utils/client';
 
 import { App } from 'antd';
 
+import VerificationCode from '../../../client/src/user/VerificationCode';
+
 export const ChangePassword = () => {
   const currentUser = useCurrentUserContext();
-  const hideOldPassword = currentUser?.data?.data?.password === null;
-  return <SchemaComponent schema={schema} scope={{ useSaveCurrentUserValues, hideOldPassword }} />;
+  const oldPassword = currentUser?.data?.data?.password;
+  const phoneNumber = currentUser?.data?.data?.phone;
+  const codeDescription = phoneNumber ? `将发送验证码给手机${phoneNumber}` : '请先在个人资料填写手机号';
+  return (
+    <SchemaComponent
+      schema={schema}
+      scope={{ useSaveCurrentUserValues, oldPassword, codeDescription, phoneNumber }}
+      components={{ VerificationCode }}
+    />
+  );
 };
 
 const useSaveCurrentUserValues = () => {
@@ -63,13 +73,85 @@ const schema: ISchema = {
             },
           },
         },
+        verifyMethod: {
+          type: 'string',
+          required: true,
+          title: '{{t("Verify method")}}',
+          enum: [
+            { label: '{{t("Use old password")}}', value: 'password' },
+            { label: '{{t("Use verification code")}}', value: 'code' },
+          ],
+          'x-component': 'Radio.Group',
+          'x-decorator': 'FormItem',
+          'x-reactions': [
+            {
+              dependencies: ['.phoneExist', '.oldPasswordExist'],
+              fulfill: {
+                state: {
+                  hidden: '{{!($deps[0] && $deps[1])}}',
+                  value: `{{ !$deps[1] ? 'code' : (!$deps[0] ? 'password' : undefined) }}`,
+                },
+              },
+            },
+          ],
+        },
+        phoneExist: {
+          type: 'boolean',
+          default: '{{ !!phoneNumber }}',
+          'x-hidden': true,
+        },
+        phone: {
+          type: 'string',
+          title: '{{t("Phone")}}',
+          'x-value': '{{phoneNumber}}',
+          'x-component': 'Input',
+          'x-validator': 'phone',
+          'x-decorator': 'FormItem',
+          'x-hidden': true,
+        },
+        code: {
+          type: 'string',
+          title: '{{t("Verification code")}}',
+          description: '{{codeDescription}}',
+          'x-component': 'VerificationCode',
+          'x-component-props': {
+            actionType: 'auth:changePassword',
+            targetFieldName: 'phone',
+          },
+          required: true,
+          'x-decorator': 'FormItem',
+          'x-reactions': [
+            {
+              dependencies: ['.verifyMethod', '.phoneExist', '.oldPasswordExist'],
+              fulfill: {
+                state: {
+                  hidden: `{{ !$deps[1] || ($deps[0] !== 'code' && $deps[1] && $deps[2]) }}`,
+                },
+              },
+            },
+          ],
+        },
+        oldPasswordExist: {
+          type: 'boolean',
+          default: '{{ oldPassword }}',
+          'x-hidden': true,
+        },
         oldPassword: {
           type: 'string',
           title: '{{t("Old password")}}',
           required: true,
           'x-component': 'Password',
           'x-decorator': 'FormItem',
-          'x-hidden': '{{ hideOldPassword }}',
+          'x-reactions': [
+            {
+              dependencies: ['.verifyMethod', '.oldPasswordExist', '.phoneExist'],
+              fulfill: {
+                state: {
+                  hidden: `{{ !$deps[1] || ($deps[0] !== 'password' && $deps[1] && $deps[2]) }}`,
+                },
+              },
+            },
+          ],
         },
         newPassword: {
           type: 'string',
