@@ -1422,7 +1422,15 @@ export const useAssociationNames = (dataSource?: string) => {
       }
       const isTreeCollection =
         isAssociationField && getCollection(collectionField.target, dataSource)?.template === 'tree';
+      console.log('xx component', s['x-component-props']);
+      // TODO: 测试1对多和多对多
+      if (collectionField?.type === 'belongsToMany') {
+        const fieldPath = !isAssociationField && isAssociationSubfield ? getAssociationPath(s.name) : s.name;
+        const path = prefix === '' || !prefix ? fieldPath : prefix + '.' + fieldPath;
+        // updateAssociationValues.add(path);
+      }
       if (collectionField && (isAssociationField || isAssociationSubfield) && s['x-component'] !== 'TableField') {
+        console.log('000 component', s['x-component-props']);
         const fieldPath = !isAssociationField && isAssociationSubfield ? getAssociationPath(s.name) : s.name;
         const path = prefix === '' || !prefix ? fieldPath : prefix + '.' + fieldPath;
         if (isTreeCollection) {
@@ -1431,7 +1439,10 @@ export const useAssociationNames = (dataSource?: string) => {
         } else {
           appends.add(path);
         }
+        console.log('111 component', s['x-component-props']);
         if (['Nester', 'SubTable', 'PopoverNester'].includes(s['x-component-props']?.mode)) {
+          console.log('component', s['x-component-props']);
+          console.log('add updateAssociationValues', path);
           updateAssociationValues.add(path);
           const bufPrefix = prefix && prefix !== '' ? prefix + '.' + s.name : s.name;
           _getAssociationAppends(s, bufPrefix);
@@ -1456,8 +1467,10 @@ export const useAssociationNames = (dataSource?: string) => {
   };
   const getAssociationAppends = () => {
     updateAssociationValues = new Set([]);
+    console.log('before updateAssociationValues ==', updateAssociationValues);
     appends = new Set([]);
     _getAssociationAppends(fieldSchema, '');
+    console.log('updateAssociationValues ==', updateAssociationValues);
     return { appends: [...appends], updateAssociationValues: [...updateAssociationValues] };
   };
   return { getAssociationAppends };
