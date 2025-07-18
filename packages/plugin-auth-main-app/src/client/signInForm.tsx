@@ -82,7 +82,6 @@ export const SignInForm = (props) => {
         setMainUser(result?.data?.data);
       } catch (error) {
         console.error('Error fetching auth config:', error);
-        message.error('Failed to fetch authentication information. Please try again.');
       }
     };
     fetchAuthConfig();
