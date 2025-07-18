@@ -19,7 +19,7 @@ export class PluginDynamicPage extends Plugin {
   async load() {
     this.app.router.remove('app.page');
     this.app.router.add('app.page', {
-      path: '/:entry/:name/*',
+      path: `/${this.app.prefix}/:name/*`,
       Component: DynamicPage,
     });
     this.app.usePageMode = usePageMode;

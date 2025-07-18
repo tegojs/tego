@@ -106,7 +106,8 @@ const useErrorProps = (app: Application, error: any) => {
             {app.i18n.t('Sign in with another account')}
           </Button>,
           subApp ? (
-            <Button key="back" onClick={() => (window.location.href = '/admin')}>
+            // TODO 提供默认跳转的页面，即到对应页面后，会触发前端跳转
+            <Button key="back" onClick={() => (window.location.href = `/admin`)}>
               {app.i18n.t('Return to the main application')}
             </Button>
           ) : null,
@@ -347,7 +348,7 @@ export class BuiltInPlugin extends Plugin {
   addRoutes() {
     this.router.add('root', {
       path: '/',
-      element: <Navigate replace to="/admin" />,
+      element: <Navigate replace to={`/${this.app.prefix}`} />,
     });
 
     this.router.add('not-found', {
@@ -356,17 +357,17 @@ export class BuiltInPlugin extends Plugin {
     });
 
     this.router.add('app', {
-      path: '/:entry',
+      path: `/${this.app.prefix}`,
       Component: 'AdminLayout',
     });
 
     this.router.add('app.page', {
-      path: '/:entry/:name',
+      path: `/${this.app.prefix}/:name`,
       Component: 'RouteSchemaComponent',
     });
 
     this.router.add('app.welcome', {
-      path: '/:entry/welcome',
+      path: `/${this.app.prefix}/welcome`,
       Component: 'WelcomeCard',
     });
   }

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 
 import { useAPIClient } from '../../../api-client';
-import { SchemaInitializerContext } from '../../../application';
+import { SchemaInitializerContext, useApp } from '../../../application';
 import { GroupItem } from '../../../modules/menu/GroupItem';
 import { LinkMenuItem } from '../../../modules/menu/LinkMenuItem';
 import { PageMenuItem } from '../../../modules/menu/PageMenuItem';
@@ -23,6 +23,7 @@ const PopverContent = (props) => {
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
   const apiClient = useAPIClient();
+  const app = useApp();
   const insertSchema = async (schema) => {
     const { data: newSchema } = await apiClient.request({
       resource: 'uiSchemas',
@@ -34,7 +35,7 @@ const PopverContent = (props) => {
     });
     if (newSchema?.data?.['x-uid']) {
       // XXX: 有待改善交互体验, 强制刷新是为了重新获取刚存进去的 schema
-      navigate(`/admin/${newSchema.data['x-uid']}`);
+      navigate(`/${app.prefix}/${newSchema.data['x-uid']}`);
       window.location.reload();
     }
   };

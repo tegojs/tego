@@ -93,8 +93,7 @@ export const SettingLayout = ({ selectedKeys, onClick, route, children, fullscre
               <Button
                 type="text"
                 onClick={() => {
-                  // FIXME /admin
-                  navigate('/admin');
+                  navigate(`/${app.prefix}`);
                 }}
                 icon={<HomeFilled key="HomeFilled" />}
               ></Button>,

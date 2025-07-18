@@ -22,7 +22,6 @@ export class PluginManager {
     protected loadRemotePlugins: boolean,
     protected app: Application,
   ) {
-    this.app = app;
     this.initPlugins = this.init(_plugins);
   }
 

@@ -1,3 +1,6 @@
+import { useApp } from '../application';
+
 export const useAdminSchemaUid = () => {
-  return 'default-admin-menu';
+  const app = useApp();
+  return app.indexSchema;
 };

@@ -17,7 +17,6 @@ import {
 import VariablesProvider from '../variables/VariablesProvider';
 import { Application } from './Application';
 import { BlankComponent, RouterContextCleaner } from './components';
-import { CustomRouterContextProvider } from './CustomRouterContextProvider';
 
 export interface BrowserRouterOptions extends Omit<BrowserRouterProps, 'children'> {
   type?: 'browser';
@@ -146,14 +145,12 @@ export class RouterManager {
     const Provider = () => {
       const BaseLayout = useContext(BaseLayoutContext);
       return (
-        <CustomRouterContextProvider>
-          <BaseLayout>
-            <VariablesProvider>
-              <Outlet />
-              {children}
-            </VariablesProvider>
-          </BaseLayout>
-        </CustomRouterContextProvider>
+        <BaseLayout>
+          <VariablesProvider>
+            <Outlet />
+            {children}
+          </VariablesProvider>
+        </BaseLayout>
       );
     };
 

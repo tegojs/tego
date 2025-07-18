@@ -6,10 +6,7 @@ export class Plugin<T = any> {
   constructor(
     protected options: T,
     protected app: Application,
-  ) {
-    this.options = options;
-    this.app = app;
-  }
+  ) {}
 
   get pluginManager() {
     return this.app.pluginManager;

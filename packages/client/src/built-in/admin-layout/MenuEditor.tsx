@@ -1,8 +1,9 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useLocation, useMatch, useNavigate, useParams } from 'react-router';
 
 import { useRequest } from '../../api-client';
+import { useApp } from '../../application';
 import { useAdminSchemaUid } from '../../hooks';
 import { findByUid, findMenuItem, SchemaComponent } from '../../schema-component';
 import { useACLRoleContext } from '../acl';
@@ -21,13 +22,14 @@ export const useMenuProps = () => {
 
 export const MenuEditor = (props) => {
   const { sideMenuRef } = props;
+  const app = useApp();
   const { setTitle } = useDocumentTitle();
   const navigate = useNavigate();
   const params = useParams<any>();
   const location = useLocation();
-  const isMatchAdmin = useMatch('/admin');
-  const isMatchWelcome = useMatch('/admin/welcome');
-  const isMatchAdminName = useMatch('/admin/:name');
+  const isMatchAdmin = useMatch(`/${app.prefix}`);
+  const isMatchWelcome = useMatch(`/${app.prefix}/welcome`);
+  const isMatchAdminName = useMatch(`${app.prefix}/:name`);
   const defaultSelectedUid = params.name;
   const ctx = useACLRoleContext();
   const [current, setCurrent] = useState(null);
@@ -35,7 +37,7 @@ export const MenuEditor = (props) => {
     const schema = item.props.schema || {};
     setTitle(schema.title);
     setCurrent(schema);
-    navigate(`/admin/${schema['x-uid']}`);
+    navigate(`/${app.prefix}/${schema['x-uid']}`);
   };
   const adminSchemaUid = useAdminSchemaUid();
   const { data, loading } = useRequest<{
@@ -48,20 +50,20 @@ export const MenuEditor = (props) => {
       refreshDeps: [adminSchemaUid],
       onSuccess(data) {
         const schema = filterByACL(data?.data, ctx);
-        // url 为 `/admin` 的情况
+        // url 为 `/${app.prefix}` 的情况
         if (isMatchAdmin && !isMatchWelcome) {
           const s = findMenuItem(schema);
           if (s) {
-            navigate(`/admin/${s['x-uid']}`);
+            navigate(`/${app.prefix}/${s['x-uid']}`);
             setTitle(s.title);
           } else {
             // 如果找不到菜单，则跳转到欢迎引导页面
-            navigate(`/admin/welcome`);
+            navigate(`/${app.prefix}/welcome`);
           }
           return;
         }
 
-        // url 不为 `/admin/xxx` 的情况，不做处理
+        // url 不为 `/${app.prefix}/xxx` 的情况，不做处理
         if (!isMatchAdminName || isMatchWelcome) return;
 
         // url 为 `admin/xxx` 的情况
@@ -72,17 +74,17 @@ export const MenuEditor = (props) => {
           const s = findMenuItem(schema);
 
           if (s) {
-            navigate(`/admin/${s['x-uid']}`);
+            navigate(`/${app.prefix}/${s['x-uid']}`);
             setTitle(s.title);
           } else {
-            navigate(`/admin/`);
+            navigate(`/${app.prefix}/`);
           }
         }
       },
     },
   );
 
-  const match = useMatch('/admin/:name');
+  const match = useMatch(`/${app.prefix}/:name`);
 
   useEffect(() => {
     if (match) {

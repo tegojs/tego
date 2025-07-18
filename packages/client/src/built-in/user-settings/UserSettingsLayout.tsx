@@ -69,7 +69,7 @@ export const UserSettingsLayout = () => {
   }, [app.userSettingsManager, compile]);
   const getFirstDeepChildPath = useCallback((settings: UserSettingsPageType[]) => {
     if (!settings || !settings.length) {
-      return '/admin';
+      return `/${app.prefix}`;
     }
     const first = settings[0];
     if (first.children?.length) {

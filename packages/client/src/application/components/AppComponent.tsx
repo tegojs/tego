@@ -21,7 +21,9 @@ export const AppComponent = observer(
       console.error(err);
     }, []);
     useEffect(() => {
-      app.load();
+      if (!app.loaded && !app.loading) {
+        app.load();
+      }
     }, [app]);
     const AppError = app.getComponent('AppError');
     if (app.loading) return app.renderComponent('AppSpin', { app });

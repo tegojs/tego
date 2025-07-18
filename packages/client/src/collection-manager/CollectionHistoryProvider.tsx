@@ -3,6 +3,7 @@ import React, { createContext, useContext, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { useAPIClient, useRequest } from '../api-client';
+import { useApp } from '../application';
 
 export interface CollectionHistoryContextValue {
   historyCollections: any[];
@@ -17,6 +18,7 @@ CollectionHistoryContext.displayName = 'CollectionHistoryContext';
 
 export const CollectionHistoryProvider = (props) => {
   const api = useAPIClient();
+  const app = useApp();
 
   const options = {
     resource: 'collectionsHistory',
@@ -39,7 +41,7 @@ export const CollectionHistoryProvider = (props) => {
     manual: true,
   });
 
-  const isAdminPage = location.pathname.startsWith('/admin');
+  const isAdminPage = location.pathname.startsWith(`/${app.prefix}`);
   const token = api.auth.getToken() || '';
 
   useEffect(() => {
