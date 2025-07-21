@@ -21,7 +21,7 @@ import { FlagProvider, useFlag } from '../flag-provider';
 import { useLocalVariables, useVariables } from '../variables';
 import { isVariable } from '../variables/utils/isVariable';
 import { findParentFieldSchema, getFieldDefaultValue, SchemaSettingsModalItem } from './SchemaSettings';
-import { Option } from './VariableInput/type';
+import { VariableInputOption } from './VariableInput/type';
 import { formatVariableScop } from './VariableInput/utils/formatVariableScop';
 import { getShouldChange, VariableInput } from './VariableInput/VariableInput';
 
@@ -77,7 +77,7 @@ export const SchemaSettingsDefaultValue = function DefaultValueConfigure(props: 
       (parentCollectionField?.type === 'hasMany' && collectionField?.interface === 'm2o'));
 
   const returnScope = useCallback(
-    (scope: Option[]) => {
+    (scope: VariableInputOption[]) => {
       const currentForm = scope.find((item) => item.value === '$nForm');
       const fields = getCollectionFields(name);
 
@@ -114,7 +114,7 @@ export const SchemaSettingsDefaultValue = function DefaultValueConfigure(props: 
           'x-decorator': 'FormItem',
           'x-component': 'VariableInput',
           'x-component-props': {
-            ...(fieldSchema?.['x-component-props'] || {}),
+            ...fieldSchema?.['x-component-props'],
             collectionField,
             contextCollectionName: isAllowContextVariable && tableCtx.collection,
             schema: collectionField?.uiSchema,
@@ -155,7 +155,7 @@ export const SchemaSettingsDefaultValue = function DefaultValueConfigure(props: 
               }
 
               const schema = {
-                ...(s || {}),
+                ...s,
                 'x-decorator': 'FormItem',
                 'x-component-props': {
                   ...s['x-component-props'],

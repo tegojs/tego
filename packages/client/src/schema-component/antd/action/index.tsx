@@ -8,3 +8,4 @@ export * from './hooks/useGetAriaLabelOfModal';
 export * from './hooks/useGetAriaLabelOfPopover';
 export * from './Action.Designer';
 export * from './Action.Area';
+export { linkageAction } from './utils';

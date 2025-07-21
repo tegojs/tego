@@ -434,7 +434,6 @@ export class BuiltInPlugin extends Plugin {
       },
     });
     await this.app.pm.add(SchemaComponentPlugin, { name: 'schema-component' });
-    await this.app.pm.add(SchemaInitializerPlugin, { name: 'schema-initializer' });
     await this.app.pm.add(SchemaSettingsPlugin, { name: 'schema-settings' });
     await this.app.pm.add(PluginBlockSchemaComponent, { name: 'block-schema-component' });
     await this.app.pm.add(AntdSchemaComponentPlugin, { name: 'antd-schema-component' });
