@@ -9,7 +9,7 @@
   "main": "dist/server/index.js",
   "devDependencies": {
     "@types/sequelize": "^4.28.20",
-    "antd": "5.22.5",
+    "antd": "5.26.6",
     "lodash": "4.17.21",
     "sequelize": "^6.37.5"
   },

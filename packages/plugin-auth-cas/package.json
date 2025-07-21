@@ -14,7 +14,7 @@
   "dependencies": {},
   "devDependencies": {
     "@ant-design/icons": "~5.3.7",
-    "antd": "5.22.5",
+    "antd": "5.26.6",
     "axios": "1.7.7",
     "react-i18next": "^15.2.0",
     "react-router-dom": "6.28.1"

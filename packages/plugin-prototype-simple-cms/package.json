@@ -12,7 +12,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "antd": "5.22.5"
+    "antd": "5.26.6"
   },
   "peerDependencies": {
     "@tachybase/client": "workspace:*",

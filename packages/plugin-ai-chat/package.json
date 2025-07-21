@@ -10,7 +10,7 @@
   "devDependencies": {
     "@ant-design/icons": "^5.5.2",
     "@ant-design/x": "^1.4.0",
-    "antd": "5.22.5",
+    "antd": "5.26.6",
     "antd-style": "3.7.1",
     "axios": "1.7.7",
     "lodash": "^4.17.21",

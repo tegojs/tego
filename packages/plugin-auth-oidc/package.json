@@ -17,7 +17,7 @@
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",
     "ahooks": "^3.9.0",
-    "antd": "5.22.5",
+    "antd": "5.26.6",
     "nanoid": "3.3.8",
     "openid-client": "^5.7.1",
     "react": "~18.3.1",

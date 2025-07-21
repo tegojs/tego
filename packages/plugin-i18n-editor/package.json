@@ -16,7 +16,7 @@
     "@ant-design/icons": "^5.5.2",
     "@tachybase/schema": "workspace:*",
     "ahooks": "^3.9.0",
-    "antd": "5.22.5",
+    "antd": "5.26.6",
     "deepmerge": "^4.3.1",
     "react-i18next": "^15.2.0"
   },
