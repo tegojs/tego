@@ -158,11 +158,16 @@ export const AntdSelect = observer((props) => {
     setFilter(paramsFilter);
   };
 
-  const fetchOptions = _.debounce(run, 300);
+  const fetchOptions = useMemo(() => _.debounce(run, 300), [run]);
 
   useEffect(() => {
-    fetchOptions();
-  }, [searchValue]);
+    if (collectionName && searchValue) {
+      fetchOptions();
+    }
+    return () => {
+      fetchOptions.cancel();
+    };
+  }, [searchValue, fetchOptions]);
 
   useEffect(() => {
     checkedPopup();
