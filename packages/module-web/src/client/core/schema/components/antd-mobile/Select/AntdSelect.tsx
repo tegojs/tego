@@ -18,6 +18,8 @@ import {
 } from '@tachybase/client';
 import { isArray } from '@tachybase/utils/client';
 
+import flat from 'flat';
+
 import { lang } from '../../../../../locale';
 import { MInput } from '../Input';
 import { CreateRecordAction } from './CreateRecordAction';
@@ -50,7 +52,7 @@ export const AntdSelect = observer((props) => {
   const [selectValue, setSelectValue] = useState([]);
 
   const showOptions = useMemo(() => {
-    return options.filter((item) => item[fieldNamesLabel].includes(searchValue));
+    return options.filter((item) => item[fieldNamesLabel]?.includes(searchValue));
   }, [options, searchValue]);
 
   const inputValue = useMemo(() => {
@@ -67,7 +69,16 @@ export const AntdSelect = observer((props) => {
       resource: collectionName,
       action: 'list',
       params: {
-        filter: { ...fieldServiceFilter?.filter, ...filter },
+        filter: () => {
+          const items = flat({ ...fieldServiceFilter?.filter, ...filter });
+          Object.entries(items).forEach(([key, value]) => {
+            if (value === null) {
+              delete items[key];
+            }
+          });
+          return flat.unflatten(items);
+        },
+        paginate: false,
       },
     },
     {
@@ -140,7 +151,7 @@ export const AntdSelect = observer((props) => {
       delete paramsFilter[fieldNamesLabel];
     }
 
-    const selectedValueList = options.filter((item) => selectValue.includes(item.value));
+    const selectedValueList = options.filter((item) => selectValue?.includes(item.value));
     onChange(selectedValueList);
 
     setPopupVisible(false);
