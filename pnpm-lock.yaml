@@ -2118,6 +2118,9 @@ importers:
       '@tachybase/schema':
         specifier: workspace:*
         version: link:../schema
+      '@types/flat':
+        specifier: ^5.0.5
+        version: 5.0.5
       '@types/react':
         specifier: ~18.3.18
         version: 18.3.18

@@ -16,6 +16,7 @@
     "@ant-design/icons": "~5.3.7",
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",
+    "@types/flat": "^5.0.5",
     "@types/react": "~18.3.18",
     "@types/react-dom": "~18.3.5",
     "ahooks": "~3.9.0",
