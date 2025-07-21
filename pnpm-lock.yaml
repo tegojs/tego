@@ -2140,8 +2140,8 @@ importers:
         specifier: ^2.52.0
         version: 2.52.0
       flat:
-        specifier: ^5.0.2
-        version: 5.0.2
+        specifier: ^6.0.1
+        version: 6.0.1
       koa-send:
         specifier: ^5.0.1
         version: 5.0.1
@@ -12728,6 +12728,11 @@ packages:
 
   flat@5.0.2:
     resolution: {integrity: sha512-b6suED+5/3rTpUBdG1gupIl8MPFCAMA0QXwmljLhvCUKcUvdE4gWky9zpuGCcXHOsz4J9wPGNWq6OKpmIzz3hQ==}
+    hasBin: true
+
+  flat@6.0.1:
+    resolution: {integrity: sha512-/3FfIa8mbrg3xE7+wAhWeV+bd7L2Mof+xtZb5dRDKZ+wDvYJK4WDYeIOuOhre5Yv5aQObZrlbRmk3RTSiuQBtw==}
+    engines: {node: '>=18'}
     hasBin: true
 
   flru@1.0.2:
@@ -28547,6 +28552,8 @@ snapshots:
   flat-to-nested@1.1.1: {}
 
   flat@5.0.2: {}
+
+  flat@6.0.1: {}
 
   flru@1.0.2: {}
 
