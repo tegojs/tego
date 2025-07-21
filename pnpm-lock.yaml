@@ -2108,6 +2108,12 @@ importers:
       '@tachybase/utils':
         specifier: workspace:*
         version: link:../utils
+      '@types/flat':
+        specifier: ^5.0.5
+        version: 5.0.5
+      flat:
+        specifier: ^5.0.2
+        version: 5.0.2
     devDependencies:
       '@ant-design/icons':
         specifier: ~5.3.7
@@ -2118,9 +2124,6 @@ importers:
       '@tachybase/schema':
         specifier: workspace:*
         version: link:../schema
-      '@types/flat':
-        specifier: ^5.0.5
-        version: 5.0.5
       '@types/react':
         specifier: ~18.3.18
         version: 18.3.18
@@ -2142,9 +2145,6 @@ importers:
       cronstrue:
         specifier: ^2.52.0
         version: 2.52.0
-      flat:
-        specifier: ^5.0.2
-        version: 5.0.2
       koa-send:
         specifier: ^5.0.1
         version: 5.0.1
