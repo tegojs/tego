@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { dayjs } from '@tachybase/utils/client';
 
-import { useCurrentUserVariable, useDatetimeVariable } from '../../schema-settings';
+import { useCurrentUserVariable, useDatetimeVariable, useExactDateVariable } from '../../schema-settings';
 import { useCurrentRoleVariable } from '../../schema-settings/VariableInput/hooks/useRoleVariable';
 import { VariableOption } from '../types';
 
@@ -9,6 +9,7 @@ const useBuiltInVariables = () => {
   const { currentUserCtx } = useCurrentUserVariable();
   const { currentRoleCtx } = useCurrentRoleVariable();
   const { datetimeCtx } = useDatetimeVariable();
+  const { exactDateTimeCtx } = useExactDateVariable();
   const builtinVariables: VariableOption[] = useMemo(() => {
     return [
       {
@@ -42,6 +43,10 @@ const useBuiltInVariables = () => {
         name: '$date',
         ctx: datetimeCtx,
       },
+      {
+        name: '$nExactDate',
+        ctx: exactDateTimeCtx,
+      },
       /**
        * @deprecated
        * 兼容旧版本的 `$system` 变量，新版本已弃用
@@ -61,7 +66,7 @@ const useBuiltInVariables = () => {
         ctx: () => dayjs().toISOString(),
       },
     ];
-  }, [currentUserCtx]);
+  }, [currentUserCtx, exactDateTimeCtx]);
 
   return { builtinVariables };
 };

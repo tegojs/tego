@@ -163,3 +163,19 @@ export const getDateRanges = () => {
     next90Days: () => [getStart(1, 'day'), getEnd(90, 'days')],
   };
 };
+
+export const getDateExact = () => {
+  return {
+    nowUtc: () => dayjs().toISOString(),
+    nowLocal: () => dayjs().format('YYYY-MM-DD HH:mm:ss'),
+    todayUtc: () => dayjs().startOf('day').utc().toISOString(),
+    todayLocal: () => dayjs().startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    todayDate: () => dayjs().format('YYYY-MM-DD'),
+    yesterdayUtc: () => dayjs().subtract(1, 'day').startOf('day').utc().toISOString(),
+    yesterdayLocal: () => dayjs().subtract(1, 'day').startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    yesterdayDate: () => dayjs().subtract(1, 'day').format('YYYY-MM-DD'),
+    tomorrowUtc: () => dayjs().add(1, 'day').startOf('day').utc().toISOString(),
+    tomorrowLocal: () => dayjs().add(1, 'day').startOf('day').format('YYYY-MM-DD HH:mm:ss'),
+    tomorrowDate: () => dayjs().add(1, 'day').format('YYYY-MM-DD'),
+  };
+};
