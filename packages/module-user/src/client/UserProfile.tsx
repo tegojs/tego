@@ -1,5 +1,12 @@
 import React from 'react';
-import { SchemaComponent, useAPIClient, useCurrentUserContext, useRequest, useTranslation } from '@tachybase/client';
+import {
+  SchemaComponent,
+  useAPIClient,
+  useApp,
+  useCurrentUserContext,
+  useRequest,
+  useTranslation,
+} from '@tachybase/client';
 import { ISchema, useForm } from '@tachybase/schema';
 import { uid } from '@tachybase/utils/client';
 
@@ -8,10 +15,15 @@ import { App } from 'antd';
 import VerificationCode from '../../../client/src/user/VerificationCode';
 
 export const UserProfile = () => {
+  const pm = useApp().pluginManager;
+  const otp = pm.get('@tachybase/plugin-otp');
+  const sms = pm.get('@tachybase/plugin-auth-sms');
+  const smsVerifyEnabled = !!otp && !!sms;
+
   return (
     <SchemaComponent
       schema={schema}
-      scope={{ useCurrentUserValues, useSaveCurrentUserValues }}
+      scope={{ useCurrentUserValues, useSaveCurrentUserValues, smsVerifyEnabled }}
       components={{ VerificationCode }}
     />
   );
@@ -118,7 +130,7 @@ const schema: ISchema = {
               dependencies: ['.phone'],
               fulfill: {
                 state: {
-                  hidden: `{{ $deps[0] === $form.initialValues?.phone }}`,
+                  hidden: `{{ $deps[0] === $form.initialValues?.phone || !smsVerifyEnabled}}`,
                 },
               },
             },

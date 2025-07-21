@@ -9,6 +9,7 @@ import {
   DropdownVisibleContext,
   SchemaComponent,
   useActionContext,
+  useApp,
   useCurrentUserContext,
 } from '../';
 import { useAPIClient } from '../api-client';
@@ -77,8 +78,8 @@ const schema: ISchema = {
               dependencies: ['.phoneExist', '.oldPasswordExist'],
               fulfill: {
                 state: {
-                  hidden: '{{!($deps[0] && $deps[1])}}',
-                  value: `{{ !$deps[1] ? 'code' : (!$deps[0] ? 'password' : undefined) }}`,
+                  hidden: '{{ !($deps[0] && $deps[1] && smsVerifyEnabled) }}',
+                  value: '{{ undefined }}',
                 },
               },
             },
@@ -92,7 +93,7 @@ const schema: ISchema = {
         phone: {
           type: 'string',
           title: '{{t("Phone")}}',
-          'x-value': '{{phoneNumber}}',
+          default: '{{ phoneNumber }}',
           'x-component': 'Input',
           'x-validator': 'phone',
           'x-decorator': 'FormItem',
@@ -111,10 +112,14 @@ const schema: ISchema = {
           'x-decorator': 'FormItem',
           'x-reactions': [
             {
-              dependencies: ['.verifyMethod', '.phoneExist', '.oldPasswordExist'],
+              dependencies: ['.verifyMethod', '.phoneExist', '.phone'],
               fulfill: {
                 state: {
-                  hidden: `{{ !$deps[1] || ($deps[0] !== 'code' && $deps[1] && $deps[2]) }}`,
+                  hidden: `{{ 
+                          !$deps[1] || 
+                          !smsVerifyEnabled ||
+                          ($deps[0] !== 'code' && $deps[0] !== undefined) // 有 verifyMethod 但未选 code
+                        }}`,
                 },
               },
             },
@@ -133,10 +138,13 @@ const schema: ISchema = {
           'x-decorator': 'FormItem',
           'x-reactions': [
             {
-              dependencies: ['.verifyMethod', '.oldPasswordExist', '.phoneExist'],
+              dependencies: ['.verifyMethod', '.oldPasswordExist'],
               fulfill: {
                 state: {
-                  hidden: `{{ !$deps[1] || ($deps[0] !== 'password' && $deps[1] && $deps[2]) }}`,
+                  hidden: `{{ 
+                          !$deps[1] || 
+                          (smsVerifyEnabled && $deps[0] !== 'password')
+                        }}`,
                 },
               },
             },
@@ -208,6 +216,10 @@ export const useChangePassword = () => {
   const ctx = useContext(DropdownVisibleContext);
   const [visible, setVisible] = useState(false);
   const { t } = useTranslation();
+  const pm = useApp().pluginManager;
+  const otp = pm.get('@tachybase/plugin-otp');
+  const sms = pm.get('@tachybase/plugin-auth-sms');
+  const smsVerifyEnabled = !!otp && !!sms;
   const currentUser = useCurrentUserContext();
   const oldPassword = currentUser?.data?.data?.password;
   const phoneNumber = currentUser?.data?.data?.phone;
@@ -226,7 +238,14 @@ export const useChangePassword = () => {
           <ActionContextProvider value={{ visible, setVisible }}>
             <div onClick={(e) => e.stopPropagation()}>
               <SchemaComponent
-                scope={{ useCloseAction, useSaveCurrentUserValues, oldPassword, codeDescription, phoneNumber }}
+                scope={{
+                  useCloseAction,
+                  useSaveCurrentUserValues,
+                  oldPassword,
+                  codeDescription,
+                  phoneNumber,
+                  smsVerifyEnabled,
+                }}
                 components={{ VerificationCode }}
                 schema={schema}
               />

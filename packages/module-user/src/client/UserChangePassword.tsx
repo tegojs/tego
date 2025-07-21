@@ -1,5 +1,5 @@
 import React from 'react';
-import { SchemaComponent, useAPIClient, useCurrentUserContext, useTranslation } from '@tachybase/client';
+import { SchemaComponent, useAPIClient, useApp, useCurrentUserContext, useTranslation } from '@tachybase/client';
 import { ISchema, useForm } from '@tachybase/schema';
 import { uid } from '@tachybase/utils/client';
 
@@ -9,13 +9,17 @@ import VerificationCode from '../../../client/src/user/VerificationCode';
 
 export const ChangePassword = () => {
   const currentUser = useCurrentUserContext();
+  const pm = useApp().pluginManager;
+  const otp = pm.get('@tachybase/plugin-otp');
+  const sms = pm.get('@tachybase/plugin-auth-sms');
+  const smsVerifyEnabled = !!otp && !!sms;
   const oldPassword = currentUser?.data?.data?.password;
   const phoneNumber = currentUser?.data?.data?.phone;
   const codeDescription = phoneNumber ? `将发送验证码给手机${phoneNumber}` : '请先在个人资料填写手机号';
   return (
     <SchemaComponent
       schema={schema}
-      scope={{ useSaveCurrentUserValues, oldPassword, codeDescription, phoneNumber }}
+      scope={{ useSaveCurrentUserValues, oldPassword, codeDescription, phoneNumber, smsVerifyEnabled }}
       components={{ VerificationCode }}
     />
   );
@@ -88,8 +92,8 @@ const schema: ISchema = {
               dependencies: ['.phoneExist', '.oldPasswordExist'],
               fulfill: {
                 state: {
-                  hidden: '{{!($deps[0] && $deps[1])}}',
-                  value: `{{ !$deps[1] ? 'code' : (!$deps[0] ? 'password' : undefined) }}`,
+                  hidden: '{{ !($deps[0] && $deps[1] && smsVerifyEnabled) }}',
+                  value: '{{ undefined }}',
                 },
               },
             },
@@ -103,7 +107,7 @@ const schema: ISchema = {
         phone: {
           type: 'string',
           title: '{{t("Phone")}}',
-          'x-value': '{{phoneNumber}}',
+          default: '{{ phoneNumber }}',
           'x-component': 'Input',
           'x-validator': 'phone',
           'x-decorator': 'FormItem',
@@ -122,10 +126,14 @@ const schema: ISchema = {
           'x-decorator': 'FormItem',
           'x-reactions': [
             {
-              dependencies: ['.verifyMethod', '.phoneExist', '.oldPasswordExist'],
+              dependencies: ['.verifyMethod', '.phoneExist'],
               fulfill: {
                 state: {
-                  hidden: `{{ !$deps[1] || ($deps[0] !== 'code' && $deps[1] && $deps[2]) }}`,
+                  hidden: `{{ 
+                          !$deps[1] || 
+                          !smsVerifyEnabled ||
+                          ($deps[0] !== 'code' && $deps[0] !== undefined) // 有 verifyMethod 但未选 code
+                        }}`,
                 },
               },
             },
@@ -144,10 +152,13 @@ const schema: ISchema = {
           'x-decorator': 'FormItem',
           'x-reactions': [
             {
-              dependencies: ['.verifyMethod', '.oldPasswordExist', '.phoneExist'],
+              dependencies: ['.verifyMethod', '.oldPasswordExist'],
               fulfill: {
                 state: {
-                  hidden: `{{ !$deps[1] || ($deps[0] !== 'password' && $deps[1] && $deps[2]) }}`,
+                  hidden: `{{ 
+                          !$deps[1] || 
+                          (smsVerifyEnabled && $deps[0] !== 'password')
+                        }}`,
                 },
               },
             },
