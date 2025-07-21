@@ -12,7 +12,6 @@
     "build": "tachybase-build --no-dts @tachybase/module-web"
   },
   "dependencies": {
-    "@types/flat": "^5.0.5",
     "flat": "^5.0.2"
   },
   "devDependencies": {
@@ -27,7 +26,6 @@
     "antd-mobile": "^5.38.1",
     "antd-mobile-icons": "^0.3.0",
     "cronstrue": "^2.52.0",
-    "flat": "^5.0.2",
     "koa-send": "^5.0.1",
     "koa-static": "^5.0.0",
     "lodash": "4.17.21",
