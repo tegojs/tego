@@ -1,14 +1,28 @@
 import React from 'react';
-import { SchemaComponent, useAPIClient, useCurrentUserContext, useTranslation } from '@tachybase/client';
+import { SchemaComponent, useAPIClient, useApp, useCurrentUserContext, useTranslation } from '@tachybase/client';
 import { ISchema, useForm } from '@tachybase/schema';
 import { uid } from '@tachybase/utils/client';
 
 import { App } from 'antd';
 
+import VerificationCode from '../../../client/src/user/VerificationCode';
+
 export const ChangePassword = () => {
   const currentUser = useCurrentUserContext();
-  const hideOldPassword = currentUser?.data?.data?.password === null;
-  return <SchemaComponent schema={schema} scope={{ useSaveCurrentUserValues, hideOldPassword }} />;
+  const pm = useApp().pluginManager;
+  const otp = pm.get('@tachybase/plugin-otp');
+  const sms = pm.get('@tachybase/plugin-auth-sms');
+  const smsVerifyEnabled = !!otp && !!sms;
+  const oldPassword = currentUser?.data?.data?.password;
+  const phoneNumber = currentUser?.data?.data?.phone;
+  const codeDescription = phoneNumber ? `将发送验证码给手机${phoneNumber}` : '请先在个人资料填写手机号';
+  return (
+    <SchemaComponent
+      schema={schema}
+      scope={{ useSaveCurrentUserValues, oldPassword, codeDescription, phoneNumber, smsVerifyEnabled }}
+      components={{ VerificationCode }}
+    />
+  );
 };
 
 const useSaveCurrentUserValues = () => {
@@ -63,13 +77,92 @@ const schema: ISchema = {
             },
           },
         },
+        verifyMethod: {
+          type: 'string',
+          required: true,
+          title: '{{t("Verify method")}}',
+          enum: [
+            { label: '{{t("Use old password")}}', value: 'password' },
+            { label: '{{t("Use verification code")}}', value: 'code' },
+          ],
+          'x-component': 'Radio.Group',
+          'x-decorator': 'FormItem',
+          'x-reactions': [
+            {
+              dependencies: ['.phoneExist', '.oldPasswordExist'],
+              fulfill: {
+                state: {
+                  hidden: '{{ !($deps[0] && $deps[1] && smsVerifyEnabled) }}',
+                  value: '{{ undefined }}',
+                },
+              },
+            },
+          ],
+        },
+        phoneExist: {
+          type: 'boolean',
+          default: '{{ !!phoneNumber }}',
+          'x-hidden': true,
+        },
+        phone: {
+          type: 'string',
+          title: '{{t("Phone")}}',
+          default: '{{ phoneNumber }}',
+          'x-component': 'Input',
+          'x-validator': 'phone',
+          'x-decorator': 'FormItem',
+          'x-hidden': true,
+        },
+        code: {
+          type: 'string',
+          title: '{{t("Verification code")}}',
+          description: '{{codeDescription}}',
+          'x-component': 'VerificationCode',
+          'x-component-props': {
+            actionType: 'auth:changePassword',
+            targetFieldName: 'phone',
+          },
+          required: true,
+          'x-decorator': 'FormItem',
+          'x-reactions': [
+            {
+              dependencies: ['.verifyMethod', '.phoneExist'],
+              fulfill: {
+                state: {
+                  hidden: `{{ 
+                          !$deps[1] || 
+                          !smsVerifyEnabled ||
+                          ($deps[0] !== 'code' && $deps[0] !== undefined) // 有 verifyMethod 但未选 code
+                        }}`,
+                },
+              },
+            },
+          ],
+        },
+        oldPasswordExist: {
+          type: 'boolean',
+          default: '{{ oldPassword }}',
+          'x-hidden': true,
+        },
         oldPassword: {
           type: 'string',
           title: '{{t("Old password")}}',
           required: true,
           'x-component': 'Password',
           'x-decorator': 'FormItem',
-          'x-hidden': '{{ hideOldPassword }}',
+          'x-reactions': [
+            {
+              dependencies: ['.verifyMethod', '.oldPasswordExist'],
+              fulfill: {
+                state: {
+                  hidden: `{{ 
+                          !$deps[1] || 
+                          (smsVerifyEnabled && $deps[0] !== 'password')
+                        }}`,
+                },
+              },
+            },
+          ],
         },
         newPassword: {
           type: 'string',

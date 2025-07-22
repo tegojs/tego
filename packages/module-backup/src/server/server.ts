@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process';
 import { DumpRulesGroupType } from '@tachybase/database';
 import { Plugin } from '@tachybase/server';
 
-import parser from 'cron-parser';
+import { CronExpressionParser } from 'cron-parser';
 
 import { COLLECTION_AUTOBACKUP } from '../constants';
 import { Dumper } from './dumper';
@@ -111,7 +111,7 @@ export default class PluginBackupRestoreServer extends Plugin {
         return null;
       }
       if (cronJob.repeat && isNaN(+cronJob.repeat)) {
-        const interval = parser.parseExpression(cronJob.repeat, { currentDate });
+        const interval = CronExpressionParser.parse(cronJob.repeat, { currentDate });
         const next = interval.next();
         return next.getTime();
       } else if (!isNaN(+cronJob.repeat)) {

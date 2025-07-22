@@ -1,7 +1,7 @@
 import { parseCollectionName } from '@tachybase/data-source';
 import { fn, literal, Op, Transactionable, where } from '@tachybase/database';
 
-import parser from 'cron-parser';
+import { CronExpressionParser } from 'cron-parser';
 
 import type Plugin from '../../Plugin';
 import type { WorkflowModel } from '../../types';
@@ -73,7 +73,7 @@ const DialectTimestampFnMap: { [key: string]: (col: string) => string } = {
 DialectTimestampFnMap.mariadb = DialectTimestampFnMap.mysql;
 
 function getCronNextTime(cron, currentDate: Date): number {
-  const interval = parser.parseExpression(cron, { currentDate });
+  const interval = CronExpressionParser.parse(cron, { currentDate });
   const next = interval.next();
   return next.getTime();
 }

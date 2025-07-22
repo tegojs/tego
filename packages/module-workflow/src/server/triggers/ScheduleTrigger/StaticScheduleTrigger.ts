@@ -1,4 +1,4 @@
-import parser from 'cron-parser';
+import { CronExpressionParser } from 'cron-parser';
 
 import type Plugin from '../../Plugin';
 import { parseDateWithoutMs, SCHEDULE_MODE } from './utils';
@@ -60,7 +60,7 @@ export default class StaticScheduleTrigger {
         return null;
       }
       if (typeof config.repeat === 'string') {
-        const interval = parser.parseExpression(config.repeat, { currentDate });
+        const interval = CronExpressionParser.parse(config.repeat, { currentDate });
         const next = interval.next();
         return next.getTime();
       } else if (typeof config.repeat === 'number') {

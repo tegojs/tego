@@ -1,5 +1,5 @@
 import { AuthConfig, BaseAuth } from '@tachybase/auth';
-import { Model } from '@tachybase/database';
+import { Model, PasswordField } from '@tachybase/database';
 import { AuthModel } from '@tachybase/module-auth';
 import VerificationPlugin from '@tachybase/plugin-otp';
 
@@ -58,5 +58,48 @@ export class SMSAuth extends BaseAuth {
       }
     });
     return user;
+  }
+
+  async changePassword() {
+    const ctx = this.ctx;
+    const {
+      values: { newPassword, phone, oldPassword, code },
+    } = ctx.action.params;
+    const verificationPlugin: VerificationPlugin = ctx.app.getPlugin('otp');
+    const currentUser = ctx.auth.user;
+    if (!currentUser) {
+      ctx.throw(401);
+    }
+    const user = await this.userRepository.findOne({
+      where: {
+        phone: currentUser.phone,
+      },
+    });
+    if (!user) {
+      ctx.throw(404, ctx.t('User not found', { ns: namespace }));
+    }
+    const pwd = this.userCollection.getField<PasswordField>('password');
+
+    let passwordValid = false;
+    let codeValid = false;
+
+    if (user.password && oldPassword) {
+      passwordValid = (await pwd.verify(oldPassword, user.password)) as boolean;
+    }
+
+    if (code && phone) {
+      try {
+        await verificationPlugin.intercept(ctx, async () => {
+          codeValid = true;
+        });
+      } catch (e) {}
+    }
+
+    if (!passwordValid && !codeValid) {
+      ctx.throw(401, ctx.t('The old password or verification code is incorrect', { ns: namespace }));
+    }
+    user.password = newPassword;
+    await user.save();
+    return currentUser;
   }
 }
