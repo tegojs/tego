@@ -143,7 +143,7 @@ const schema: ISchema = {
                 state: {
                   hidden: `{{ 
                           !$deps[1] || 
-                          (smsVerifyEnabled && $deps[0] !== 'password')
+                          (smsVerifyEnabled && $deps[0] !== 'password' && $deps[0] !== undefined)
                         }}`,
                 },
               },
