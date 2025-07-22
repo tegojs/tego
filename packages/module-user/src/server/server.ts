@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 import { isMainThread } from 'node:worker_threads';
 import { Cache } from '@tachybase/cache';
 import { Collection, Op } from '@tachybase/database';
-import VerificationPlugin from '@tachybase/plugin-otp';
+// import VerificationPlugin from '@tachybase/plugin-otp';
 import { Plugin } from '@tachybase/server';
 import { parse } from '@tachybase/utils';
 
@@ -152,7 +152,7 @@ export default class PluginUsersServer extends Plugin {
       },
       { tag: 'roleCacheInvalidation' },
     );
-    const verificationPlugin: VerificationPlugin = this.app.getPlugin('otp');
+    const verificationPlugin = this.app.getPlugin('otp') as any;
     if (!verificationPlugin) {
       this.app.logger.warn('sms-auth: @tachybase/plugin-otp is required');
       return;
