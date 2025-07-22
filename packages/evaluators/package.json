@@ -31,7 +31,7 @@
     "build": "tachybase-build --no-dts @tachybase/evaluators"
   },
   "dependencies": {
-    "@formulajs/formulajs": "4.4.8",
+    "@formulajs/formulajs": "4.5.3",
     "@tachybase/utils": "workspace:*",
     "lodash": "4.17.21",
     "mathjs": "^10.6.4"
