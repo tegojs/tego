@@ -40,7 +40,6 @@ export const useExactDateVariableContext = () => {
  * @returns
  */
 export const useExactDateVariable = ({ schema, targetFieldSchema }: Props = {}) => {
-  const a = useFlag();
   const { collectionField } = useFlag();
   const { dateOnly, utc, accuracy, picker } = collectionField?.uiSchema?.['x-component-props'] || {};
   const { t } = useTranslation();

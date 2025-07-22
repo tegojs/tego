@@ -130,6 +130,7 @@ export const useVariableOptions = ({
     currentRoleSettings,
     datetimeSettings,
     exactDateTimeSettings,
+    shouldDisplayExactDate,
     shouldDisplayCurrentForm,
     currentFormSettings,
     shouldDisplayCurrentObject,
