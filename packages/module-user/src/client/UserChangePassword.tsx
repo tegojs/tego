@@ -13,7 +13,7 @@ export const ChangePassword = () => {
   const otp = pm.get('@tachybase/plugin-otp');
   const sms = pm.get('@tachybase/plugin-auth-sms');
   const smsVerifyEnabled = !!otp && !!sms;
-  const oldPassword = currentUser?.data?.data?.password;
+  const oldPassword = currentUser?.data?.data?.password !== null;
   const phoneNumber = currentUser?.data?.data?.phone;
   const codeDescription = phoneNumber ? `将发送验证码给手机${phoneNumber}` : '请先在个人资料填写手机号';
   return (
