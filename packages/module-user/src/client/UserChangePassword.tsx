@@ -23,7 +23,7 @@ export const ChangePassword = () => {
   // const codeDescription = phoneNumber ? `将发送验证码给手机${phoneNumber}` : '请先在个人资料填写手机号';
   const { t } = useTranslation();
   const codeDescription = phoneNumber
-    ? t('Send verfication code to phone: {{phoneNumber}}', { phoneNumber })
+    ? t('Send verification code to phone: {{phoneNumber}}', { phoneNumber })
     : t('Please fill in your mobile phone number in your personal information first');
   return (
     <SchemaComponent
