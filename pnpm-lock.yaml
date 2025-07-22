@@ -2523,8 +2523,8 @@ importers:
         specifier: workspace:*
         version: link:../schema
       '@types/node-xlsx':
-        specifier: ^0.15.3
-        version: 0.15.3
+        specifier: ^0.21.0
+        version: 0.21.0
       antd:
         specifier: 5.22.5
         version: 5.22.5(date-fns@3.6.0)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -2575,8 +2575,8 @@ importers:
         specifier: workspace:*
         version: link:../schema
       '@types/node-xlsx':
-        specifier: ^0.15.3
-        version: 0.15.3
+        specifier: ^0.21.0
+        version: 0.21.0
       antd:
         specifier: 5.22.5
         version: 5.22.5(date-fns@3.6.0)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -10091,8 +10091,9 @@ packages:
   '@types/node-red__util@1.3.8':
     resolution: {integrity: sha512-FQRxaZyUJlyh2phJevzMSF4H8jrsOUmFg05eyhRX5lvDcc/VqdZWcYdAq9dZPRgIwHJwLBttEh9mG3DAcMJiUg==}
 
-  '@types/node-xlsx@0.15.3':
-    resolution: {integrity: sha512-6UAa+t9eR3AZzRanZWGNUV8MoXwVpXQHMqCMdK8PNPwTy+G3kYHP+2KkTI+39vXETNb6krRijL+zWzmFrlfLjw==}
+  '@types/node-xlsx@0.21.0':
+    resolution: {integrity: sha512-2phXePog1DbnNWMpl0wEaH/4ABKOBfgp+0IWLFzVzKkaWwHKwT5HcKHZYvEVv/Tntr3xf4J98Syvz7aPUmU2wA==}
+    deprecated: This is a stub types definition. node-xlsx provides its own type definitions, so you do not need this installed.
 
   '@types/node@20.17.10':
     resolution: {integrity: sha512-/jrvh5h6NXhEauFFexRin69nA0uHJ5gwk4iDivp/DeoEua3uwCUto6PC86IpRITBOs4+6i2I56K5x5b6WYGXHA==}
@@ -25233,7 +25234,9 @@ snapshots:
       '@types/node-red__runtime': 1.3.8
       jsonata: 2.0.5
 
-  '@types/node-xlsx@0.15.3': {}
+  '@types/node-xlsx@0.21.0':
+    dependencies:
+      node-xlsx: 0.24.0
 
   '@types/node@20.17.10':
     dependencies:

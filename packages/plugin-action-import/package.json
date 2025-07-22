@@ -16,7 +16,7 @@
     "@ant-design/icons": "~5.3.7",
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",
-    "@types/node-xlsx": "^0.15.3",
+    "@types/node-xlsx": "^0.21.0",
     "antd": "5.22.5",
     "file-saver": "^2.0.5",
     "lodash": "4.17.21",
