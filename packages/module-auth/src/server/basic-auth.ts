@@ -1,7 +1,8 @@
 import crypto from 'node:crypto';
 import { AuthConfig, BaseAuth } from '@tachybase/auth';
 import { PasswordField } from '@tachybase/database';
-import VerificationPlugin from '@tachybase/plugin-otp';
+
+// import VerificationPlugin from '@tachybase/plugin-otp';
 
 import { namespace } from '../preset';
 
@@ -141,7 +142,7 @@ export class BasicAuth extends BaseAuth {
       },
     });
     const pwd = this.userCollection.getField<PasswordField>('password');
-    const verificationPlugin: VerificationPlugin = ctx.app.getPlugin('otp');
+    const verificationPlugin = ctx.app.getPlugin('otp');
     if (user.password !== null) {
       const isValid = await pwd.verify(oldPassword, user.password);
       if (!isValid) {
