@@ -1,11 +1,16 @@
 import React from 'react';
-import { SchemaComponent, useAPIClient, useApp, useCurrentUserContext, useTranslation } from '@tachybase/client';
+import {
+  SchemaComponent,
+  useAPIClient,
+  useApp,
+  useCurrentUserContext,
+  useTranslation,
+  VerificationCode,
+} from '@tachybase/client';
 import { ISchema, useForm } from '@tachybase/schema';
 import { uid } from '@tachybase/utils/client';
 
 import { App } from 'antd';
-
-import VerificationCode from '../../../client/src/user/VerificationCode';
 
 export const ChangePassword = () => {
   const currentUser = useCurrentUserContext();

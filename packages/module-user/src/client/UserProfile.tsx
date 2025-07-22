@@ -6,13 +6,12 @@ import {
   useCurrentUserContext,
   useRequest,
   useTranslation,
+  VerificationCode,
 } from '@tachybase/client';
 import { ISchema, useForm } from '@tachybase/schema';
 import { uid } from '@tachybase/utils/client';
 
 import { App } from 'antd';
-
-import VerificationCode from '../../../client/src/user/VerificationCode';
 
 export const UserProfile = () => {
   const pm = useApp().pluginManager;
