@@ -10,7 +10,7 @@ import {
 } from '@tachybase/database';
 import { Registry } from '@tachybase/utils';
 
-import { CronExpressionParser } from 'cron-parser';
+import parser from 'cron-parser';
 import dayjs from 'dayjs';
 import lodash from 'lodash';
 
@@ -101,7 +101,7 @@ sequencePatterns.register('integer', {
 
       // cycle as cron string
       if (cycle) {
-        const interval = CronExpressionParser.parse(cycle, { currentDate: <Date>lastSeq.get('lastGeneratedAt') });
+        const interval = parser.parseExpression(cycle, { currentDate: <Date>lastSeq.get('lastGeneratedAt') });
         const nextTime = interval.next();
         if (recordTime.getTime() >= nextTime.getTime()) {
           next = start;
@@ -185,7 +185,7 @@ sequencePatterns.register('integer', {
 
           // cycle as cron string
           if (cycle) {
-            const interval = CronExpressionParser.parse(cycle, { currentDate: <Date>lastSeq.get('lastGeneratedAt') });
+            const interval = parser.parseExpression(cycle, { currentDate: <Date>lastSeq.get('lastGeneratedAt') });
             const nextTime = interval.next();
             if (recordTime.getTime() >= nextTime.getTime()) {
               next = start;
@@ -239,7 +239,7 @@ sequencePatterns.register('integer', {
     }
 
     if (cycle) {
-      const interval = CronExpressionParser.parse(cycle, { currentDate: <Date>lastSeq.get('lastGeneratedAt') });
+      const interval = parser.parseExpression(cycle, { currentDate: <Date>lastSeq.get('lastGeneratedAt') });
       const nextTime = interval.next();
       if (recordTime.getTime() >= nextTime.getTime()) {
         lastSeq.set({
