@@ -30,7 +30,7 @@
     "axios": "1.7.7",
     "cron-parser": "4.9.0",
     "file-saver": "^2.0.5",
-    "form-data": "^4.0.3",
+    "form-data": "^4.0.4",
     "jsonata": "^2.0.6",
     "lodash": "4.17.21",
     "lru-cache": "11.1.0",
