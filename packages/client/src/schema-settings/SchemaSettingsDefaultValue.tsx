@@ -97,7 +97,12 @@ export const SchemaSettingsDefaultValue = function DefaultValueConfigure(props: 
       FormLayout,
       VariableInput: (props) => {
         return (
-          <FlagProvider isInSubForm={isInSubForm} isInSubTable={isInSubTable} isInSetDefaultValueDialog>
+          <FlagProvider
+            isInSubForm={isInSubForm}
+            isInSubTable={isInSubTable}
+            isInSetDefaultValueDialog
+            collectionField={collectionField}
+          >
             <VariableInput {...props} />
           </FlagProvider>
         );
@@ -114,7 +119,7 @@ export const SchemaSettingsDefaultValue = function DefaultValueConfigure(props: 
           'x-decorator': 'FormItem',
           'x-component': 'VariableInput',
           'x-component-props': {
-            ...(fieldSchema?.['x-component-props'] || {}),
+            ...fieldSchema?.['x-component-props'],
             collectionField,
             contextCollectionName: isAllowContextVariable && tableCtx.collection,
             schema: collectionField?.uiSchema,
@@ -155,7 +160,7 @@ export const SchemaSettingsDefaultValue = function DefaultValueConfigure(props: 
               }
 
               const schema = {
-                ...(s || {}),
+                ...s,
                 'x-decorator': 'FormItem',
                 'x-component-props': {
                   ...s['x-component-props'],
