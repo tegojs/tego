@@ -2987,8 +2987,8 @@ importers:
         version: link:../test
     devDependencies:
       '@alicloud/dingtalk':
-        specifier: ^2.1.75
-        version: 2.1.75
+        specifier: ^2.2.24
+        version: 2.2.24
       '@alicloud/openapi-client':
         specifier: ^0.4.15
         version: 0.4.15
@@ -5283,14 +5283,17 @@ packages:
   '@alicloud/credentials@2.4.4':
     resolution: {integrity: sha512-/eRAGSKcniLIFQ1UCpDhB/IrHUZisQ1sc65ws/c2avxUMpXwH1rWAohb76SVAUJhiF4mwvLzLJM1Mn1XL4Xe/Q==}
 
-  '@alicloud/dingtalk@2.1.75':
-    resolution: {integrity: sha512-AgFGn+dI/ATU544xUZ+P1nUiwI5n3zDndyOqisrVRaRA2si4Fgl9Dr1jJ5m+Cc8vKME2KHqpCYln4dv30RZJBQ==}
+  '@alicloud/dingtalk@2.2.24':
+    resolution: {integrity: sha512-OHhYAbIyVhug6bm4pNVElJmZYpgHkvKL6QEkpRFE0geduOUhwB6hY3iLNW2C7RjijUmsWsSvyQRkKWHYgw+8Rg==}
 
   '@alicloud/dysmsapi20170525@2.0.24':
     resolution: {integrity: sha512-RtOwh3L+NbpfnOxySViIKLlNQeT9pZJS496ZTMMz7A29CBrlComC1UDLmwmD5odWF2Okv9ZdsyP3IRiQnoEL+A==}
 
   '@alicloud/endpoint-util@0.0.1':
     resolution: {integrity: sha512-+pH7/KEXup84cHzIL6UJAaPqETvln4yXlD9JzlrqioyCSaWxbug5FUobsiI6fuUOpw5WwoB3fWAtGbFnJ1K3Yg==}
+
+  '@alicloud/endpoint-util@0.0.2':
+    resolution: {integrity: sha512-7aqVtcRzM0dVUE7bHLP2wKFuZygx5V6MTHBIbhGH3gfkN3/VZ9LlrxhkEfOCYtWfAyo9q0t9ScxQ4khvhweMqw==}
 
   '@alicloud/gateway-dingtalk@1.0.2':
     resolution: {integrity: sha512-T8ml6kth/nCRthrtHIYnCYv7+q/41SnJaR8c99491azNSPcmMmgxis5ujYIl5irKm0cvoOCCjI9EWUFb2Tx7JA==}
@@ -18815,9 +18818,9 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@alicloud/dingtalk@2.1.75':
+  '@alicloud/dingtalk@2.2.24':
     dependencies:
-      '@alicloud/endpoint-util': 0.0.1
+      '@alicloud/endpoint-util': 0.0.2
       '@alicloud/gateway-dingtalk': 1.0.2
       '@alicloud/gateway-spi': 0.0.8
       '@alicloud/openapi-client': 0.4.15
@@ -18843,6 +18846,8 @@ snapshots:
       kitx: 2.1.0
     transitivePeerDependencies:
       - supports-color
+
+  '@alicloud/endpoint-util@0.0.2': {}
 
   '@alicloud/gateway-dingtalk@1.0.2':
     dependencies:

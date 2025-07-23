@@ -12,7 +12,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@alicloud/dingtalk": "^2.1.75",
+    "@alicloud/dingtalk": "^2.2.24",
     "@alicloud/openapi-client": "^0.4.15",
     "@alicloud/tea-util": "^1.4.9",
     "@ant-design/icons": "^5.5.2",
