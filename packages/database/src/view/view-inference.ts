@@ -1,5 +1,3 @@
-import { isArray } from 'mathjs';
-
 import Database from '../database';
 import FieldTypeMap from './field-type-map';
 
@@ -142,7 +140,7 @@ export class ViewFieldInference {
     const queryType = this.extractTypeFromDefinition(options.type);
     const mappedType = fieldTypeMap[queryType];
 
-    if (isArray(mappedType)) {
+    if (Array.isArray(mappedType)) {
       return {
         type: mappedType[0],
         possibleTypes: mappedType,

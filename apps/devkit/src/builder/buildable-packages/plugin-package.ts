@@ -69,7 +69,6 @@ const external = [
 
   // @tachybase/evaluators
   '@formulajs/formulajs',
-  'mathjs',
 
   // @tachybase/logger
   'winston',

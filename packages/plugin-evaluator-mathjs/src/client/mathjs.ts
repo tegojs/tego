@@ -1,4 +1,4 @@
-import mathjs from '../../utils/mathjs';
+import mathjs from '../utils/mathjs';
 
 export default {
   label: 'Math.js',
