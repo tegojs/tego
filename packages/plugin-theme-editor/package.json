@@ -16,7 +16,7 @@
     "@ant-design/icons": "~5.3.7",
     "@arvinxu/layout-kit": "^1.4.0",
     "@ctrl/tinycolor": "^3.6.1",
-    "@types/lodash": "4.17.13",
+    "@types/lodash": "4.17.20",
     "antd": "5.22.5",
     "lodash": "4.17.21",
     "rc-util": "^5.44.2",

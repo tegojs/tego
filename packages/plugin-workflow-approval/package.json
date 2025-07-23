@@ -15,7 +15,7 @@
   "devDependencies": {
     "@ant-design/icons": "~5.3.7",
     "@types/file-saver": "^2.0.7",
-    "@types/lodash": "^4.17.13",
+    "@types/lodash": "^4.17.20",
     "ahooks": "^3.9.0",
     "antd": "5.22.5",
     "antd-mobile": "^5.38.1",

@@ -14,7 +14,7 @@
   "devDependencies": {
     "@ant-design/icons": "^5.5.2",
     "@tachybase/schema": "workspace:*",
-    "@types/lodash": "4.17.18",
+    "@types/lodash": "4.17.20",
     "antd": "5.22.5",
     "async-mutex": "^0.5.0",
     "lodash": "4.17.21",

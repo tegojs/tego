@@ -24,7 +24,7 @@
   "devDependencies": {
     "@types/koa": "^2.15.0",
     "@types/koa-bodyparser": "^4.3.12",
-    "@types/lodash": "^4.17.13",
+    "@types/lodash": "^4.17.20",
     "@types/supertest": "^6.0.2",
     "koa": "^2.15.3",
     "koa-bodyparser": "4.4.1",

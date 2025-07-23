@@ -16,7 +16,7 @@
     "lodash": "4.17.21"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.13",
+    "@types/lodash": "^4.17.20",
     "redis": "^4.7.0",
     "vitest": "^3.2.4"
   }

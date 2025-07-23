@@ -15,7 +15,7 @@
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",
     "@tachybase/sheet": "1.0.0-alpha.5",
-    "@types/lodash": "~4.17.13",
+    "@types/lodash": "~4.17.20",
     "ahooks": "^3.9.0",
     "antd": "5.22.5",
     "axios": "1.7.7",

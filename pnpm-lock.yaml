@@ -369,8 +369,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/client
       '@types/lodash':
-        specifier: 4.17.18
-        version: 4.17.18
+        specifier: 4.17.20
+        version: 4.17.20
       '@yao-pkg/pkg':
         specifier: 6.5.1
         version: 6.5.1(encoding@0.1.13)
@@ -442,8 +442,8 @@ importers:
         version: 5.1.6
     devDependencies:
       '@types/lodash':
-        specifier: 4.17.13
-        version: 4.17.13
+        specifier: 4.17.20
+        version: 4.17.20
       '@types/node':
         specifier: 20.17.10
         version: 20.17.10
@@ -476,8 +476,8 @@ importers:
         specifier: ^2.15.0
         version: 2.15.0
       '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.13
+        specifier: ^4.17.20
+        version: 4.17.20
 
   packages/auth:
     dependencies:
@@ -526,8 +526,8 @@ importers:
         version: 4.17.21
     devDependencies:
       '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.13
+        specifier: ^4.17.20
+        version: 4.17.20
       redis:
         specifier: ^4.7.0
         version: 4.7.0
@@ -752,8 +752,8 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5
       '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.13
+        specifier: ^4.17.20
+        version: 4.17.20
       '@types/markdown-it':
         specifier: 12.2.3
         version: 12.2.3
@@ -859,8 +859,8 @@ importers:
         specifier: ^4.3.12
         version: 4.3.12
       '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.13
+        specifier: ^4.17.20
+        version: 4.17.20
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.2
@@ -950,8 +950,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.13
+        specifier: ^4.17.20
+        version: 4.17.20
 
   packages/evaluators:
     dependencies:
@@ -1183,8 +1183,8 @@ importers:
         specifier: ^2.0.7
         version: 2.0.7
       '@types/lodash':
-        specifier: 4.17.13
-        version: 4.17.13
+        specifier: 4.17.20
+        version: 4.17.20
       antd:
         specifier: 5.22.5
         version: 5.22.5(date-fns@3.6.0)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1386,8 +1386,8 @@ importers:
         specifier: ^6.0.2
         version: 6.0.2
       '@types/lodash':
-        specifier: 4.17.13
-        version: 4.17.13
+        specifier: 4.17.20
+        version: 4.17.20
       async-mutex:
         specifier: ^0.5.0
         version: 0.5.0
@@ -1589,8 +1589,8 @@ importers:
         version: link:../utils
     devDependencies:
       '@types/lodash':
-        specifier: 4.17.13
-        version: 4.17.13
+        specifier: 4.17.20
+        version: 4.17.20
       antd:
         specifier: 5.22.5
         version: 5.22.5(date-fns@3.6.0)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1726,8 +1726,8 @@ importers:
         specifier: 1.0.0-alpha.5
         version: 1.0.0-alpha.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/lodash':
-        specifier: ~4.17.13
-        version: 4.17.13
+        specifier: ~4.17.20
+        version: 4.17.20
       ahooks:
         specifier: ^3.9.0
         version: 3.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1915,8 +1915,8 @@ importers:
         specifier: workspace:*
         version: link:../schema
       '@types/lodash':
-        specifier: 4.17.18
-        version: 4.17.18
+        specifier: 4.17.20
+        version: 4.17.20
       antd:
         specifier: 5.22.5
         version: 5.22.5(date-fns@3.6.0)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -1994,8 +1994,8 @@ importers:
         specifier: 7.20.5
         version: 7.20.5
       '@types/lodash':
-        specifier: 4.17.13
-        version: 4.17.13
+        specifier: 4.17.20
+        version: 4.17.20
       axios:
         specifier: 1.7.7
         version: 1.7.7
@@ -2299,8 +2299,8 @@ importers:
         specifier: ^2.0.7
         version: 2.0.7
       '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.13
+        specifier: ^4.17.20
+        version: 4.17.20
       '@types/qrcode':
         specifier: ^1.5.5
         version: 1.5.5
@@ -3699,8 +3699,8 @@ importers:
         specifier: ^5.5.2
         version: 5.5.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.13
+        specifier: ^4.17.20
+        version: 4.17.20
       antd:
         specifier: 5.22.5
         version: 5.22.5(date-fns@3.6.0)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3751,8 +3751,8 @@ importers:
         specifier: workspace:*
         version: link:../schema
       '@types/lodash':
-        specifier: ~4.17.13
-        version: 4.17.13
+        specifier: ~4.17.20
+        version: 4.17.20
       ahooks:
         specifier: ^3.9.0
         version: 3.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4671,8 +4671,8 @@ importers:
         specifier: ^3.6.1
         version: 3.6.1
       '@types/lodash':
-        specifier: 4.17.13
-        version: 4.17.13
+        specifier: 4.17.20
+        version: 4.17.20
       antd:
         specifier: 5.22.5
         version: 5.22.5(date-fns@3.6.0)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4781,8 +4781,8 @@ importers:
         specifier: ^2.0.7
         version: 2.0.7
       '@types/lodash':
-        specifier: ^4.17.13
-        version: 4.17.13
+        specifier: ^4.17.20
+        version: 4.17.20
       ahooks:
         specifier: ^3.9.0
         version: 3.9.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -5082,8 +5082,8 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
       '@types/lodash':
-        specifier: 4.17.13
-        version: 4.17.13
+        specifier: 4.17.20
+        version: 4.17.20
       '@types/qs':
         specifier: ^6.14.0
         version: 6.14.0
@@ -5257,8 +5257,8 @@ importers:
         version: 0.11.8
     devDependencies:
       '@types/lodash':
-        specifier: 4.17.13
-        version: 4.17.13
+        specifier: 4.17.20
+        version: 4.17.20
       '@types/multer':
         specifier: 1.4.13
         version: 1.4.13
@@ -10025,12 +10025,6 @@ packages:
 
   '@types/lodash-es@4.17.12':
     resolution: {integrity: sha512-0NgftHUcV4v34VhXm8QBSftKVXtbkBG3ViCjs6+eJ5a6y6Mi/jiFGPc1sC7QK+9BFhWrURE3EOggmWaSxL9OzQ==}
-
-  '@types/lodash@4.17.13':
-    resolution: {integrity: sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==}
-
-  '@types/lodash@4.17.18':
-    resolution: {integrity: sha512-KJ65INaxqxmU6EoCiJmRPZC9H9RVWCRd349tXM2M3O5NA7cY6YL7c0bHAHQ93NOfTObEQ004kd2QVHs/r0+m4g==}
 
   '@types/lodash@4.17.20':
     resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
@@ -25179,10 +25173,6 @@ snapshots:
   '@types/lodash-es@4.17.12':
     dependencies:
       '@types/lodash': 4.17.20
-
-  '@types/lodash@4.17.13': {}
-
-  '@types/lodash@4.17.18': {}
 
   '@types/lodash@4.17.20': {}
 

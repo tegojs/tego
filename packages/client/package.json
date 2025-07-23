@@ -79,7 +79,7 @@
   "devDependencies": {
     "@testing-library/react": "^16.2.0",
     "@types/flat": "^5.0.5",
-    "@types/lodash": "^4.17.13",
+    "@types/lodash": "^4.17.20",
     "@types/markdown-it": "12.2.3",
     "@types/react-big-calendar": "^1.16.2"
   },
