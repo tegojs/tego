@@ -1,5 +1,4 @@
-import React from 'react';
-
+import { OpenMode } from '../../../schema-component';
 import { ActionInitializer } from '../../../schema-initializer/items/ActionInitializer';
 
 export const ViewActionInitializer = (props) => {
@@ -11,7 +10,7 @@ export const ViewActionInitializer = (props) => {
     'x-settings': 'actionSettings:view',
     'x-component': 'Action',
     'x-component-props': {
-      openMode: 'drawer',
+      openMode: OpenMode.DEFAULT,
     },
     properties: {
       drawer: {
@@ -22,26 +21,15 @@ export const ViewActionInitializer = (props) => {
           className: 'tb-action-popup',
         },
         properties: {
-          tabs: {
+          page: {
             type: 'void',
-            'x-component': 'Tabs',
-            'x-component-props': {},
-            'x-initializer': 'popup:addTab',
+            title: '{{ t("Details") }}',
+            'x-component': 'Page',
             properties: {
-              tab1: {
+              grid: {
                 type: 'void',
-                title: '{{t("Details")}}',
-                'x-component': 'Tabs.TabPane',
-                'x-designer': 'Tabs.Designer',
-                'x-component-props': {},
-                properties: {
-                  grid: {
-                    type: 'void',
-                    'x-component': 'Grid',
-                    'x-initializer': 'popup:common:addBlock',
-                    properties: {},
-                  },
-                },
+                'x-component': 'Grid',
+                'x-initializer': 'popup:common:addBlock',
               },
             },
           },

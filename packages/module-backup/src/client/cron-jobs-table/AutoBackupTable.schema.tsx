@@ -1,4 +1,4 @@
-import { useDataBlockRequest, useDataBlockResource, useRecord } from '@tachybase/client';
+import { OpenMode, useDataBlockRequest, useDataBlockResource, useRecord } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { tval } from '../locale';
@@ -136,7 +136,7 @@ const create = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',
@@ -166,7 +166,7 @@ const editAction: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

@@ -1,3 +1,4 @@
+import { OpenMode } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 const collectionlocalization = {
@@ -53,7 +54,7 @@ export const updatelocalization: ISchema = {
   'x-action': 'update',
   'x-component': 'Action.Link',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     icon: 'EditOutlined',
   },
   'x-decorator': 'ACLActionProvider',

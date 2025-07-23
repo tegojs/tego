@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
 import { observer, RecursionField, useField, useFieldSchema } from '@tachybase/schema';
 
-import { CloseOutlined, FullscreenExitOutlined, FullscreenOutlined } from '@ant-design/icons';
-import { css } from '@emotion/css';
-import { Button, Drawer } from 'antd';
+import { Drawer } from 'antd';
 import classNames from 'classnames';
 
 import { OpenSize } from './';
 import { useStyles } from './Action.Drawer.style';
+import { DrawerButton } from './components/DrawerButton';
 import { useActionContext } from './hooks';
 import { useSetAriaLabelForDrawer } from './hooks/useSetAriaLabelForDrawer';
 import { ComposedActionDrawer } from './types';
@@ -38,20 +36,7 @@ export const ActionDrawer: ComposedActionDrawer = observer(
     return (
       <Drawer
         width={openSizeWidthMap.get(openSize)}
-        extra={
-          <>
-            <Amplifier />
-            <Button
-              type="text"
-              icon={<CloseOutlined />}
-              className={css`
-                background: none;
-                border: none;
-              `}
-              onClick={() => setVisible(false, true)}
-            />
-          </>
-        }
+        extra={<DrawerButton />}
         title={field.title}
         {...others}
         {...drawerProps}
@@ -104,28 +89,3 @@ ActionDrawer.Footer = observer(
 );
 
 export default ActionDrawer;
-
-export const Amplifier = () => {
-  const [isAmplifier, setIsAmplifier] = useState(false);
-  const [blockWidth, setBlockWidth] = useState('');
-  return (
-    <Button
-      type="text"
-      icon={isAmplifier ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
-      className={css`
-        background: none;
-        border: none;
-      `}
-      onClick={(e) => {
-        const element = (e.target as HTMLElement).closest('.ant-drawer-content-wrapper') as HTMLElement;
-        if (isAmplifier) {
-          element.style.width = blockWidth;
-        } else {
-          setBlockWidth(element.getBoundingClientRect().width + 'px');
-          element.style.width = '100%';
-        }
-        setIsAmplifier(!isAmplifier);
-      }}
-    />
-  );
-};

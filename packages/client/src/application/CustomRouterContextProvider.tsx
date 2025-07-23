@@ -14,6 +14,8 @@ import {
   useSearchParams,
 } from 'react-router-dom';
 
+import { OpenMode } from '../schema-component';
+
 const NavigateNoUpdateContext = React.createContext<NavigateFunction>(null);
 NavigateNoUpdateContext.displayName = 'NavigateNoUpdateContext';
 
@@ -40,6 +42,12 @@ MatchAdminNameContext.displayName = 'MatchAdminNameContext';
 
 const IsInSettingsPageContext = React.createContext<boolean>(false);
 IsInSettingsPageContext.displayName = 'IsInSettingsPageContext';
+
+const IsSystemPageContext = React.createContext<boolean>(false);
+IsSystemPageContext.displayName = 'IsSystemPageContext';
+
+const IsSubPageContext = React.createContext<boolean>(false);
+IsSubPageContext.displayName = 'IsSubPageContext';
 
 /**
  * @internal
@@ -72,7 +80,7 @@ export const IsSubPageClosedByPageMenuProvider: FC<{ children: React.ReactNode }
   const isSubPageClosedByPageMenu = useCallback(() => {
     const result =
       _.isEmpty(params['*']) &&
-      fieldSchema?.['x-component-props']?.openMode === 'page' &&
+      fieldSchema?.['x-component-props']?.openMode === OpenMode.PAGE &&
       !!prevParamsRef.current['*']?.includes(fieldSchema['x-uid']);
 
     prevParamsRef.current = params;
@@ -111,6 +119,16 @@ const SearchParamsProvider: FC<{ children: React.ReactNode }> = ({ children }) =
 const IsInSettingsPageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const isInSettingsPage = useLocation().pathname.includes('/settings');
   return <IsInSettingsPageContext.Provider value={isInSettingsPage}>{children}</IsInSettingsPageContext.Provider>;
+};
+
+const IsSystemPageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isSystemPage = useLocation().pathname.includes('/_admin');
+  return <IsSystemPageContext.Provider value={isSystemPage}>{children}</IsSystemPageContext.Provider>;
+};
+
+const IsSubPageProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
+  const isSubPage = useLocation().pathname.includes('/sub');
+  return <IsSubPageContext.Provider value={isSubPage}>{children}</IsSubPageContext.Provider>;
 };
 
 const MatchAdminProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -223,6 +241,15 @@ export const useIsInSettingsPage = () => {
   return React.useContext(IsInSettingsPageContext);
 };
 
+export const useIsSystemPage = () => {
+  return React.useContext(IsSystemPageContext);
+};
+
+// 是否是独立子页面
+export const useIsSubPage = () => {
+  return React.useContext(IsSubPageContext);
+};
+
 /**
  * @internal
  */
@@ -262,7 +289,11 @@ export const CustomRouterContextProvider: FC<{ children: React.ReactNode }> = ({
               <MatchAdminNameProvider>
                 <SearchParamsProvider>
                   <RouterBasenameProvider>
-                    <IsInSettingsPageProvider>{children}</IsInSettingsPageProvider>
+                    <IsInSettingsPageProvider>
+                      <IsSystemPageProvider>
+                        <IsSubPageProvider>{children}</IsSubPageProvider>
+                      </IsSystemPageProvider>
+                    </IsInSettingsPageProvider>
                   </RouterBasenameProvider>
                 </SearchParamsProvider>
               </MatchAdminNameProvider>

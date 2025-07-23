@@ -5,7 +5,7 @@ import { App } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { useIsDetailBlock } from '../../../block-provider/FormBlockProvider';
-import { ActionContext } from './context';
+import { ActionContext, OpenMode } from './context';
 
 export const useA = () => {
   return {
@@ -21,7 +21,7 @@ export const useActionContext = () => {
   return {
     ...ctx,
     setVisible(visible: boolean, confirm = false) {
-      if (ctx?.openMode !== 'page') {
+      if (ctx?.openMode !== OpenMode.PAGE) {
         if (!visible) {
           if (confirm && ctx.formValueChanged) {
             modal.confirm({

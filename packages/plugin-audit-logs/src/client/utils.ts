@@ -1,3 +1,4 @@
+import { OpenMode } from '@tachybase/client';
 import { uid } from '@tachybase/schema';
 
 import { tval } from './locale';
@@ -181,7 +182,7 @@ export const createSchema = () => {
                 'x-action': 'view',
                 'x-component': 'Action.Link',
                 'x-component-props': {
-                  openMode: 'drawer',
+                  openMode: OpenMode.DRAWER_MODE,
                 },
                 properties: {
                   drawer: {

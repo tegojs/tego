@@ -1,3 +1,4 @@
+import { OpenMode } from '@tachybase/client';
 import { ISchema } from '@tachybase/schema';
 
 import { trackingConfigCollection } from '../collections/trackingConfig.collection';
@@ -10,7 +11,7 @@ export const createTrackingConfig: ISchema = {
   'x-component': 'Action',
   'x-decorator': 'ACLActionProvider',
   'x-component-props': {
-    openMode: 'drawer',
+    openMode: OpenMode.DRAWER_MODE,
     type: 'primary',
     component: 'CreateRecordAction',
     icon: 'PlusOutlined',
@@ -109,7 +110,7 @@ export const createTrackingConfig: ISchema = {
                       $and: [{ meta: { userId: { $gt: 1 } } }],
                     },
                   },
-                  description: `e.g. 
+                  description: `e.g.
                     filter: {
                       "$and": [
                         { "meta": { "userId": { "$gt": 1 } } },

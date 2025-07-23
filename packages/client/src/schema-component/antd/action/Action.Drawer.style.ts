@@ -8,7 +8,11 @@ export const useStyles = genStyleHook('tb-action-drawer', (token) => {
       overflow: 'hidden',
       '&.reset': {
         '&.tb-action-popup': {
-          '.ant-drawer-body': { paddingTop: token.paddingContentVerticalLG, backgroundColor: 'var(--colorBgDrawer)' },
+          '.ant-drawer-body': {
+            backgroundColor: 'var(--colorBgDrawer)',
+            height: '100%',
+            padding: 0,
+          },
         },
         '&.tb-record-picker-selector': {
           '.ant-drawer-wrapper-body': {

@@ -20,7 +20,7 @@ import {
   useCollectionManager_deprecated,
 } from '../../../collection-manager';
 import { useCompile } from '../../hooks';
-import { ActionContextProvider } from '../action';
+import { ActionContextProvider, OpenMode } from '../action';
 import { EllipsisWithTooltip } from '../input';
 import { FileSelector, Preview } from '../preview';
 import { useFieldNames, useInsertSchema } from './hooks';
@@ -165,7 +165,7 @@ const InternalFileManager = (props) => {
       />
       <ActionContextProvider
         value={{
-          openMode: 'drawer',
+          openMode: OpenMode.DEFAULT,
           visible: visibleSelector,
           setVisible: setVisibleSelector,
           modalProps: {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useActionContext, useBlockRequestContext, useRecord } from '@tachybase/client';
+import { OpenMode, useActionContext, useBlockRequestContext, useRecord } from '@tachybase/client';
 import { ISchema, uid, useForm } from '@tachybase/schema';
 
 import { Alert, Modal, Space, Typography } from 'antd';
@@ -94,7 +94,7 @@ export const configurationSchema: ISchema = {
               'x-component': 'Action',
               'x-component-props': {
                 icon: 'PlusOutlined',
-                openMode: 'drawer',
+                openMode: OpenMode.DRAWER_MODE,
                 type: 'primary',
               },
               properties: {

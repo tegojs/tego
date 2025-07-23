@@ -11,13 +11,19 @@ import {
   SchemaComponentOptions,
   useActionContext,
 } from '../..';
-import { CollectionProvider_deprecated, RecordProvider, useCollectionRecordData, useFormBlockContext } from '../../../';
+import {
+  CollectionProvider_deprecated,
+  RecordProvider,
+  useCollectionRecordData,
+  useFormBlockContext,
+  useIsMobile,
+} from '../../../';
 import {
   TableSelectorParamsProvider,
   useTableSelectorProps as useTsp,
 } from '../../../block-provider/TableSelectorProvider';
 import { useCompile } from '../../hooks';
-import { ActionContextProvider } from '../action';
+import { ActionContextProvider, OpenMode } from '../action';
 import { useAssociationFieldContext, useFieldNames, useInsertSchema } from './hooks';
 import schema from './schema';
 import { flatData, getLabelFormatValue, useLabelUiSchema } from './util';
@@ -103,6 +109,7 @@ export const InternalPicker = observer(
       collectionField,
       currentFormCollection: collectionName,
     };
+    const isMobile = useIsMobile();
 
     const getValue = () => {
       if (multiple == null) return null;
@@ -187,7 +194,7 @@ export const InternalPicker = observer(
         <ActionContextProvider
           value={{
             openSize: fieldSchema['x-component-props']?.['openSize'] || openSize,
-            openMode: 'drawer',
+            openMode: isMobile ? OpenMode.MODAL : OpenMode.DRAWER_MODE,
             visible: visibleSelector,
             setVisible: setVisibleSelector,
           }}

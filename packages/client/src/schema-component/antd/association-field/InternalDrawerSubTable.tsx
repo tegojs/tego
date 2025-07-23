@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useCollectionManager } from '../../../data-source';
 import { FlagProvider } from '../../../flag-provider';
-import { ActionContext, ActionContextProvider } from '../action/context';
+import { ActionContext, ActionContextProvider, OpenMode } from '../action/context';
 import { SubFormProvider, useAssociationFieldContext } from './hooks';
 import { InternalSubTable } from './InternalSubTable';
 import { ReadPrettyInternalViewer } from './InternalViewer';
@@ -45,7 +45,14 @@ export const InternaDrawerSubTable = observer(
           </div>
           <EditOutlined style={{ display: 'inline-flex', marginLeft: '5px' }} />
         </span>
-        <ActionContextProvider value={{ ...ctx, visible, setVisible, openMode: 'drawer' }}>
+        <ActionContextProvider
+          value={{
+            ...ctx,
+            visible,
+            setVisible,
+            openMode: OpenMode.DEFAULT,
+          }}
+        >
           <Drawer
             title={t(options?.uiSchema?.rawTitle)}
             open={visible}

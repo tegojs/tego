@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useField, useFieldSchema } from '@tachybase/schema';
 
 import { Select } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 import { SchemaInitializerItem, SchemaInitializerSelect } from '../application';
-import { useDesignable } from '../schema-component';
+import { useIsMobile } from '../block-provider';
+import { PageStyle } from '../built-in/page-style/PageStyle.provider';
+import { usePageStyle } from '../built-in/page-style/usePageStyle';
+import { OpenMode, useDesignable } from '../schema-component';
 import { SchemaSettingsSelectItem } from '../schema-settings';
 
 interface Options {
@@ -18,7 +21,19 @@ export const SchemaInitializerOpenModeSchemaItems: React.FC<Options> = (options)
   const field = useField();
   const { t } = useTranslation();
   const { dn } = useDesignable();
-  const openModeValue = fieldSchema?.['x-component-props']?.['openMode'] || 'drawer';
+  const isMobile = useIsMobile();
+  const pageStyle = usePageStyle();
+
+  const defaultOpenMode = useMemo(() => {
+    // 移动端或经典模式下默认为 PAGE 模式
+    if (isMobile || pageStyle === PageStyle.TAB_STYLE) {
+      return OpenMode.PAGE;
+    }
+    // 经典模式下默认为 DRAWER 模式
+    return OpenMode.DRAWER_MODE;
+  }, [isMobile, pageStyle]);
+
+  const openModeValue = fieldSchema?.['x-component-props']?.['openMode'] || defaultOpenMode;
 
   return (
     <>
@@ -26,8 +41,8 @@ export const SchemaInitializerOpenModeSchemaItems: React.FC<Options> = (options)
         <SchemaInitializerSelect
           title={t('Open mode')}
           options={[
-            { label: t('Drawer'), value: 'drawer' },
-            { label: t('Dialog'), value: 'modal' },
+            { label: t('Drawer'), value: OpenMode.DRAWER_MODE },
+            { label: t('Dialog'), value: OpenMode.MODAL },
           ]}
           value={openModeValue}
           onChange={(value) => {
@@ -47,7 +62,7 @@ export const SchemaInitializerOpenModeSchemaItems: React.FC<Options> = (options)
           }}
         />
       ) : null}
-      {openSize && ['modal', 'drawer'].includes(openModeValue) ? (
+      {openSize && [OpenMode.MODAL, OpenMode.DRAWER_MODE].includes(openModeValue) ? (
         <SchemaInitializerItem>
           <div style={{ alignItems: 'center', display: 'flex', justifyContent: 'space-between' }}>
             {t('Popup size')}
@@ -61,7 +76,7 @@ export const SchemaInitializerOpenModeSchemaItems: React.FC<Options> = (options)
               ]}
               value={
                 fieldSchema?.['x-component-props']?.['openSize'] ??
-                (fieldSchema?.['x-component-props']?.['openMode'] == 'modal' ? 'large' : 'middle')
+                (fieldSchema?.['x-component-props']?.['openMode'] === OpenMode.MODAL ? 'large' : 'middle')
               }
               onChange={(value) => {
                 field.componentProps.openSize = value;
@@ -91,7 +106,17 @@ export const SchemaSettingOpenModeSchemaItems: React.FC<Options> = (options) => 
   const field = useField();
   const { t } = useTranslation();
   const { dn } = useDesignable();
-  const openModeValue = fieldSchema?.['x-component-props']?.['openMode'] || 'drawer';
+  const pageStyle = usePageStyle();
+  const isMobile = useIsMobile();
+
+  const defaultOpenMode = useMemo(() => {
+    if (isMobile || pageStyle === PageStyle.TAB_STYLE) {
+      return OpenMode.PAGE;
+    }
+    return OpenMode.DRAWER_MODE;
+  }, [isMobile, pageStyle]);
+
+  const openModeValue = fieldSchema?.['x-component-props']?.['openMode'] || defaultOpenMode;
 
   return (
     <>
@@ -99,10 +124,10 @@ export const SchemaSettingOpenModeSchemaItems: React.FC<Options> = (options) => 
         <SchemaSettingsSelectItem
           title={t('Open mode')}
           options={[
-            { label: t('Drawer'), value: 'drawer' },
-            { label: t('Dialog'), value: 'modal' },
-            { label: t('Sheet'), value: 'sheet' },
-            { label: t('Page'), value: 'page' },
+            { label: t('Drawer'), value: OpenMode.DRAWER_MODE },
+            { label: t('Dialog'), value: OpenMode.MODAL },
+            { label: t('Sheet'), value: OpenMode.SHEET },
+            { label: t('Page'), value: OpenMode.PAGE },
           ]}
           value={openModeValue}
           onChange={(value) => {
@@ -122,7 +147,7 @@ export const SchemaSettingOpenModeSchemaItems: React.FC<Options> = (options) => 
           }}
         />
       ) : null}
-      {openSize && ['modal', 'drawer'].includes(openModeValue) ? (
+      {openSize && [OpenMode.MODAL, OpenMode.DRAWER_MODE].includes(openModeValue) ? (
         <SchemaSettingsSelectItem
           title={t('Popup size')}
           options={[
@@ -132,7 +157,7 @@ export const SchemaSettingOpenModeSchemaItems: React.FC<Options> = (options) => 
           ]}
           value={
             fieldSchema?.['x-component-props']?.['openSize'] ??
-            (fieldSchema?.['x-component-props']?.['openMode'] == 'modal' ? 'large' : 'middle')
+            (fieldSchema?.['x-component-props']?.['openMode'] === OpenMode.MODAL ? 'large' : 'middle')
           }
           onChange={(value) => {
             field.componentProps.openSize = value;

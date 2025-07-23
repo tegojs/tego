@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SchemaSettings, useSchemaInitializer } from '../../application';
-import { ButtonEditor } from '../../schema-component';
+import { ButtonEditor, OpenMode } from '../../schema-component';
 import { SchemaSettingOpenModeSchemaItems } from '../../schema-items';
 import { ModalActionSchemaInitializerItem } from './ModalActionSchemaInitializerItem';
 
@@ -79,7 +79,7 @@ export function QuickAccessPopupActionSchemaInitializerItem(props) {
             icon: values.icon,
             iconColor: values.iconColor,
             refreshDataBlockRequest: false,
-            openMode: 'drawer',
+            openMode: OpenMode.DRAWER_MODE,
           },
           properties: {
             drawer: {
