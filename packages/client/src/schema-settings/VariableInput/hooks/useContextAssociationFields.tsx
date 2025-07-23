@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { CollectionFieldOptions_deprecated, useCollectionManager_deprecated } from '../../../collection-manager';
 import { useCompile, useGetFilterOptions } from '../../../schema-component';
-import { FieldOption, Option } from '../type';
+import { FieldOption, VariableInputOption } from '../type';
 
 export const useIsSameOrChildCollection = () => {
   const { getChildrenCollections } = useCollectionManager_deprecated();
@@ -22,7 +22,7 @@ interface GetOptionsParams {
   schema: any;
   depth: number;
   maxDepth?: number;
-  loadChildren?: (option: Option) => Promise<void>;
+  loadChildren?: (option: VariableInputOption) => Promise<void>;
   compile: (value: string) => any;
 }
 
@@ -31,9 +31,9 @@ const getChildren = (
   { schema, depth, maxDepth, loadChildren, compile }: GetOptionsParams,
   collectionField,
   getIsSameOrChildCollection,
-): Option[] => {
+): VariableInputOption[] => {
   const result = options
-    .map((option): Option => {
+    .map((option): VariableInputOption => {
       const disabled = !getIsSameOrChildCollection(option.target, collectionField?.target);
       if (!option.target) {
         return {
@@ -79,7 +79,7 @@ export const useContextAssociationFields = ({
   const compile = useCompile();
   const getFilterOptions = useGetFilterOptions();
   const getIsSameOrChildCollection = useIsSameOrChildCollection();
-  const loadChildren = (option: Option): Promise<void> => {
+  const loadChildren = (option: VariableInputOption): Promise<void> => {
     if (!option.field?.target) {
       return new Promise((resolve) => {
         error('Must be set field target');
@@ -133,7 +133,7 @@ export const useContextAssociationFields = ({
       },
       depth: 0,
       loadChildren,
-    } as Option;
+    } as VariableInputOption;
   }, [schema?.['x-component']]);
 
   return result;

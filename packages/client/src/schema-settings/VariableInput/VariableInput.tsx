@@ -14,7 +14,7 @@ import { useContextAssociationFields } from './hooks/useContextAssociationFields
 import { useCurrentRecordVariable } from './hooks/useRecordVariable';
 import { useCurrentUserVariable } from './hooks/useUserVariable';
 import { useVariableOptions } from './hooks/useVariableOptions';
-import { Option } from './type';
+import { VariableInputOption } from './type';
 
 interface GetShouldChangeProps {
   collectionField: CollectionFieldOptions_deprecated;
@@ -57,7 +57,7 @@ type Props = {
    * @param scope
    * @returns
    */
-  returnScope?: (scope: Option[]) => any[];
+  returnScope?: (scope: VariableInputOption[]) => any[];
 };
 
 /**
@@ -243,14 +243,14 @@ export function useCompatOldVariables(props: {
   });
 
   const compatOldVariables = useCallback(
-    (variables: Option[], { value }) => {
+    (variables: VariableInputOption[], { value }) => {
       if (!isVariable(value)) {
         return variables;
       }
 
       variables = _.cloneDeep(variables);
 
-      const systemVariable: Option = {
+      const systemVariable: VariableInputOption = {
         value: '$system',
         key: '$system',
         label: t('System variables'),

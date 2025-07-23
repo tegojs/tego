@@ -1,5 +1,5 @@
 import React from 'react';
-import { createRouterManager, Plugin, RouterManager } from '@tachybase/client';
+import { createRouterManager, Plugin, RouterManager, SchemaInitializerPlugin } from '@tachybase/client';
 
 import { Navigate } from 'react-router-dom';
 
@@ -25,10 +25,11 @@ export class ModuleWeb extends Plugin {
   public mobileRouter: RouterManager;
 
   async afterAdd() {
-    this.pm.add(PluginDataSelect, { name: 'plugin-data-select' });
-    this.app.pm.add(PluginSearchAndJump, { name: 'SearchAndJump' });
-    this.app.pm.add(PluginDesignableButton, { name: 'Designable' });
-    this.app.pm.add(PluginCalculator, { name: 'calculator' });
+    await this.app.pm.add(SchemaInitializerPlugin, { name: 'schema-initializer' });
+    await this.app.pm.add(PluginDataSelect, { name: 'plugin-data-select' });
+    await this.app.pm.add(PluginSearchAndJump, { name: 'SearchAndJump' });
+    await this.app.pm.add(PluginDesignableButton, { name: 'Designable' });
+    await this.app.pm.add(PluginCalculator, { name: 'calculator' });
   }
   async load() {
     this.setMobileRouter();

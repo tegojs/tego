@@ -4,7 +4,7 @@ import { ISchema, Schema } from '@tachybase/schema';
 import { CollectionFieldOptions_deprecated, useCollectionManager_deprecated } from '../../../collection-manager';
 import { useCompile, useGetFilterOptions } from '../../../schema-component';
 import { isSpecialCaseField } from '../../../schema-component/antd/form-item/hooks/useSpecialCase';
-import { FieldOption, Option } from '../type';
+import { FieldOption, VariableInputOption } from '../type';
 
 export interface IsDisabledParams {
   option: FieldOption;
@@ -26,7 +26,7 @@ interface GetOptionsParams {
    * 不需要禁用选项，一般会在表达式中使用
    */
   noDisabled?: boolean;
-  loadChildren?: (option: Option) => Promise<void>;
+  loadChildren?: (option: VariableInputOption) => Promise<void>;
   compile: (value: string) => any;
   isDisabled?: (params: IsDisabledParams) => boolean;
   getCollectionField?: (name: string) => CollectionFieldOptions_deprecated;
@@ -59,7 +59,7 @@ interface BaseProps {
    * @param fields
    * @param option
    */
-  returnFields?(fields: FieldOption[], option: Option): FieldOption[];
+  returnFields?(fields: FieldOption[], option: VariableInputOption): FieldOption[];
   dataSource?: string;
 }
 
@@ -91,9 +91,9 @@ const getChildren = (
     targetFieldSchema,
     getCollectionField,
   }: GetOptionsParams,
-): Option[] => {
+): VariableInputOption[] => {
   const result = options
-    .map((option): Option => {
+    .map((option): VariableInputOption => {
       if (!option.target) {
         return {
           key: option.name,
@@ -148,7 +148,7 @@ export const useBaseVariable = ({
   const { isDisabled } = useContext(BaseVariableContext) || {};
   const { getCollectionField } = useCollectionManager_deprecated(dataSource);
 
-  const loadChildren = (option: Option): Promise<void> => {
+  const loadChildren = (option: VariableInputOption): Promise<void> => {
     if (!option.field?.target) {
       return Promise.resolve(void 0);
     }
@@ -217,7 +217,7 @@ export const useBaseVariable = ({
       depth: 0,
       loadChildren,
       children: [],
-    } as Option;
+    } as VariableInputOption;
   }, [uiSchema?.['x-component']]);
 
   return result;

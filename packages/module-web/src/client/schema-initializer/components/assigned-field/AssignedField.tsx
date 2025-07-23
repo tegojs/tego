@@ -1,22 +1,24 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { Field, merge, useField, useFieldSchema } from '@tachybase/schema';
-
-import _ from 'lodash';
-
-import { useFormBlockContext } from '../../../block-provider';
 import {
+  CollectionFieldProvider,
+  formatVariableScop,
+  getShouldChange,
   useCollection_deprecated,
   useCollectionField_deprecated,
   useCollectionFilterOptions,
   useCollectionManager_deprecated,
-} from '../../../collection-manager';
-import { CollectionFieldProvider } from '../../../data-source';
-import { useRecord } from '../../../record-provider';
-import { useCompile, useComponent } from '../../../schema-component';
-import { VariableInputOption } from '../../../schema-settings/VariableInput/type';
-import { formatVariableScop } from '../../../schema-settings/VariableInput/utils/formatVariableScop';
-import { getShouldChange, VariableInput } from '../../../schema-settings/VariableInput/VariableInput';
-import { useLocalVariables, useVariables } from '../../../variables';
+  useCompile,
+  useComponent,
+  useFormBlockContext,
+  useLocalVariables,
+  useRecord,
+  useVariables,
+  VariableInput,
+  VariableInputOption,
+} from '@tachybase/client';
+import { Field, merge, useField, useFieldSchema } from '@tachybase/schema';
+
+import _ from 'lodash';
 
 interface AssignedFieldProps {
   value: any;
