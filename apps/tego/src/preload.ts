@@ -46,7 +46,6 @@ const defaultWhitelists = [
   'koa',
   'koa-bodyparser',
   'lodash',
-  'mathjs',
   'multer',
   'mysql2',
   'pg',
