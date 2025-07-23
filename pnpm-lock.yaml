@@ -3823,27 +3823,15 @@ importers:
 
   packages/plugin-evaluator-mathjs:
     dependencies:
-      '@tachybase/actions':
-        specifier: workspace:*
-        version: link:../actions
       '@tachybase/client':
         specifier: workspace:*
         version: link:../client
-      '@tachybase/database':
+      '@tachybase/evaluators':
         specifier: workspace:*
-        version: link:../database
-      '@tachybase/schema':
-        specifier: workspace:*
-        version: link:../schema
+        version: link:../evaluators
       '@tachybase/server':
         specifier: workspace:*
         version: link:../server
-      '@tachybase/test':
-        specifier: workspace:*
-        version: link:../test
-      '@tachybase/utils':
-        specifier: workspace:*
-        version: link:../utils
     devDependencies:
       mathjs:
         specifier: ^10.6.4

@@ -11,13 +11,9 @@
     "mathjs": "^10.6.4"
   },
   "peerDependencies": {
-    "@tachybase/actions": "workspace:*",
     "@tachybase/client": "workspace:*",
-    "@tachybase/database": "workspace:*",
-    "@tachybase/schema": "workspace:*",
-    "@tachybase/server": "workspace:*",
-    "@tachybase/test": "workspace:*",
-    "@tachybase/utils": "workspace:*"
+    "@tachybase/evaluators": "workspace:*",
+    "@tachybase/server": "workspace:*"
   },
   "description.zh-CN": "MathJS 表达式评估器, 提供数学表达式评估功能",
   "displayName.zh-CN": "MathJS 表达式评估器"
