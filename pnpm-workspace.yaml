@@ -9,6 +9,7 @@ allowedDeprecatedVersions:
   react-beautiful-dnd: "13.1.1"
 
 overrides:
+  "@ant-design/cssinjs": "1.22.1"
   "@types/node": "20.17.10"
   "antd": "5.22.5"
   "dayjs": "1.11.13"
