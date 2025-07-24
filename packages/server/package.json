@@ -37,7 +37,7 @@
     "execa": "^5.1.1",
     "fast-glob": "^3.3.2",
     "find-package-json": "^1.2.0",
-    "fs-extra": "^11.2.0",
+    "fs-extra": "^11.3.0",
     "glob": "11.0.0",
     "i18next": "23.16.8",
     "ini": "^4.1.3",
