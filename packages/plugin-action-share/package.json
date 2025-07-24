@@ -11,9 +11,10 @@
   "scripts": {
     "build": "tachybase-build --no-dts @tachybase/plugin-action-share"
   },
-  "dependencies": {
+  "devDependencies": {
     "@ant-design/icons": "~5.3.7",
     "@emotion/css": "^11.13.5",
+    "@tachybase/schema": "workspace:*",
     "antd": "5.22.5",
     "antd-style": "3.7.1",
     "qrcode": "^1.5.4",
@@ -21,7 +22,6 @@
     "react-router": "6.28.1",
     "react-router-dom": "6.28.1"
   },
-  "devDependencies": {},
   "peerDependencies": {
     "@tachybase/actions": "workspace:*",
     "@tachybase/auth": "workspace:*",
