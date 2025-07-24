@@ -20,6 +20,8 @@ export function useFormulaTitleOptions() {
     (value) => value.name === fieldSchema['x-decorator-props'],
   )[0];
   const collectionField = getField(fieldSchema['name']) || getCollectionJoinField(fieldSchema['x-collection-field']);
+  const isAssociationField =
+    collectionField && ['hasOne', 'hasMany', 'belongsTo', 'belongsToMany'].includes(collectionField.type);
   let fields = [];
   if (collectionField) {
     fields = getCollectionFields(
@@ -34,7 +36,7 @@ export function useFormulaTitleOptions() {
   }
   const options = [];
   fields?.forEach((field) => {
-    if (!['m2m', 'o2m'].includes(field.interface)) {
+    if (!['m2m', 'o2m'].includes(field.interface) && isAssociationField) {
       if (field.uiSchema) {
         options.push({
           label: compile(field.uiSchema.title),
@@ -48,6 +50,19 @@ export function useFormulaTitleOptions() {
               })) ?? [],
         });
       }
+    }
+    if (!isAssociationField && field.name === fieldSchema['name']) {
+      options.push({
+        label: compile(field.uiSchema.title),
+        value: field.name,
+        children:
+          getCollectionFields(field.target)
+            ?.filter((subField) => subField.uiSchema)
+            .map((subField) => ({
+              label: subField.uiSchema ? compile(subField.uiSchema.title) : '',
+              value: subField.name,
+            })) ?? [],
+      });
     }
   });
   return options;

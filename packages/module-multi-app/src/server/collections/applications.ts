@@ -72,5 +72,14 @@ export default defineCollection({
         return uid(16); // Longer suffix for improved security
       },
     },
+    {
+      type: 'belongsToMany',
+      name: 'partners',
+      target: 'users',
+      foreignKey: 'applicationName',
+      otherKey: 'userId',
+      targetKey: 'id',
+      through: 'applicationsPartners',
+    },
   ],
 });

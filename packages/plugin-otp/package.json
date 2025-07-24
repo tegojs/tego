@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-otp",
   "displayName": "Verification",
-  "version": "1.3.17",
+  "version": "1.3.20",
   "description": "verification setting.",
   "keywords": [
     "Authentication"
@@ -14,7 +14,7 @@
   "dependencies": {},
   "devDependencies": {
     "@alicloud/dysmsapi20170525": "2.0.24",
-    "@alicloud/openapi-client": "0.4.12",
+    "@alicloud/openapi-client": "0.4.15",
     "@alicloud/tea-util": "1.4.9",
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",

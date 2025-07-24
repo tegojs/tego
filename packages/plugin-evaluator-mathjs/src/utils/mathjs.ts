@@ -1,6 +1,6 @@
-import * as math from 'mathjs';
+import { evaluate } from '@tachybase/evaluators';
 
-import { evaluate } from '.';
+import * as math from 'mathjs';
 
 export default evaluate.bind(
   function (expression: string, scope = {}) {

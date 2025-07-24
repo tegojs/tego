@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-multi-app",
   "displayName": "Multi-app manager",
-  "version": "1.3.17",
+  "version": "1.3.20",
   "description": "Dynamically create multiple apps without separate deployments.",
   "keywords": [
     "System management"
@@ -14,12 +14,12 @@
   "devDependencies": {
     "@ant-design/icons": "^5.5.2",
     "@tachybase/schema": "workspace:*",
-    "@types/lodash": "4.17.18",
+    "@types/lodash": "4.17.20",
     "antd": "5.22.5",
-    "async-mutex": "^0.3.2",
+    "async-mutex": "^0.5.0",
     "lodash": "4.17.21",
     "mysql2": "^3.14.1",
-    "pg": "^8.13.1",
+    "pg": "^8.16.3",
     "qs": "^6.14.0",
     "react": "~18.3.1",
     "react-i18next": "^15.2.0",

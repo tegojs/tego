@@ -1,7 +1,6 @@
 import { Registry } from '@tachybase/utils/client';
 
 import formulajs from './engines/formulajs';
-import mathjs from './engines/mathjs';
 import string from './engines/string';
 
 export interface Evaluator {
@@ -13,7 +12,6 @@ export interface Evaluator {
 
 export const evaluators = new Registry<Evaluator>();
 
-evaluators.register('math.js', mathjs);
 evaluators.register('formula.js', formulajs);
 evaluators.register('string', string);
 

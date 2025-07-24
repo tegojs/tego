@@ -94,6 +94,6 @@ export class PluginAuthClient extends Plugin {
 
 export { AuthenticatorsContext, useAuthenticator } from './authenticator';
 export type { Authenticator } from './authenticator';
-export { useSignIn } from './basic';
+export { useSignIn, useRedirect } from './basic';
 
 export default PluginAuthClient;

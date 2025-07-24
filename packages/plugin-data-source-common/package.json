@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-data-source-common",
   "displayName": "External DataSource Support",
-  "version": "1.3.17",
+  "version": "1.3.20",
   "description": "Supports more data sources",
   "keywords": [
     "Data sources"
@@ -13,12 +13,12 @@
   "dependencies": {},
   "devDependencies": {
     "@ant-design/icons": "^5.5.2",
-    "@types/lodash": "^4.17.13",
+    "@types/lodash": "^4.17.20",
     "antd": "5.22.5",
     "axios": "1.7.7",
     "lodash": "^4.17.21",
     "mysql2": "^3.14.1",
-    "pg": "^8.13.1",
+    "pg": "^8.16.3",
     "react-i18next": "^15.2.0",
     "react-router-dom": "6.28.1"
   },

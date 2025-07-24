@@ -147,3 +147,16 @@ export async function stopAll(ctx: Context, next: Next) {
     all,
   };
 }
+
+export async function share(ctx: Context, next: Next) {
+  const { filterByTk } = ctx.action.params;
+  const { partners } = ctx.action.params.values;
+
+  const repo = ctx.db.getRepository('applications');
+  await repo.update({
+    filterByTk,
+    values: {
+      partners: partners,
+    },
+  });
+}

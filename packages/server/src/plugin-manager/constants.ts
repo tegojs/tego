@@ -35,7 +35,6 @@ export const EXTERNAL = [
 
   // @tachybase/evaluators
   '@formulajs/formulajs',
-  'mathjs',
 
   // @tachybase/logger
   'winston',

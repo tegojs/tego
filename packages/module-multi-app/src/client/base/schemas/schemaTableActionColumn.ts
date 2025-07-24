@@ -64,5 +64,48 @@ export const tableActionColumnSchema: ISchema = {
         },
       },
     },
+    share: {
+      type: 'void',
+      title: '{{t("Share")}}',
+      'x-component': 'Action.Link',
+      properties: {
+        drawer: {
+          type: 'void',
+          'x-component': 'Action.Drawer',
+          'x-decorator': 'Form',
+          'x-decorator-props': {
+            useValues: '{{ cm.useValuesFromRecord }}',
+          },
+          title: '{{t("Share")}}',
+          properties: {
+            partners: {
+              'x-component': 'CollectionField',
+              'x-decorator': 'FormItem',
+              'x-collection-field': 'applications.partners',
+            },
+            footer: {
+              type: 'void',
+              'x-component': 'Action.Drawer.Footer',
+              properties: {
+                cancel: {
+                  title: '{{t("Cancel")}}',
+                  'x-component': 'Action',
+                  'x-use-component-props': 'useCancelActionProps',
+                },
+                submit: {
+                  title: '{{t("Submit")}}',
+                  'x-action': 'submit',
+                  'x-component': 'Action',
+                  'x-use-component-props': 'useMultiAppUpdateAction',
+                  'x-component-props': {
+                    type: 'primary',
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };

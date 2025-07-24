@@ -13,7 +13,7 @@ import { FormProvider } from '../../core';
 import { useCompile } from '../../hooks';
 import { ActionContextProvider, useActionContext } from '../action';
 import { EllipsisWithTooltip } from '../input/EllipsisWithTooltip';
-import { useAssociationFieldContext, useFieldNames, useInsertSchema } from './hooks';
+import { useAssociationFieldContext, useCustomTitle, useFieldNames, useInsertSchema } from './hooks';
 import { transformNestedData } from './InternalCascadeSelect';
 import schema from './schema';
 import { getLabelFormatValue, useLabelUiSchemaV2 } from './util';
@@ -52,7 +52,7 @@ export const ReadPrettyInternalViewer = observer(
     const isTreeCollection = targetCollection?.template === 'tree';
     const ellipsisWithTooltipRef = useRef<IEllipsisWithTooltipRef>();
     const getLabelUiSchema = useLabelUiSchemaV2();
-    const { formulaRecord, fieldNames } = customTitle(recordCtx, fieldSchema, defFieldNames);
+    const { formulaRecord, fieldNames } = useCustomTitle(recordCtx, fieldSchema, defFieldNames);
     const renderRecords = () =>
       toArr(formulaRecord[fieldSchema['name']] || props.value).map((record, index, arr) => {
         const value = record?.[fieldNames?.label || 'label'];
@@ -163,41 +163,3 @@ export const ReadPrettyInternalViewer = observer(
   },
   { displayName: 'ReadPrettyInternalViewer' },
 );
-
-const customTitle = (record, schema, fieldNames) => {
-  if (schema['x-component-props']?.mode === 'CustomTitle' && schema['x-component-props']?.fieldNames?.formula) {
-    const regex = /{{(.*?)}}/g;
-    const valueOject = {};
-    let outputStr = '';
-    let match;
-    const formula = schema['x-component-props']?.fieldNames?.formula;
-    while ((match = regex.exec(formula))) {
-      if (match[1].includes('.')) {
-        const fieldList = [schema.name];
-        fieldList.push(...match[1].split('.'));
-        const result = { currRecord: record, value: '' };
-        fieldList.forEach((value, index) => {
-          if (fieldList.length - 1 !== index) {
-            result.currRecord = result.currRecord?.[value];
-            return;
-          }
-          result.value = result.currRecord?.[value];
-        });
-        valueOject[match[1]] = result.value ?? '';
-      } else {
-        valueOject[match[1]] = record[schema['name']]?.[match[1]] || '';
-      }
-    }
-    outputStr = replacePlaceholders(formula, valueOject);
-
-    record[schema['name']] = { ...record[schema['name']], customLabel: outputStr };
-    return { formulaRecord: record, fieldNames: { ...fieldNames, label: 'customLabel' } };
-  }
-  return { formulaRecord: record, fieldNames };
-};
-
-const replacePlaceholders = (inputStr, values) => {
-  return inputStr.replace(/{{(.*?)}}/g, function (match, placeholder) {
-    return Object.prototype.hasOwnProperty.call(values, placeholder) ? values[placeholder] : match;
-  });
-};

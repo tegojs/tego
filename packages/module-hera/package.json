@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/module-hera",
   "displayName": "Hera platform - Deprecated",
-  "version": "2.3.17",
+  "version": "2.3.20",
   "description": "Hera platform - Deprecated",
   "keywords": [
     "System management"
@@ -15,14 +15,14 @@
     "@tachybase/components": "workspace:*",
     "@tachybase/schema": "workspace:*",
     "@tachybase/sheet": "1.0.0-alpha.5",
-    "@types/lodash": "~4.17.13",
-    "ahooks": "^3.8.4",
+    "@types/lodash": "~4.17.20",
+    "ahooks": "^3.9.0",
     "antd": "5.22.5",
     "axios": "1.7.7",
     "copy-to-clipboard": "^3.3.3",
     "dayjs": "1.11.13",
     "file-saver": "^2.0.5",
-    "fs-extra": "^11.2.0",
+    "fs-extra": "^11.3.0",
     "lodash": "4.17.21",
     "react": "^18.3.1",
     "react-error-boundary": "^4.1.2",
@@ -30,7 +30,7 @@
     "redis": "^4.7.0",
     "signature_pad": "4.2.0",
     "throttle-debounce": "^5.0.2",
-    "vitest": "^3.0.5",
+    "vitest": "^3.2.4",
     "ws": "^8.18.0"
   },
   "peerDependencies": {

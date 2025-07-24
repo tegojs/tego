@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-auth-wecom",
   "displayName": "Auth: WeCom",
-  "version": "1.3.17",
+  "version": "1.3.20",
   "description": "work WeChat authentication.",
   "keywords": [
     "Authentication"
@@ -13,7 +13,7 @@
   "dependencies": {},
   "devDependencies": {
     "@ant-design/icons": "^5.5.2",
-    "ahooks": "^3.8.4",
+    "ahooks": "^3.9.0",
     "antd": "5.22.5",
     "axios": "1.7.7",
     "react-router-dom": "6.28.1"

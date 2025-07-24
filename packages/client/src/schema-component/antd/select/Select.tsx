@@ -1,4 +1,4 @@
-import { connect, isValid, mapProps, mapReadPretty, toArr } from '@tachybase/schema';
+import { connect, isValid, mapProps, mapReadPretty, toArr, useFieldSchema } from '@tachybase/schema';
 import { isPlainObject } from '@tachybase/utils/client';
 
 import { CloseCircleFilled, CloseOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -99,9 +99,10 @@ const InternalSelect = connect(
   (props: Props) => {
     const { objectValue, loading, value, rawOptions, defaultValue, ...others } = props;
     let mode: any = props.multiple ? 'multiple' : props.mode;
-    if (mode && !['multiple', 'tags'].includes(mode)) {
+    if (mode && !['multiple', 'tags', 'CustomTitle'].includes(mode)) {
       mode = undefined;
     }
+    let options = props.options ? [...props.options] : [];
     if (['CustomTitle'].includes(props.mode) && ('formula' in others.fieldNames || 'collection' in props)) {
       return <FormulaSelect {...props} />;
     }
@@ -126,6 +127,7 @@ const InternalSelect = connect(
       }
       return v;
     };
+
     return (
       <AntdSelect
         // @ts-ignore
@@ -136,6 +138,7 @@ const InternalSelect = connect(
         allowClear={{
           clearIcon: <CloseCircleFilled role="button" aria-label="icon-close-select" />,
         }}
+        options={options}
         popupMatchSelectWidth={false}
         notFoundContent={loading ? <Spin /> : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />}
         value={toValue(value)}

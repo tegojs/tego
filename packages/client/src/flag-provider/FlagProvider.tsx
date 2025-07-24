@@ -22,6 +22,8 @@ export interface FlagProviderProps {
    */
   isInSubForm?: boolean;
   children: any;
+
+  collectionField?: any; //目标赋值的数据表字段
 }
 
 export const FlagContext = React.createContext<Omit<FlagProviderProps, 'children'>>(null);

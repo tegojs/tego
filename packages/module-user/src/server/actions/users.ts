@@ -1,5 +1,9 @@
 import { Context, DEFAULT_PAGE, DEFAULT_PER_PAGE, Next } from '@tachybase/actions';
 
+// import VerificationPlugin from '@tachybase/plugin-otp';
+
+import { namespace } from '..';
+
 export async function updateProfile(ctx: Context, next: Next) {
   const { values } = ctx.action.params;
   const { currentUser } = ctx.state;
@@ -7,6 +11,14 @@ export async function updateProfile(ctx: Context, next: Next) {
     ctx.throw(401);
   }
   const UserRepo = ctx.db.getRepository('users');
+  if (values?.code) {
+    const verificationPlugin: any = ctx.app.getPlugin('otp');
+    try {
+      await verificationPlugin.intercept(ctx, async () => {});
+    } catch (e) {
+      ctx.throw(401, ctx.t('The verification code is incorrect or expired', { ns: namespace }));
+    }
+  }
   const result = await UserRepo.update({
     filterByTk: currentUser.id,
     values,

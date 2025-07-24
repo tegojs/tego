@@ -3,10 +3,11 @@ import { css, useAPIClient } from '@tachybase/client';
 import { useForm } from '@tachybase/schema';
 
 import { Button, Input, message } from 'antd';
-import { useTranslation } from 'react-i18next';
+
+import { useAuthTranslation } from './locale';
 
 export default function VerificationCode({ targetFieldName = 'phone', actionType, value, onChange }) {
-  const { t } = useTranslation();
+  const { t } = useAuthTranslation();
   const api = useAPIClient();
   const form = useForm();
 

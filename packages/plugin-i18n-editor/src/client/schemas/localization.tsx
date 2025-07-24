@@ -218,6 +218,11 @@ export const localizationSchema: ISchema = {
             text: {
               type: 'string',
               'x-component': 'CollectionField',
+              'x-component-props': {
+                style: {
+                  whiteSpace: 'pre-wrap',
+                },
+              },
               'x-read-pretty': true,
             },
           },
@@ -232,6 +237,9 @@ export const localizationSchema: ISchema = {
               'x-component': 'CollectionField',
               'x-component-props': {
                 component: 'TranslationField',
+                style: {
+                  whiteSpace: 'pre-wrap',
+                },
               },
               'x-read-pretty': true,
             },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { isArrayField, isValid, observer, useField } from '@tachybase/schema';
+import { isArrayField, isValid, observer, useField, useFieldSchema } from '@tachybase/schema';
 
 import { Tag } from 'antd';
 
@@ -19,9 +19,14 @@ export const ReadPretty = observer(
       return <div />;
     }
     const collectionField = useCollectionField();
+    const fieldSchema = useFieldSchema();
     const dataSource = field.dataSource || props.options || collectionField?.uiSchema.enum || [];
-    const currentOptions = getCurrentOptions(field.value, dataSource, fieldNames);
-
+    const options = getCurrentOptions(field.value, dataSource, fieldNames);
+    const currentOptions = getFormulaValue(
+      fieldSchema['x-component-props'].fieldNames?.['formula'],
+      options,
+      fieldSchema,
+    );
     return (
       <div>
         <EllipsisWithTooltip ellipsis={props.ellipsis}>
@@ -36,3 +41,14 @@ export const ReadPretty = observer(
   },
   { displayName: 'ReadPretty' },
 );
+
+const getFormulaValue = (template, options, fieldSchema) => {
+  if (!template) {
+    return options;
+  }
+  return options.map((item) => {
+    const label = item.label;
+    const customLabel = template.replace(new RegExp(`{{${fieldSchema['name']}}}`, 'g'), label);
+    return { ...item, label: customLabel };
+  });
+};

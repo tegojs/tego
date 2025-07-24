@@ -1,7 +1,7 @@
 {
   "name": "@tachybase/plugin-field-sequence",
   "displayName": "Collection field: Sequence",
-  "version": "1.3.17",
+  "version": "1.3.20",
   "description": "Automatically generate codes based on configured rules, supporting combinations of dates, numbers, and text.",
   "keywords": [
     "Collection fields"

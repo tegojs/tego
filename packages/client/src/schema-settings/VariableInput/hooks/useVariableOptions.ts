@@ -4,6 +4,7 @@ import { Form, ISchema, Schema } from '@tachybase/schema';
 import { CollectionFieldOptions_deprecated } from '../../../collection-manager';
 import { useBlockCollection } from './useBlockCollection';
 import { useDatetimeVariable } from './useDateVariable';
+import { useExactDateVariable } from './useExactDateVariable';
 import { useFilterVariable } from './useFilterVariable';
 import { useCurrentFormVariable } from './useFormVariable';
 import { useCurrentObjectVariable } from './useIterationVariable';
@@ -64,6 +65,12 @@ export const useVariableOptions = ({
     targetFieldSchema,
   });
   const { datetimeSettings } = useDatetimeVariable({ operator, schema: uiSchema, noDisabled });
+  const { exactDateTimeSettings, shouldDisplayExactDate } = useExactDateVariable({
+    operator,
+    schema: uiSchema,
+    noDisabled: true,
+    targetFieldSchema,
+  });
   const { currentFormSettings, shouldDisplayCurrentForm } = useCurrentFormVariable({
     schema: uiSchema,
     collectionField,
@@ -109,7 +116,8 @@ export const useVariableOptions = ({
     return [
       currentUserSettings,
       currentRoleSettings,
-      datetimeSettings,
+      !shouldDisplayExactDate && datetimeSettings,
+      shouldDisplayExactDate && exactDateTimeSettings,
       shouldDisplayCurrentForm && currentFormSettings,
       shouldDisplayCurrentObject && currentObjectSettings,
       shouldDisplayCurrentRecord && currentRecordSettings,
@@ -121,6 +129,8 @@ export const useVariableOptions = ({
     currentUserSettings,
     currentRoleSettings,
     datetimeSettings,
+    exactDateTimeSettings,
+    shouldDisplayExactDate,
     shouldDisplayCurrentForm,
     currentFormSettings,
     shouldDisplayCurrentObject,

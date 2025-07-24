@@ -45,6 +45,7 @@ export const Input: ComposedInput = Object.assign(
     URL: connect(AntdInput, mapReadPretty(ReadPretty.URL)),
     JSON: connect(Json, mapReadPretty(ReadPretty.JSON)),
     ReadPretty: ReadPretty.Input,
+    Preview: ReadPretty.Preview,
   },
 );
 

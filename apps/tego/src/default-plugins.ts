@@ -21,4 +21,5 @@ export const defaultPlugins = [
   'password-policy',
   'auth-pages',
   'manual-notification',
+  'auth-main-app',
 ];
