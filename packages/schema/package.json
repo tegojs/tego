@@ -10,7 +10,7 @@
   "dependencies": {
     "camel-case": "^4.1.1",
     "hoist-non-react-statics": "^3.3.2",
-    "lower-case": "^2.0.1",
+    "lower-case": "^3.0.0",
     "param-case": "^3.0.4",
     "pascal-case": "^3.1.1",
     "upper-case": "^2.0.1"
