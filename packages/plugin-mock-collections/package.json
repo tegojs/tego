@@ -10,7 +10,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@faker-js/faker": "8.4.1",
+    "@faker-js/faker": "9.9.0",
     "lodash": "4.17.21",
     "pg": "^8.16.3"
   },
