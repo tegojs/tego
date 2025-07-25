@@ -4,6 +4,7 @@ import { operators } from './properties';
 export class IdFieldInterface extends CollectionFieldInterface {
   name = 'id';
   type = 'object';
+  icon = 'FieldNumberOutlined';
   group = 'systemInfo';
   order = 0;
   title = '{{t("ID")}}';

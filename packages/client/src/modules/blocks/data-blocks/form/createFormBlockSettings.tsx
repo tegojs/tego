@@ -9,6 +9,7 @@ import {
   SchemaSettingsFormItemTemplate,
   SchemaSettingsLinkageRules,
 } from '../../../../schema-settings';
+import { SchemaSettingsEditablePage } from '../form-editor/openFormEditablePage';
 
 // TODO: 0.20 版之后可以删除
 export const creationFormBlockSettings = new SchemaSettings({
@@ -102,6 +103,16 @@ export const createFormBlockSettings = new SchemaSettings({
         const { action } = useFormBlockContext();
         return !action;
       },
+      useComponentProps() {
+        const { name } = useCollection_deprecated();
+        return {
+          collectionName: name,
+        };
+      },
+    },
+    {
+      name: 'openEditablePage',
+      Component: SchemaSettingsEditablePage,
       useComponentProps() {
         const { name } = useCollection_deprecated();
         return {

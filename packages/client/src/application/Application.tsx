@@ -29,6 +29,7 @@ import { ComponentTypeAndString, RouterManager, RouterOptions } from './RouterMa
 import { SchemaInitializer, SchemaInitializerManager } from './schema-initializer';
 import * as schemaInitializerComponents from './schema-initializer/components';
 import { SchemaSettings, SchemaSettingsManager } from './schema-settings';
+import { EditableSchemaSettings, EditableSchemaSettingsManager } from './schema-settings-editable';
 import { PluginSettingOptions, SystemSettingsManager } from './SystemSettingsManager';
 import { TrackingManager } from './TrackingManager';
 import { UserSettingOptions, UserSettingsManager } from './UserSettingsManager';
@@ -61,6 +62,7 @@ export interface ApplicationOptions {
   pluginSettings?: Record<string, PluginSettingOptions>;
   userSettings?: Record<string, UserSettingOptions>;
   schemaSettings?: SchemaSettings[];
+  editableSchemaSettings?: EditableSchemaSettings[];
   schemaInitializers?: SchemaInitializer[];
   designable?: boolean;
   loadRemotePlugins?: boolean;
@@ -91,6 +93,7 @@ export class Application {
   public notification;
   public schemaInitializerManager: SchemaInitializerManager;
   public schemaSettingsManager: SchemaSettingsManager;
+  public editableSchemaSettingsManager: EditableSchemaSettingsManager;
   public dataSourceManager: DataSourceManager;
   public noticeManager: NoticeManager;
   public trackingManager: TrackingManager;
@@ -131,6 +134,7 @@ export class Application {
     this.i18n = options.i18n || i18n;
     this.router = new RouterManager(options.router, this);
     this.schemaSettingsManager = new SchemaSettingsManager(options.schemaSettings, this);
+    this.editableSchemaSettingsManager = new EditableSchemaSettingsManager(options.editableSchemaSettings, this);
     this.pluginManager = new PluginManager(options.plugins, options.loadRemotePlugins, this);
     this.schemaInitializerManager = new SchemaInitializerManager(options.schemaInitializers, this);
     this.dataSourceManager = new DataSourceManager(options.dataSourceManager, this);

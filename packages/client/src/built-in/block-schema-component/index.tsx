@@ -20,6 +20,8 @@ import { useDetailsWithPaginationDecoratorProps } from '../../modules/blocks/dat
 import { useDetailsWithPaginationProps } from '../../modules/blocks/data-blocks/details-multi/hooks/useDetailsWithPaginationProps';
 import { useDetailsDecoratorProps } from '../../modules/blocks/data-blocks/details-single/hooks/useDetailsDecoratorProps';
 import { useDetailsProps } from '../../modules/blocks/data-blocks/details-single/hooks/useDetailsProps';
+import { EditableFormItemSchemaToolbar } from '../../modules/blocks/data-blocks/form-editor/EditableFormItemSchemaToolbar';
+import { EditableFormToolbar } from '../../modules/blocks/data-blocks/form-editor/EditableFormToolbar';
 import { FormItemSchemaToolbar } from '../../modules/blocks/data-blocks/form/FormItemSchemaToolbar';
 import { useCreateFormBlockDecoratorProps } from '../../modules/blocks/data-blocks/form/hooks/useCreateFormBlockDecoratorProps';
 import { useCreateFormBlockProps } from '../../modules/blocks/data-blocks/form/hooks/useCreateFormBlockProps';
@@ -56,6 +58,8 @@ export class PluginBlockSchemaComponent extends Plugin {
       BlockSchemaToolbar,
       ActionSchemaToolbar,
       FormItemSchemaToolbar,
+      EditableFormItemSchemaToolbar,
+      EditableFormToolbar,
       CollapseItemSchemaToolbar,
       TableColumnSchemaToolbar,
     });

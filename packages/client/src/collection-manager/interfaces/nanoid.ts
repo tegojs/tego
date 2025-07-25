@@ -3,6 +3,7 @@ import { operators } from './properties';
 
 export class NanoidFieldInterface extends CollectionFieldInterface {
   name = 'nanoid';
+  icon = 'FieldNumberOutlined';
   type = 'object';
   group = 'advanced';
   order = 0;

@@ -4,6 +4,7 @@ import * as antIcons from '@ant-design/icons';
 import AntdIcon, { createFromIconfontCN } from '@ant-design/icons';
 
 import * as preloaded from './preloaded';
+import * as customIcons from './svgIcon';
 
 let IconFont: any;
 
@@ -64,6 +65,11 @@ Icon.register = (icons?: any) => {
 for (const name in preloaded) {
   const PreloadedIcon = (props) => <Icon component={preloaded[name]} {...props} />;
   Icon.register({ [name]: PreloadedIcon });
+}
+
+for (const name in customIcons) {
+  const customIconsIcon = (props) => <Icon component={customIcons[name]} {...props} />;
+  Icon.register({ [name]: customIconsIcon });
 }
 
 export default Icon;
