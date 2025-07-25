@@ -1,0 +1,1 @@
+# @tachybase/plugin-user-manual
