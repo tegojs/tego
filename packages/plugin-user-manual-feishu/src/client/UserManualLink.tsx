@@ -2,7 +2,7 @@ import { Icon, useToken } from '@tachybase/client';
 
 import { Button, Tooltip } from 'antd';
 
-import { USER_MANUAL_PATH_FEISHU } from './contants';
+import { USER_MANUAL_URL_FEISHU } from './contants';
 import { useTranslation } from './locale';
 
 export const UserManualLink = () => {
@@ -21,7 +21,7 @@ export const UserManualLink = () => {
         }
         title={t('User Manual')}
         onClick={() => {
-          window.open(USER_MANUAL_PATH_FEISHU, '_blank', 'noopener,noreferrer');
+          window.open(USER_MANUAL_URL_FEISHU, '_blank', 'noopener,noreferrer');
         }}
       />
     </Tooltip>
