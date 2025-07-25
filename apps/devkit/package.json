@@ -41,7 +41,7 @@
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.0",
     "lodash": "^4.17.21",
-    "npm-packlist": "^10.0.0",
+    "npm-packlist": "^10.0.1",
     "open": "^10.1.2",
     "p-all": "^3.0.0",
     "package-json": "^10.0.1",
