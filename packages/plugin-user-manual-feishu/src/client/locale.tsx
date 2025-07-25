@@ -1,5 +1,7 @@
 import { Application, i18n, tval as nTval, useApp } from '@tachybase/client';
 
+import { type TranslationHook } from './type';
+
 const NAMESPACE = 'user-manual';
 
 export class Locale {
@@ -14,7 +16,7 @@ export class Locale {
   }
 }
 
-export const useTranslation = (): any => {
+export const useTranslation = (): TranslationHook => {
   const { i18n } = useApp();
   const t = (key: string, props = {}) => i18n.t(key, { ns: NAMESPACE, ...props });
   return { t };

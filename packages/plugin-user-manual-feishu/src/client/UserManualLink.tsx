@@ -21,7 +21,7 @@ export const UserManualLink = () => {
         }
         title={t('User Manual')}
         onClick={() => {
-          window.open(USER_MANUAL_PATH_FEISHU, '_blank');
+          window.open(USER_MANUAL_PATH_FEISHU, '_blank', 'noopener,noreferrer');
         }}
       />
     </Tooltip>
