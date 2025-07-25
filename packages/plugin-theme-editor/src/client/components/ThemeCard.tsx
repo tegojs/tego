@@ -27,7 +27,7 @@ const Overview = ({ theme }: { theme: ThemeConfig }) => {
   const { token } = useToken();
 
   return (
-    <ConfigProvider theme={{ ...theme, inherit: false }}>
+    <ConfigProvider theme={{ ...theme, inherit: false }} prefixCls={`${theme.name}-demo`}>
       <div
         style={{
           display: 'flex',
@@ -38,6 +38,7 @@ const Overview = ({ theme }: { theme: ThemeConfig }) => {
           borderRadius: token.borderRadiusLG,
           overflow: 'hidden',
         }}
+        className={`${theme.name}-demo`}
       >
         <Space
           style={{
