@@ -39,3 +39,24 @@ export const useCustomRequestVariableOptions = () => {
     return list;
   }, [fields, userFields]);
 };
+
+export const useCustomRequestVariableRecordOptions = () => {
+  const collection = useCollection_deprecated();
+  const { t } = useTranslation();
+  const fieldsOptions = useCollectionFilterOptions(collection);
+  const userFieldOptions = useCollectionFilterOptions('users');
+  const compile = useCompile();
+
+  const [fields, userFields] = useMemo(() => {
+    return [compile(fieldsOptions), compile(userFieldOptions)];
+  }, [fieldsOptions, userFieldOptions]);
+  const environmentVariables = useGlobalVariable('$env');
+  return useMemo(() => {
+    // 如果environmentVariables为空则返回不包含environmentVariables的数组,如果不为空则返回包含environmentVariables的数组
+    const list = [...fields];
+    if (environmentVariables) {
+      list.unshift(environmentVariables);
+    }
+    return list;
+  }, [fields, userFields]);
+};

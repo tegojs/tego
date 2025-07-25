@@ -93,6 +93,7 @@ export class PluginPresets extends Plugin {
     ['ocr-convert', '1.0.12', false],
     ['text-copy', '1.2.11', false],
     ['user-manual-feishu', '1.3.21', false],
+    ['form-design', '1.3.16', false],
   ];
 
   get localPlugins() {

@@ -19,6 +19,8 @@ export * from './components/CollectionCategory';
 export * from './components/CollectionTemplateTag';
 export * from './ImportCollectionMetaAction';
 
+export * as CMConfigurationComponents from './components';
+
 registerValidateFormats({
   uid: /^[a-zA-Z][a-zA-Z0-9_-]*$/,
 });

@@ -178,5 +178,52 @@ export const CustomRequestConfigurationFieldsSchema = {
         defaultValue: 5000,
       },
     },
+    resultValues: {
+      title: generateNTemplate('Return value setting'),
+      type: 'array',
+      'x-component': 'ArrayItems',
+      'x-decorator': 'FormItem',
+      items: {
+        type: 'object',
+        properties: {
+          space: {
+            type: 'void',
+            'x-component': 'Space',
+            properties: {
+              name: {
+                type: 'string',
+                'x-decorator': 'FormItem',
+                'x-component': 'Select',
+                'x-component-props': {
+                  placeholder: generateNTemplate('Name'),
+                },
+                'x-reactions': ['{{useCustomRequestFields()}}'],
+              },
+              value: {
+                type: 'string',
+                'x-decorator': 'FormItem',
+                'x-component': 'Variable.TextArea',
+                'x-component-props': {
+                  scope: '{{useCustomRequestVariableRecordOptions}}',
+                },
+              },
+              remove: {
+                type: 'void',
+                'x-decorator': 'FormItem',
+                'x-component': 'ArrayItems.Remove',
+              },
+            },
+          },
+        },
+      },
+      properties: {
+        add: {
+          type: 'void',
+          title: generateNTemplate('Add setting fields'),
+          'x-component': 'ArrayItems.Addition',
+        },
+      },
+      'x-visible': '{{useResultValuesVisible()}}',
+    },
   },
 };

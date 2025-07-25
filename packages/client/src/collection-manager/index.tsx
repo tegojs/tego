@@ -5,6 +5,7 @@ export {
   useLinkageCollectionFilterOptions,
   useCollectionFieldsOptions,
   isDeleteButtonDisabled,
+  useCollectionFilterOptionsV2,
 } from './action-hooks';
 export * from './CollectionManagerProvider';
 export * from './CollectionManagerSchemaComponentProvider';

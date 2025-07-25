@@ -58,6 +58,7 @@ const datetimeProperties = {
 export class FormulaFieldInterface extends CollectionFieldInterface {
   name = 'formula';
   type = 'object';
+  icon = 'FunctionOutlined';
   group = 'advanced';
   order = 1;
   title = `{{t("Formula", { ns: "${NAMESPACE}" })}}`;

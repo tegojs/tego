@@ -1,11 +1,16 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
+import { ISchema, Schema, uid, useFieldSchema } from '@tachybase/schema';
 
 import { FormOutlined } from '@ant-design/icons';
 
 import { useSchemaInitializer, useSchemaInitializerItem } from '../../../../application';
 import { useAssociationName } from '../../../../data-source/collection/AssociationProvider';
 import { Collection, CollectionFieldOptions } from '../../../../data-source/collection/Collection';
+import { useDesignable, useSchemaComponentContext } from '../../../../schema-component';
 import { DataBlockInitializer } from '../../../../schema-initializer/items/DataBlockInitializer';
+import { findSchema } from '../../../../schema-initializer/utils';
+import { createCreateFormEditUISchema, EditableSelectedFieldProvider, FormSchemaEditor } from '../form-editor';
+import { EditableSelectedFormProvider } from '../form-editor/EditableSelectedFormContent';
 import { createCreateFormBlockUISchema } from './createCreateFormBlockUISchema';
 
 export const FormBlockInitializer = ({
@@ -48,41 +53,54 @@ export const FormBlockInitializer = ({
   /** 用于更改 Other records 的文案 */
   otherText?: string;
 }) => {
+  const [visible, setVisible] = useState(false);
+  const [pendingOptions, setPendingOptions] = useState<any>(null);
+  const schemaUID = pendingOptions?.schema['x-uid'] || null;
   const itemConfig = useSchemaInitializerItem();
-  const { createFormBlock, templateWrap } = useCreateFormBlock();
-  const onCreateFormBlockSchema = useCallback(
-    (options) => {
-      if (createBlockSchema) {
-        return createBlockSchema(options);
-      }
+  const { createFormBlock, templateWrap, createEditFormBlock } = useCreateFormBlock();
+  const onCreateFormBlockSchema = useCallback((options) => {
+    if (createBlockSchema) {
+      return createBlockSchema(options);
+    }
+    const schema = new Schema(createEditFormBlock(options));
+    setPendingOptions({ schema, ...options });
+    setVisible(true);
+  }, []);
 
-      createFormBlock(options);
-    },
-    [createBlockSchema, createFormBlock],
-  );
+  const handleClose = () => {
+    setVisible(false);
+    setPendingOptions(null);
+  };
 
   return (
-    <DataBlockInitializer
-      {...itemConfig}
-      icon={<FormOutlined />}
-      componentType={componentType}
-      templateWrap={(templateSchema, options) => {
-        if (customizeTemplateWrap) {
-          return customizeTemplateWrap(templateSchema, options);
-        }
+    <>
+      <DataBlockInitializer
+        {...itemConfig}
+        icon={<FormOutlined />}
+        componentType={componentType}
+        templateWrap={(templateSchema, options) => {
+          if (customizeTemplateWrap) {
+            return customizeTemplateWrap(templateSchema, options);
+          }
 
-        return templateWrap(templateSchema, options);
-      }}
-      onCreateBlockSchema={onCreateFormBlockSchema}
-      filter={filterCollections}
-      onlyCurrentDataSource={onlyCurrentDataSource}
-      hideSearch={hideSearch}
-      showAssociationFields={showAssociationFields}
-      hideChildrenIfSingleCollection={hideChildrenIfSingleCollection}
-      hideOtherRecordsInPopup={hideOtherRecordsInPopup}
-      currentText={currentText}
-      otherText={otherText}
-    />
+          return templateWrap(templateSchema, options);
+        }}
+        onCreateBlockSchema={onCreateFormBlockSchema}
+        filter={filterCollections}
+        onlyCurrentDataSource={onlyCurrentDataSource}
+        hideSearch={hideSearch}
+        showAssociationFields={showAssociationFields}
+        hideChildrenIfSingleCollection={hideChildrenIfSingleCollection}
+        hideOtherRecordsInPopup={hideOtherRecordsInPopup}
+        currentText={currentText}
+        otherText={otherText}
+      />
+      <EditableSelectedFormProvider>
+        <EditableSelectedFieldProvider>
+          <FormSchemaEditor key={schemaUID} open={visible} onCancel={handleClose} options={pendingOptions} />
+        </EditableSelectedFieldProvider>
+      </EditableSelectedFormProvider>
+    </>
   );
 };
 
@@ -136,8 +154,48 @@ export const useCreateFormBlock = () => {
     return schema;
   };
 
+  const createEditFormBlock = ({ item, fromOthersInPopup }) => {
+    const schema = fromOthersInPopup
+      ? createCreateFormEditUISchema({
+          collectionName: item.collectionName || item.name,
+          dataSource: item.dataSource,
+          isCusomeizeCreate: true,
+        })
+      : createCreateFormEditUISchema(
+          association
+            ? {
+                association,
+                dataSource: item.dataSource,
+                isCusomeizeCreate: isCustomizeCreate,
+              }
+            : {
+                collectionName: item.collectionName || item.name,
+                dataSource: item.dataSource,
+                isCusomeizeCreate: isCustomizeCreate,
+              },
+        );
+    return gridRowColWrap(schema);
+  };
+
   return {
     createFormBlock,
     templateWrap,
+    createEditFormBlock,
+  };
+};
+
+const gridRowColWrap = (schema: ISchema) => {
+  return {
+    type: 'void',
+    'x-component': 'Grid.Row',
+    properties: {
+      [uid()]: {
+        type: 'void',
+        'x-component': 'Grid.Col',
+        properties: {
+          [schema.name || uid()]: schema,
+        },
+      },
+    },
   };
 };

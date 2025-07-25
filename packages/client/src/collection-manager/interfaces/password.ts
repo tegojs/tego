@@ -6,6 +6,7 @@ export class PasswordFieldInterface extends CollectionFieldInterface {
   name = 'password';
   type = 'object';
   group = 'basic';
+  icon = 'LockOutlined';
   order = 9;
   title = '{{t("Password")}}';
   default = {

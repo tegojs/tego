@@ -48,6 +48,8 @@ export {
   RecordScope,
   RecordsScope,
   useParentForm,
+  SchemaMarkupContext,
+  ContextCleaner,
 } from './react';
 export * from './reactive';
 export * from './reactive-react';

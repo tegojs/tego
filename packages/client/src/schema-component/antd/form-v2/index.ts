@@ -12,3 +12,4 @@ export { DetailsDesigner, FormV2, fetchTemplateData };
 export type { ITemplate };
 export * from './Form.Settings';
 export * from './FormField';
+export { getTempFieldState } from './utils';

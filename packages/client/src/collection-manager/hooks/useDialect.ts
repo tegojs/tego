@@ -1,6 +1,6 @@
 import { useCurrentAppInfo } from '../../common';
 
-const useDialect = () => {
+export const useDialect = () => {
   const {
     data: { database },
   } = useCurrentAppInfo();

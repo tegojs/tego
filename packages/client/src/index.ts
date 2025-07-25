@@ -50,3 +50,5 @@ export * from 'react-i18next';
 export { useHotkeys } from 'react-hotkeys-hook';
 
 export * from './modules/blocks/useParentRecordCommon';
+
+export { findSchema as findSchemaUtils, removeGridFormItem } from './schema-initializer/utils';

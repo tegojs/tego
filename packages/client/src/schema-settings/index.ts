@@ -17,3 +17,6 @@ export * from './EditCustomDefaultValue';
 export * from './hooks/useParseDataScopeFilter';
 export * from './SchemaSettingsPlugin';
 export * from './VariableInput';
+export { FormLinkageRules } from './LinkageRules';
+export { ActionType } from './LinkageRules/type';
+export { useLinkageCollectionFieldOptions } from './LinkageRules/action-hooks';

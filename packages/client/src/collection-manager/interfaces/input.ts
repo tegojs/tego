@@ -13,6 +13,7 @@ registerValidateRules({
 export class InputFieldInterface extends CollectionFieldInterface {
   name = 'input';
   type = 'object';
+  icon = 'inputField';
   group = 'basic';
   order = 1;
   title = '{{t("Single line text")}}';
