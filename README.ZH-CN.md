@@ -1,3 +1,10 @@
+> ⚠️ **注意：本仓库正在进行重构，不建议当前使用。**
+>
+> 如果你希望继续使用旧版本的插件体系和前端集成方式，请移步：
+>
+> 🔗 [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
+>
+> 在重构完成之前，`tego-standard` 仓库将保留旧的使用方式与插件集合。
 <h1 align="center" style="border-bottom: none">
     <div>
         <a style="color:#36f" href="https://www.tachybase.com">
