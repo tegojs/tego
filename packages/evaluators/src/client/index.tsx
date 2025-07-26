@@ -12,6 +12,8 @@ export interface Evaluator {
 
 export const evaluators = new Registry<Evaluator>();
 
+export { evaluate, appendArrayColumn } from '../utils';
+
 evaluators.register('formula.js', formulajs);
 evaluators.register('string', string);
 
