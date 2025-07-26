@@ -12,6 +12,8 @@ export default (cli: Command) => {
       if (hasTsNode()) {
         promptForTs();
       }
+      // FIXME
+      process.env.IS_DEV_CMD = 'true';
       await runAppCommand('upgrade');
     });
 };

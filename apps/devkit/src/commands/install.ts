@@ -12,6 +12,7 @@ export default (cli: Command) => {
       if (hasTsNode()) {
         promptForTs();
       }
+      process.env.IS_DEV_CMD = 'true';
       await runAppCommand('install');
     });
 };
