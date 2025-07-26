@@ -11,7 +11,7 @@
 <br>
 
 <p align="center">
-  灵矶是一个插件化的应用框架，应用开发者可以基于灵矶做出丰富应用逻辑，而核心开发者可以聚焦于关键模块的稳定性和对不同环境的适配。
+灵矶是一个可插拔的 Node.js 框架，用于构建可定制的开发平台。它使开发者能够创建属于自己的无代码/低代码系统或事件驱动应用程序，同时其核心专注于稳定性与环境适应性。
 </p>
 <p align="center">
    <img alt="GitHub License" src="https://img.shields.io/github/license/tegojs/tego">
@@ -22,12 +22,6 @@
    <a href="https://gitee.com/tachybase/tachybase"><img alt="Static Badge" src="https://img.shields.io/badge/gitee-green"></a>
    <a href="https://github.com/tegojs/tego"><img alt="Static Badge" src="https://img.shields.io/badge/Github-lightblack"></a>
 </p>
-
-# 系统试用
-
-[SaaS 版本](https://apps.tachybase.com/) 
-
-可以自行注册账号密码，在内部建立子应用体验，目前系统处于公测阶段，有任何问题可以及时反馈，我们会在收到的第一时间解决。
 
 # 快速开始
 
@@ -58,10 +52,6 @@ npx tego start --quickstart
 # 开源许可证
 
 本项目遵循  [Apache 2.0](LICENSE) 开源许可证。
-
-# 第三方代码声明
-
-项目中包含大量来自第三方库的代码，例如 RequireJS、JsonLogic、NocoBase、Formily 和 Ant Design。这些代码遵循其原有的版权和协议要求。未来会逐步进行重构和替换，在项目早期使用时请注意相关授权要求。
 
 # 贡献
 

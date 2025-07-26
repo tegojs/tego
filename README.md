@@ -11,7 +11,7 @@
 <br>
 
 <p align="center">
-  Tego is a pluggable application framework., where developers can build complex application logic, while core developers focus on ensuring the stability of key modules and adapting to different environments. 
+Tego is a pluggable Node.js framework for building customizable development platforms. It enables developers to create their own no-code/low-code systems or event-driven applications, while the core focuses on stability and environment adaptability.
 </p>
 <p align="center">
    <img alt="GitHub License" src="https://img.shields.io/github/license/tegojs/tego">
@@ -22,12 +22,6 @@
    <a href="https://gitee.com/tachybase/tachybase"><img alt="Static Badge" src="https://img.shields.io/badge/gitee-green"></a>
    <a href="https://github.com/tegojs/tego"><img alt="Static Badge" src="https://img.shields.io/badge/Github-lightblack"></a>
 </p>
-
-# Try
-
-[SaaS Version](https://apps.tachybase.com/) 
-
-You can register an account and password by yourself and create sub-applications within the system to try it out. The system is currently in public beta. If you encounter any issues, feel free to provide feedback, and we will address them as soon as possible.
 
 # Quick Start
 
@@ -58,10 +52,6 @@ npx tego start --quickstart
 # License
 
 This project is licensed under the [Apache 2.0](LICENSE) License。
-
-# Third-party Code Notice
-
-The project includes a significant amount of code from third-party libraries such as RequireJS、JsonLogic、NocoBase、Formily and Ant Design. This code adheres to their original licenses and agreements. It will be gradually rewritten in the future. Please be mindful of this when using it in the early stages of the project.
 
 # Contributing
 
