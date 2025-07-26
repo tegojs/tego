@@ -1,3 +1,11 @@
+> ⚠️ **Caution: This repository is under active refactoring and is not recommended for current use.**
+>
+> If you are looking for the previous version of Tego with the original plugin setup and frontend integration, please refer to:
+>
+> 🔗 [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
+>
+> That repository maintains the older usage pattern and plugin collection during the ongoing restructuring of this core package.
+
 <h1 align="center" style="border-bottom: none">
     <div>
         <a style="color:#36f" href="https://www.tachybase.com">
