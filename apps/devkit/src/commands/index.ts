@@ -8,7 +8,7 @@ import createPlugin from './create-plugin';
 import dev from './dev';
 import e2e from './e2e';
 import global from './global';
-import init from './init';
+import install from './install';
 import postinstall from './postinstall';
 import tar from './tar';
 import test from './test';
@@ -25,7 +25,7 @@ export default async (cli: Command) => {
   clean(cli);
   test(cli);
   upgrade(cli);
+  install(cli);
   postinstall(cli);
   createPlugin(cli);
-  init(cli);
 };
