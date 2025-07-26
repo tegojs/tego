@@ -193,7 +193,7 @@ export async function runInstall() {
   }
 }
 
-export async function runAppCommand(command: string, args = []) {
+export async function runAppCommand(command: string, args: string[] = []) {
   const { APP_SERVER_ROOT, SERVER_TSCONFIG_PATH } = process.env;
 
   if (!SERVER_TSCONFIG_PATH) {

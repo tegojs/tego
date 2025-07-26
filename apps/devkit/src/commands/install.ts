@@ -13,6 +13,6 @@ export default (cli: Command) => {
         promptForTs();
       }
       process.env.IS_DEV_CMD = 'true';
-      await runAppCommand('install');
+      await runAppCommand('install', process.argv.slice(2));
     });
 };
