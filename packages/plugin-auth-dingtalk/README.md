@@ -1,1 +1,0 @@
-# @tachybase/plugin-dingding

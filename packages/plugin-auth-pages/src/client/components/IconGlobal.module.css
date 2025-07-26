@@ -1,9 +1,0 @@
-.icon-globe {
-  display: inline-block;
-  width: 36px;
-  height: 36px;
-  background: url('../assets/images/global.svg') no-repeat center center;
-  background-size: contain;
-  vertical-align: middle;
-  transform: translateX(15px);
-}

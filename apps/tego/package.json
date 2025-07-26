@@ -77,9 +77,6 @@
     "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
-    "@tachybase/cache": "workspace:*",
-    "@tachybase/client": "workspace:*",
-    "@tachybase/logger": "workspace:*",
     "@types/lodash": "4.17.20",
     "@yao-pkg/pkg": "6.5.1"
   },

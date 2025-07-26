@@ -1,4 +1,0 @@
-{
-  "notNull Violation": "{{field}} はNullにできません",
-  "unique violation": "{{field}} は一意でなくてはなりません"
-}

@@ -1,1 +1,0 @@
-# @tachybase/plugin-api-logs

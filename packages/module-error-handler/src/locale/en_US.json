@@ -1,6 +1,0 @@
-{
-  "Validation error": "{{field}} validation error",
-  "notNull Violation": "{{field}} cannot be null",
-  "notNull violation": "notNull violation",
-  "unique violation": "{{field}} must be unique"
-}
