@@ -50,9 +50,6 @@ importers:
       '@types/react':
         specifier: 18.3.23
         version: 18.3.23
-      '@types/react-dom':
-        specifier: 18.3.7
-        version: 18.3.7(@types/react@18.3.23)
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -83,9 +80,6 @@ importers:
       react:
         specifier: 18.3.1
         version: 18.3.1
-      react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
       tego:
         specifier: workspace:*
         version: link:packages/tego
@@ -243,6 +237,9 @@ importers:
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
       react-modal:
         specifier: ^3.16.3
         version: 3.16.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -942,9 +939,6 @@ importers:
       react:
         specifier: 18.3.1
         version: 18.3.1
-      react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
       sequelize:
         specifier: 6.37.7
         version: 6.37.7(mysql2@3.14.1)(pg@8.16.3)(sqlite3@5.1.7)
@@ -11636,6 +11630,7 @@ snapshots:
   '@types/react-dom@18.3.7(@types/react@18.3.23)':
     dependencies:
       '@types/react': 18.3.23
+    optional: true
 
   '@types/react@18.3.23':
     dependencies:
