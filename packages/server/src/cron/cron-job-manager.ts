@@ -1,6 +1,28 @@
-import { CronJob, CronJobParameters } from 'cron';
-
 import Application from '../application';
+
+export interface CronJobParameters {
+  cronTime: string;
+  onTick: () => void;
+  start?: boolean;
+  timeZone?: string;
+  context?: any;
+}
+
+export class CronJob {
+  constructor(params: CronJobParameters) {
+    if (params.start !== false) {
+      this.start();
+    }
+  }
+
+  start() {
+    console.log('Mock CronJob started');
+  }
+
+  stop() {
+    console.log('Mock CronJob stopped');
+  }
+}
 
 export class CronJobManager {
   private _jobs: Set<CronJob> = new Set();

@@ -27,8 +27,6 @@
     "chalk": "^4.1.2",
     "commander": "^9.5.0",
     "compression": "^1.7.5",
-    "cron": "^2.4.4",
-    "cronstrue": "^2.52.0",
     "dayjs": "1.11.13",
     "decompress": "4.2.1",
     "execa": "^5.1.1",

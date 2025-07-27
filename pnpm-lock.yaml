@@ -333,9 +333,6 @@ importers:
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
-      cron-parser:
-        specifier: 4.9.0
-        version: 4.9.0
       dayjs:
         specifier: 1.11.13
         version: 1.11.13
@@ -731,12 +728,6 @@ importers:
       compression:
         specifier: ^1.7.5
         version: 1.7.5
-      cron:
-        specifier: ^2.4.4
-        version: 2.4.4
-      cronstrue:
-        specifier: ^2.52.0
-        version: 2.52.0
       dayjs:
         specifier: 1.11.13
         version: 1.11.13
@@ -3712,9 +3703,6 @@ packages:
   '@types/lodash@4.17.20':
     resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
 
-  '@types/luxon@3.3.7':
-    resolution: {integrity: sha512-gKc9P2d4g5uYwmy4s/MO/yOVPmvHyvzka1YH6i5dM03UrFofHSmgc0D0ymbDRStFWHusk6cwwF6nhLm/ckBbbQ==}
-
   '@types/memcached@2.2.10':
     resolution: {integrity: sha512-AM9smvZN55Gzs2wRrqeMHVP7KE8KWgCJO/XL5yCly2xF6EKa4YlbpK+cLSAH4NG/Ah64HrlegmGqW8kYws7Vxg==}
 
@@ -4645,17 +4633,6 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
-
-  cron-parser@4.9.0:
-    resolution: {integrity: sha512-p0SaNjrHOnQeR8/VnfGbmg9te2kfyYSQ7Sc/j/6DtPL3JQvKxmjO9TSjNFpujqV3vEYYBvNNvXSxzyksBWAx1Q==}
-    engines: {node: '>=12.0.0'}
-
-  cron@2.4.4:
-    resolution: {integrity: sha512-MHlPImXJj3K7x7lyUHjtKEOl69CSlTOWxS89jiFgNkzXfvhVjhMz/nc7/EIfN9vgooZp8XTtXJ1FREdmbyXOiQ==}
-
-  cronstrue@2.52.0:
-    resolution: {integrity: sha512-NKgHbWkSZXJUcaBHSsyzC8eegD6bBd4O0oCI6XMIJ+y4Bq3v4w7sY3wfWoKPuVlq9pQHRB6od0lmKpIqi8TlKA==}
-    hasBin: true
 
   cross-spawn@6.0.6:
     resolution: {integrity: sha512-VqCUuhcd1iB+dsv8gxPttb5iZh/D0iubSP21g36KXdEuf6I5JiioesUVjpCdHV9MZRUfVFlvwtIUyPfxo5trtw==}
@@ -6084,14 +6061,6 @@ packages:
   lru.min@1.1.2:
     resolution: {integrity: sha512-Nv9KddBcQSlQopmBHXSsZVY5xsdlZkdH/Iey0BlcBYggMd4two7cZnKOK9vmy3nY0O5RGH99z1PCeTpPqszUYg==}
     engines: {bun: '>=1.0.0', deno: '>=1.30.0', node: '>=8.0.0'}
-
-  luxon@3.3.0:
-    resolution: {integrity: sha512-An0UCfG/rSiqtAIiBPO0Y9/zAnHUZxAMiCpTd5h2smgsj7GGmcenvrvww2cqNA8/4A5ZrD1gJpHN2mIHZQF+Mg==}
-    engines: {node: '>=12'}
-
-  luxon@3.5.0:
-    resolution: {integrity: sha512-rh+Zjr6DNfUYR3bPwJEnuwDdqMbxZW7LOQfUN4B54+Cl+0o5zaU9RJ6bcidfDtC1cWCZXQ+nvX8bf6bAji37QQ==}
-    engines: {node: '>=12'}
 
   luxon@3.7.1:
     resolution: {integrity: sha512-RkRWjA926cTvz5rAb1BqyWkKbbjzCGchDUIKMCUvNi17j6f6j8uHGDV82Aqcqtzd+icoYpELmG3ksgGiFNNcNg==}
@@ -11514,8 +11483,6 @@ snapshots:
 
   '@types/lodash@4.17.20': {}
 
-  '@types/luxon@3.3.7': {}
-
   '@types/memcached@2.2.10':
     dependencies:
       '@types/node': 20.17.10
@@ -12679,17 +12646,6 @@ snapshots:
       parse-json: 5.2.0
     optionalDependencies:
       typescript: 5.8.3
-
-  cron-parser@4.9.0:
-    dependencies:
-      luxon: 3.5.0
-
-  cron@2.4.4:
-    dependencies:
-      '@types/luxon': 3.3.7
-      luxon: 3.3.0
-
-  cronstrue@2.52.0: {}
 
   cross-spawn@6.0.6:
     dependencies:
@@ -14212,10 +14168,6 @@ snapshots:
   lru-cache@7.18.3: {}
 
   lru.min@1.1.2: {}
-
-  luxon@3.3.0: {}
-
-  luxon@3.5.0: {}
 
   luxon@3.7.1:
     optional: true
