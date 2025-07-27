@@ -95,10 +95,10 @@ jobs:
         with:
           tag_name: ${{ needs.release.outputs.version }}
           files: |
-            apps/tego/dist/tego-linux-x64
-            apps/tego/dist/tego-macos-x64
-            apps/tego/dist/tego-win-x64.exe
-            apps/tego/dist/tego-linux-arm64
-            apps/tego/dist/tego-macos-arm64
+            packages/tego/dist/tego-linux-x64
+            packages/tego/dist/tego-macos-x64
+            packages/tego/dist/tego-win-x64.exe
+            packages/tego/dist/tego-linux-arm64
+            packages/tego/dist/tego-macos-arm64
 
 
