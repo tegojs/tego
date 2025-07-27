@@ -1,5 +1,5 @@
 {
   "name": "@tachybase/empty-ts-command-line",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "lib/index.js"
 }
