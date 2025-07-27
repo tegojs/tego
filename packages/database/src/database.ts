@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events';
-import { basename, isAbsolute, resolve } from 'path';
+import { EventEmitter } from 'node:events';
+import { basename, isAbsolute, resolve } from 'node:path';
 import { createConsoleLogger, createLogger, Logger, LoggerOptions } from '@tachybase/logger';
 import { applyMixins, AsyncEmitter } from '@tachybase/utils';
 

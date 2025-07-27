@@ -1,4 +1,4 @@
-import stream from 'stream';
+import stream from 'node:stream';
 import { Context, Next } from '@tachybase/actions';
 
 export function dataWrapping() {
@@ -22,7 +22,7 @@ export function dataWrapping() {
     }
 
     if (!ctx.body) {
-      if (ctx.action?.actionName == 'get') {
+      if (ctx.action?.actionName === 'get') {
         ctx.status = 200;
       }
     }

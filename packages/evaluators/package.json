@@ -27,9 +27,6 @@
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "scripts": {
-    "build": "tachybase-build --no-dts @tachybase/evaluators"
-  },
   "dependencies": {
     "@formulajs/formulajs": "4.5.3",
     "@tachybase/utils": "workspace:*",

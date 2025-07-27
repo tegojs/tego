@@ -10,7 +10,7 @@ import { vi } from 'vitest';
  */
 import 'jsdom-worker';
 
-import path from 'path';
+import path from 'node:path';
 
 configure({ asyncUtilTimeout: 30000 });
 dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });

@@ -26,9 +26,6 @@
   },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "tachybase-build --no-dts @tachybase/utils"
-  },
   "dependencies": {
     "@hapi/topo": "^6.0.2",
     "@rc-component/mini-decimal": "^1.1.0",

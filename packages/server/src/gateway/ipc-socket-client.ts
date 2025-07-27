@@ -1,5 +1,5 @@
-import * as events from 'events';
-import net from 'net';
+import * as events from 'node:events';
+import net from 'node:net';
 import { createConsoleLogger, Logger } from '@tachybase/logger';
 
 import xpipe from 'xpipe';

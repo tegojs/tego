@@ -39,9 +39,6 @@
   "main": "lib/index.js",
   "module": "./src/index.ts",
   "types": "./lib/index.d.ts",
-  "scripts": {
-    "build": "tachybase-build --no-dts @tachybase/test"
-  },
   "dependencies": {
     "@faker-js/faker": "9.9.0",
     "@playwright/test": "^1.49.1",

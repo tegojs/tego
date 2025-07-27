@@ -1,6 +1,6 @@
-import http from 'http';
-import path from 'path';
-import url from 'url';
+import http from 'node:http';
+import path from 'node:path';
+import url from 'node:url';
 
 import dotenv from 'dotenv';
 import mariadb from 'mariadb';

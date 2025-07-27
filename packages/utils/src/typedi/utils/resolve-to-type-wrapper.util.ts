@@ -13,8 +13,8 @@ import { ServiceIdentifier } from '../types/service-identifier.type';
  */
 export function resolveToTypeWrapper(
   typeOrIdentifier: ((type?: never) => Constructable<unknown>) | ServiceIdentifier<unknown> | undefined,
-  target: Object,
-  propertyName: string | Symbol,
+  target: object,
+  propertyName: string | symbol,
   index?: number,
 ): { eagerType: ServiceIdentifier | null; lazyType: (type?: never) => ServiceIdentifier } {
   /**

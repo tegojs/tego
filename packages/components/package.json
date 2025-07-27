@@ -4,9 +4,6 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "tachybase-build --no-dts @tachybase/components"
-  },
   "dependencies": {
     "@ant-design/cssinjs": "^1.22.1",
     "@ant-design/icons": "^5.5.2",

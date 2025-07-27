@@ -36,7 +36,7 @@ export const createConsoleLogger = (options?: winston.LoggerOptions) => {
       }),
       format || consoleFormat,
     ),
-    ...(rest || {}),
+    ...rest,
     transports: [new winston.transports.Console()],
   });
 };

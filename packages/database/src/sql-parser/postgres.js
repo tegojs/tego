@@ -1953,7 +1953,7 @@ function peg$parse(input, options) {
       column: c,
       definition: d,
       resource: 'column',
-      ...(cdo || {}),
+      ...cdo,
     };
   };
   var peg$f73 = function (n, df) {
@@ -3240,7 +3240,7 @@ function peg$parse(input, options) {
       distinct: d,
       columns: c,
       into: {
-        ...(ci || fi || li || {}),
+        ...(ci || fi || li),
         position: (ci && 'column') || (fi && 'from') || (li && 'end'),
       },
       from: f,

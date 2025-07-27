@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { applyMixins, AsyncEmitter } from '@tachybase/utils';
 
 import { Mutex } from 'async-mutex';

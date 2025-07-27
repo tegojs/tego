@@ -1,4 +1,4 @@
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { Database, Migration, mockDatabase } from '@tachybase/database';
 
 import { vi } from 'vitest';

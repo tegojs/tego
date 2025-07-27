@@ -5,9 +5,6 @@
   "license": "Apache-2.0",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
-  "scripts": {
-    "build": "tachybase-build --no-dts @tachybase/logger"
-  },
   "dependencies": {
     "chalk": "^4.1.2",
     "koa": "^2.15.3",

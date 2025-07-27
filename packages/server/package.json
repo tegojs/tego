@@ -4,9 +4,6 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "types": "./lib/index.d.ts",
-  "scripts": {
-    "build": "tachybase-build --no-dts @tachybase/server"
-  },
   "dependencies": {
     "@hapi/topo": "^6.0.2",
     "@koa/cors": "^5.0.0",

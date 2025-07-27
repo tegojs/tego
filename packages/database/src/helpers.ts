@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 
 import semver from 'semver';
 
@@ -63,7 +63,7 @@ function extractSSLOptionsFromEnv() {
 
 export async function parseDatabaseOptionsFromEnv(): Promise<IDatabaseOptions> {
   const databaseOptions: IDatabaseOptions = {
-    logging: process.env.DB_LOGGING == 'on' ? customLogger : false,
+    logging: process.env.DB_LOGGING === 'on' ? customLogger : false,
     dialect: process.env.DB_DIALECT as any,
     storage: process.env.DB_STORAGE,
     username: process.env.DB_USER,

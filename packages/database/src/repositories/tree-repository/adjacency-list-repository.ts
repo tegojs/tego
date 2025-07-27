@@ -34,7 +34,7 @@ export class AdjacencyListRepository extends Repository {
 
   async update(options): Promise<any> {
     return super.update({
-      ...(options || {}),
+      ...options,
       addIndex: false,
     });
   }
@@ -63,7 +63,7 @@ export class AdjacencyListRepository extends Repository {
 
     const parentIds = parentNodes.map((node) => node[primaryKey]);
 
-    if (parentIds.length == 0) {
+    if (parentIds.length === 0) {
       this.database.logger.warn('parentIds is empty');
       return parentNodes;
     }

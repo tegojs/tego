@@ -1,4 +1,4 @@
-import REPL from 'repl';
+import REPL from 'node:repl';
 
 import Application from '../application';
 
