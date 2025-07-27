@@ -1,4 +1,4 @@
-import { randomUUID } from 'crypto';
+import { randomUUID } from 'node:crypto';
 
 import Koa from 'koa';
 import { pick } from 'lodash';
@@ -56,10 +56,10 @@ export function createAppLogger(options: AppLoggerOptions = {}) {
     } finally {
       info['res'] = ctx.response.toJSON();
       // info['status'] = ctx.status;
-      if (Math.floor(ctx.status / 100) == 5) {
+      if (Math.floor(ctx.status / 100) === 5) {
         info.level = 'error';
         info['errors'] = ctx.body?.['errors'] || ctx.body;
-      } else if (Math.floor(ctx.status / 100) == 4) {
+      } else if (Math.floor(ctx.status / 100) === 4) {
         info.level = 'warn';
         info['errors'] = ctx.body?.['errors'] || ctx.body;
       }

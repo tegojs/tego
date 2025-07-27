@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 
 import merge from 'deepmerge';
 import { default as _, default as lodash } from 'lodash';

@@ -1,4 +1,4 @@
-import { EventEmitter } from 'events';
+import { EventEmitter } from 'node:events';
 import { applyMixins, AsyncEmitter, uid } from '@tachybase/utils';
 
 import { IPubSubAdapter } from './types';

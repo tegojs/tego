@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import { DataTypes } from 'sequelize';
 
@@ -31,7 +31,7 @@ export class PasswordField extends Field {
       const key = hash.substring(randomBytesSize * 2);
       crypto.scrypt(password, salt, length / 2 - randomBytesSize, (err, derivedKey) => {
         if (err) reject(err);
-        resolve(key == derivedKey.toString('hex'));
+        resolve(key === derivedKey.toString('hex'));
       });
     });
   }

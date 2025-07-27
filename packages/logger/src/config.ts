@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 export const getLoggerLevel = () =>
   process.env.LOGGER_LEVEL || (process.env.APP_ENV === 'development' ? 'debug' : 'info');

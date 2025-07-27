@@ -194,11 +194,11 @@ export class MockServer extends Application {
 
 export function mockServer(options: ApplicationOptions = {}) {
   if (typeof TextEncoder === 'undefined') {
-    global.TextEncoder = require('util').TextEncoder;
+    global.TextEncoder = require('node:util').TextEncoder;
   }
 
   if (typeof TextDecoder === 'undefined') {
-    global.TextDecoder = require('util').TextDecoder;
+    global.TextDecoder = require('node:util').TextDecoder;
   }
 
   Gateway.getInstance().reset();

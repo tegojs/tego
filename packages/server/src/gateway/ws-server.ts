@@ -1,4 +1,4 @@
-import { IncomingMessage } from 'http';
+import { IncomingMessage } from 'node:http';
 import { Logger } from '@tachybase/logger';
 
 import lodash from 'lodash';

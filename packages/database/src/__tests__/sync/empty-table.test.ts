@@ -1,4 +1,4 @@
-import * as process from 'process';
+import * as process from 'node:process';
 import { Database, mockDatabase } from '@tachybase/database';
 
 describe('empty table', () => {
@@ -69,7 +69,7 @@ describe('empty table', () => {
     });
   });
 
-  it.skipIf(process.env['DB_DIALECT'] == 'sqlite')('should add primary key field into empty table', async () => {
+  it.skipIf(process.env['DB_DIALECT'] === 'sqlite')('should add primary key field into empty table', async () => {
     const empty = db.collection({
       name: 'empty',
       autoGenId: false,

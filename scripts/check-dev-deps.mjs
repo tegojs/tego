@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 // 查找指定路径下的所有文件夹名称，并获取其中的 package.json 文件
 async function checkFoldersAndPackageJson(dirs, mainVersion) {

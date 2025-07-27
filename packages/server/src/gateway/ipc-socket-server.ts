@@ -1,7 +1,7 @@
-import { randomUUID } from 'crypto';
-import fs from 'fs';
-import net from 'net';
-import path from 'path';
+import { randomUUID } from 'node:crypto';
+import fs from 'node:fs';
+import net from 'node:net';
+import path from 'node:path';
 
 import xpipe from 'xpipe';
 

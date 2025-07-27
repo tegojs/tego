@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import { Action, Resourcer, ResourcerContext } from '..';
 import Resource from '../resource';

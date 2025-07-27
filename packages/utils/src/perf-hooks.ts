@@ -1,4 +1,4 @@
-import { performance, RecordableHistogram } from 'perf_hooks';
+import { performance, RecordableHistogram } from 'node:perf_hooks';
 
 export const prePerfHooksWrap = (handler: any, options?: { name?: string }) => {
   const { name } = options || {};

@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import winston from 'winston';
 import { DailyRotateFileTransportOptions } from 'winston-daily-rotate-file';

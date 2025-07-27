@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 
 import Database from '../database';
 import { mockDatabase } from './index';

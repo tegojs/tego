@@ -1,4 +1,4 @@
-import { basename, extname } from 'path';
+import { basename, extname } from 'node:path';
 
 import { Repository } from '../repository';
 import { BaseValueParser } from './base-value-parser';

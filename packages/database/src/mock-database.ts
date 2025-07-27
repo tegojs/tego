@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { merge } from '@tachybase/utils';
 
 import { customAlphabet } from 'nanoid';
@@ -36,7 +36,7 @@ export function getConfigByEnv() {
     dialectOptions: {},
   };
 
-  if (process.env.DB_DIALECT == 'postgres') {
+  if (process.env.DB_DIALECT === 'postgres') {
     options.dialectOptions['application_name'] = 'tachybase.main';
   }
 

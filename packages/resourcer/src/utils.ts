@@ -55,7 +55,7 @@ export function parseRequest(request: ParseRequest, options: ParseOptions = {}):
     add: 'add',
     set: 'set',
     remove: 'remove',
-    ...(options.accessors || {}),
+    ...options.accessors,
   };
   const { regexp, keys } = pathToRegexp('/resourcer/{:associatedName.}:resourceName{\\::actionName}');
   const reqPath = decodeURI(request.path);
