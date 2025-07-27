@@ -10,7 +10,7 @@ const deps: Record<string, string> = {
   'async-mutex': '0.5.x',
   '@formulajs/formulajs': '4.x',
   winston: '3.x',
-  'winston-daily-rotate-file': '4.x',
+  'winston-daily-rotate-file': '5.x',
   koa: '2.x',
   '@koa/cors': '3.x',
   multer: '2.x',
