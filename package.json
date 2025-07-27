@@ -46,7 +46,6 @@
     "@tego/devkit": "workspace:*",
     "@types/node": "20.17.10",
     "@types/react": "~18.3.23",
-    "@types/react-dom": "~18.3.7",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "oxlint": "^1.5.0",
@@ -57,7 +56,6 @@
     "pretty-format": "^30.0.2",
     "pretty-quick": "^4.2.2",
     "react": "~18.3.1",
-    "react-dom": "~18.3.1",
     "tego": "workspace:*",
     "tsx": "^4.20.3",
     "vitest": "^3.2.4"

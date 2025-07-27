@@ -23,7 +23,7 @@ const loadCreatePortal = () => {
   if (!env.createPortal) {
     try {
       // @ts-ignore
-      import('react-dom').then((module) => (env.createPortal ??= module?.createPortal)).catch();
+      import('react-dom').then((module) => (env.createPortal ??= module?.createPortal)).catch(() => {} /* ignore */);
     } catch {}
   }
 };
