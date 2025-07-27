@@ -4,9 +4,6 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "scripts": {
-    "build": "tachybase-build --no-dts @tachybase/requirejs"
-  },
   "dependencies": {},
   "devDependencies": {}
 }
