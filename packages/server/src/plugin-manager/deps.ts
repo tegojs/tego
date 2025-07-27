@@ -1,4 +1,3 @@
-// @ts-ignore
 import { version } from '../../package.json';
 
 const deps: Record<string, string> = {
@@ -8,7 +7,7 @@ const deps: Record<string, string> = {
   'cache-manager': '5.x',
   sequelize: '6.x',
   umzug: '3.x',
-  'async-mutex': '0.3.x',
+  'async-mutex': '0.5.x',
   '@formulajs/formulajs': '4.x',
   winston: '3.x',
   'winston-daily-rotate-file': '4.x',
