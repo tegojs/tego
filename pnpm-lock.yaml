@@ -418,8 +418,8 @@ importers:
         specifier: ^12.1.0
         version: 12.1.0
       dotenv:
-        specifier: ^17.2.1
-        version: 17.2.1
+        specifier: 16.6.1
+        version: 16.6.1
       execa:
         specifier: ^8.0.1
         version: 8.0.1
@@ -841,8 +841,8 @@ importers:
         specifier: 1.11.13
         version: 1.11.13
       dotenv:
-        specifier: 17.2.1
-        version: 17.2.1
+        specifier: 16.6.1
+        version: 16.6.1
       execa:
         specifier: ^5.1.1
         version: 5.1.1
@@ -1031,8 +1031,8 @@ importers:
         specifier: ^4.3.4
         version: 4.3.4(vite@5.4.11(@types/node@20.17.10)(less@4.2.1)(lightningcss@1.26.0)(sass@1.77.8)(terser@5.43.1))
       dotenv:
-        specifier: ^17.2.1
-        version: 17.2.1
+        specifier: 16.6.1
+        version: 16.6.1
       jsdom:
         specifier: ^16.7.0
         version: 16.7.0(canvas@2.11.2(encoding@0.1.13))
@@ -4835,8 +4835,8 @@ packages:
     resolution: {integrity: sha512-1gxPBJpI/pcjQhKgIU91II6Wkay+dLcN3M6rf2uwP8hRur3HtQXjVrdAK3sjC0piaEuxzMwjXChcETiJl47lAQ==}
     engines: {node: '>=18'}
 
-  dotenv@17.2.1:
-    resolution: {integrity: sha512-kQhDYKZecqnM0fCnzI5eIv5L4cAe/iRI+HqMbO/hbRdTAeXDG+M9FjipUxNfbARuEg4iHIbhnhs78BCHNbSxEQ==}
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
     engines: {node: '>=12'}
 
   dottie@2.0.6:
@@ -12652,7 +12652,7 @@ snapshots:
     dependencies:
       type-fest: 4.30.2
 
-  dotenv@17.2.1: {}
+  dotenv@16.6.1: {}
 
   dottie@2.0.6: {}
 
