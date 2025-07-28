@@ -7,7 +7,6 @@
   "types": "./lib/index.d.ts",
   "dependencies": {
     "@tachybase/actions": "workspace:*",
-    "@tachybase/cache": "workspace:*",
     "@tachybase/database": "workspace:*",
     "@tachybase/resourcer": "workspace:*",
     "@tachybase/utils": "workspace:*",

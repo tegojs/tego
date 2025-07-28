@@ -8,13 +8,10 @@
   "dependencies": {
     "@tachybase/acl": "workspace:*",
     "@tachybase/actions": "workspace:*",
-    "@tachybase/cache": "workspace:*",
     "@tachybase/database": "workspace:*",
     "@tachybase/resourcer": "workspace:*",
     "@tachybase/utils": "workspace:*",
-    "@types/jsonwebtoken": "^8.5.9",
     "deepmerge": "^4.3.1",
-    "jsonwebtoken": "^8.5.1",
     "koa-compose": "^4.1.0",
     "lodash": "4.17.21"
   },
