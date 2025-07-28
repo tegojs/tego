@@ -1,6 +1,5 @@
 packages:
   - 'packages/**'
-
 allowedDeprecatedVersions:
   cache-manager-redis-yet: "4.2.0"
   react-beautiful-dnd: "13.1.1"
@@ -20,7 +19,7 @@ overrides:
   "strip-ansi": "6.0.1"
   "wrap-ansi": "7.0.0"
 
-ignoredBuiltDependencies:
+neverBuiltDependencies:
 - canvas
 
 # force isolated to keep sync with partners

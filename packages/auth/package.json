@@ -1,12 +1,13 @@
 {
   "name": "@tachybase/auth",
-  "version": "1.3.30",
+  "version": "1.3.33",
   "description": "",
   "license": "Apache-2.0",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "dependencies": {
     "@tachybase/actions": "workspace:*",
+    "@tachybase/cache": "workspace:*",
     "@tachybase/database": "workspace:*",
     "@tachybase/resourcer": "workspace:*",
     "@tachybase/utils": "workspace:*",
