@@ -11,7 +11,7 @@ export const defineLoader = (
   function (request, parent, isMain) {
     // 使用白名单拦截，以及所有符合 '@tachybase/' 前缀的包
     // TODO 未来支持动态的前缀判定或者更严格的判定
-    if (whitelists.has(request) || request.startsWith('@tachybase/')) {
+    if (whitelists.has(request) || request.startsWith('@tachybase/') || request.startsWith('@tego/')) {
       try {
         const resolvedFromApp = require.resolve(request, { paths: lookingPaths });
         return originalLoad(resolvedFromApp, parent, isMain);

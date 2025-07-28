@@ -55,6 +55,8 @@ const external = [
   '@tachybase/utils',
   '@tachybase/globals',
   '@tachybase/loader',
+  '@tego/client',
+  '@tego/server',
 
   // @tachybase/auth
   'jsonwebtoken',
