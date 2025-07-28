@@ -1,6 +1,6 @@
 packages:
+  - 'apps/**'
   - 'packages/**'
-  - '.'
 
 allowedDeprecatedVersions:
   cache-manager-redis-yet: "4.2.0"
