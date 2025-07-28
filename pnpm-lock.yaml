@@ -1048,10 +1048,16 @@ importers:
       lodash:
         specifier: 4.17.21
         version: 4.17.21
+      multer:
+        specifier: ^2.0.2
+        version: 2.0.2
     devDependencies:
       '@types/lodash':
         specifier: 4.17.20
         version: 4.17.20
+      '@types/multer':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@types/node':
         specifier: 20.17.10
         version: 20.17.10
@@ -3668,6 +3674,9 @@ packages:
 
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
+
+  '@types/multer@2.0.0':
+    resolution: {integrity: sha512-C3Z9v9Evij2yST3RSBktxP9STm6OdMc5uR1xF1SGr98uv8dUlAL2hqwrZ3GVB3uyMyiegnscEK6PGtYvNrjTjw==}
 
   '@types/mysql@2.15.22':
     resolution: {integrity: sha512-wK1pzsJVVAjYCSZWQoWHziQZbNggXFDUEIGf54g4ZM/ERuP86uGdWeKZWMYlqTPMZfHJJvLPyogXGvCOg87yLQ==}
@@ -11328,6 +11337,10 @@ snapshots:
   '@types/minimatch@5.1.2': {}
 
   '@types/ms@0.7.34': {}
+
+  '@types/multer@2.0.0':
+    dependencies:
+      '@types/express': 5.0.2
 
   '@types/mysql@2.15.22':
     dependencies:
