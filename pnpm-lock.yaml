@@ -708,8 +708,8 @@ importers:
         specifier: ^1.3.34
         version: 1.3.34
       '@types/multer':
-        specifier: ^1.4.12
-        version: 1.4.12
+        specifier: ^2.0.0
+        version: 2.0.0
       async-mutex:
         specifier: ^0.5.0
         version: 0.5.0
@@ -765,8 +765,8 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       multer:
-        specifier: 2.0.1
-        version: 2.0.1
+        specifier: 2.0.2
+        version: 2.0.2
       nanoid:
         specifier: 3.3.8
         version: 3.3.8
@@ -830,7 +830,7 @@ importers:
         version: 5.0.0
       '@koa/multer':
         specifier: 3.1.0
-        version: 3.1.0(multer@2.0.1)
+        version: 3.1.0(multer@2.0.2)
       '@socketregistry/yocto-spinner':
         specifier: 1.0.19
         version: 1.0.19
@@ -916,8 +916,8 @@ importers:
         specifier: 4.17.21
         version: 4.17.21
       multer:
-        specifier: 2.0.1
-        version: 2.0.1
+        specifier: 2.0.2
+        version: 2.0.2
       mysql2:
         specifier: 3.14.1
         version: 3.14.1
@@ -1109,8 +1109,8 @@ importers:
         specifier: 4.17.21
         version: 4.17.21
       multer:
-        specifier: 2.0.1
-        version: 2.0.1
+        specifier: 2.0.2
+        version: 2.0.2
       object-path:
         specifier: ^0.11.8
         version: 0.11.8
@@ -1119,8 +1119,8 @@ importers:
         specifier: 4.17.20
         version: 4.17.20
       '@types/multer':
-        specifier: 1.4.13
-        version: 1.4.13
+        specifier: 2.0.0
+        version: 2.0.0
       '@types/node':
         specifier: 20.17.10
         version: 20.17.10
@@ -3603,6 +3603,9 @@ packages:
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
 
+  '@types/body-parser@1.19.6':
+    resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
+
   '@types/bunyan@1.8.9':
     resolution: {integrity: sha512-ZqS9JGpBxVOvsawzmVt30sP++gSQMTejCkIAQ3VdadOcRE8izTyW66hufvwLeH+YEGP6Js2AW7Gz+RMyvrEbmw==}
 
@@ -3651,11 +3654,14 @@ packages:
   '@types/express-serve-static-core@5.0.0':
     resolution: {integrity: sha512-AbXMTZGt40T+KON9/Fdxx0B2WK5hsgxcfXJLr5bFpZ7b4JCex2WyQPTEKdXqfHiY5nKKBScZ7yCoO6Pvgxfvnw==}
 
-  '@types/express@5.0.0':
-    resolution: {integrity: sha512-DvZriSMehGHL1ZNLzi6MidnsDhUZM/x2pRdDIKdwbUNqqwHxMlRdkxtn6/EPKyqKpHqTl/4nRZsRNLpZxZRpPQ==}
+  '@types/express-serve-static-core@5.0.7':
+    resolution: {integrity: sha512-R+33OsgWw7rOhD1emjU7dzCDHucJrgJXMA5PYCzJxVil0dsyx5iBEPHqpPfiKNJQb7lZ1vxwoLR4Z87bBUpeGQ==}
 
   '@types/express@5.0.2':
     resolution: {integrity: sha512-BtjL3ZwbCQriyb0DGw+Rt12qAXPiBTPs815lsUvtt1Grk0vLRMZNMUZ741d5rjk+UQOxfDiBZ3dxpX00vSkK3g==}
+
+  '@types/express@5.0.3':
+    resolution: {integrity: sha512-wGA0NX93b19/dZC1J18tKWVIYWyyF2ZjT9vin/NRu0qzzvfVzWjs04iq2rQ3H65vCTQYlRqs3YHfY7zjdV+9Kw==}
 
   '@types/flat@5.0.5':
     resolution: {integrity: sha512-nPLljZQKSnac53KDUDzuzdRfGI0TDb5qPrb+SrQyN3MtdQrOnGsKniHN1iYZsJEBIVQve94Y6gNz22sgISZq+Q==}
@@ -3674,6 +3680,9 @@ packages:
 
   '@types/http-errors@2.0.4':
     resolution: {integrity: sha512-D0CFMMtydbJAegzOyHjtiKPLlvnm3iTZyZRSZoLq2mRhDdmLfIWOCYPfQJ4cu2erKghU++QvjcUjp/5h7hESpA==}
+
+  '@types/http-errors@2.0.5':
+    resolution: {integrity: sha512-r8Tayk8HJnX0FztbZN7oVqGccWgw98T/0neJphO91KkmOzug1KkofZURD4UaD5uH8AqcFLfdPErnBod0u71/qg==}
 
   '@types/ignore-walk@4.0.3':
     resolution: {integrity: sha512-6V7wDsk0nz8LtRC7qeC0GfXadFLT4FdCtVbXhxoIGRdkn2kLr20iMLupRGiBhlZ79WWWqaObIdR3nkXfUrBPdQ==}
@@ -3723,11 +3732,8 @@ packages:
   '@types/ms@0.7.34':
     resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
 
-  '@types/multer@1.4.12':
-    resolution: {integrity: sha512-pQ2hoqvXiJt2FP9WQVLPRO+AmiIm/ZYkavPlIQnx282u4ZrVdztx0pkh3jjpQt0Kz+YI0YhSG264y08UJKoUQg==}
-
-  '@types/multer@1.4.13':
-    resolution: {integrity: sha512-bhhdtPw7JqCiEfC9Jimx5LqX9BDIPJEh2q/fQ4bqbBPtyEZYr3cvF22NwG0DmPZNYA0CAf2CnqDB4KIGGpJcaw==}
+  '@types/multer@2.0.0':
+    resolution: {integrity: sha512-C3Z9v9Evij2yST3RSBktxP9STm6OdMc5uR1xF1SGr98uv8dUlAL2hqwrZ3GVB3uyMyiegnscEK6PGtYvNrjTjw==}
 
   '@types/mysql@2.15.22':
     resolution: {integrity: sha512-wK1pzsJVVAjYCSZWQoWHziQZbNggXFDUEIGf54g4ZM/ERuP86uGdWeKZWMYlqTPMZfHJJvLPyogXGvCOg87yLQ==}
@@ -3797,11 +3803,17 @@ packages:
   '@types/send@0.17.4':
     resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
 
+  '@types/send@0.17.5':
+    resolution: {integrity: sha512-z6F2D3cOStZvuk2SaP6YrwkNO65iTZcwA2ZkSABegdkAh/lf+Aa/YQndZVfmEXT5vgAp6zv06VQ3ejSVjAny4w==}
+
   '@types/serve-handler@6.1.4':
     resolution: {integrity: sha512-aXy58tNie0NkuSCY291xUxl0X+kGYy986l4kqW6Gi4kEXgr6Tx0fpSH7YwUSa5usPpG3s9DBeIR6hHcDtL2IvQ==}
 
   '@types/serve-static@1.15.5':
     resolution: {integrity: sha512-PDRk21MnK70hja/YF8AHfC7yIsiQHn1rcXx7ijCFBX/k+XQJhQT/gw3xekXKJvx+5SXaMMS8oqQy09Mzvz2TuQ==}
+
+  '@types/serve-static@1.15.8':
+    resolution: {integrity: sha512-roei0UY3LhpOJvjbIP6ZZFngyLKl5dskOtDhxY5THRSpO+ZI+nzJ+m5yUMzGrp89YRa7lvknKkMYjqQFGwA7Sg==}
 
   '@types/shimmer@1.0.5':
     resolution: {integrity: sha512-9Hp0ObzwwO57DpLFF0InUjUm/II8GmKAvzbefxQTihCb7KI6yc9yzf0nLc4mVdby5N4DRCgQM2wCup9KTieeww==}
@@ -6324,8 +6336,8 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  multer@2.0.1:
-    resolution: {integrity: sha512-Ug8bXeTIUlxurg8xLTEskKShvcKDZALo1THEX5E41pYCD2sCVub5/kIRIGqWNoqV6szyLyQKV6mD4QUrWE5GCQ==}
+  multer@2.0.2:
+    resolution: {integrity: sha512-u7f2xaZ/UG8oLXHvtF/oWTRvT44p9ecwBBqTwgJVq0+4BW1g8OW01TyMEGWBHbyMOYVHXslaut7qEQ1meATXgw==}
     engines: {node: '>= 10.16.0'}
 
   multistream@4.1.0:
@@ -9706,9 +9718,9 @@ snapshots:
     dependencies:
       vary: 1.1.2
 
-  '@koa/multer@3.1.0(multer@2.0.1)':
+  '@koa/multer@3.1.0(multer@2.0.2)':
     dependencies:
-      multer: 2.0.1
+      multer: 2.0.2
 
   '@mapbox/node-pre-gyp@1.0.11(encoding@0.1.13)':
     dependencies:
@@ -11415,6 +11427,11 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 20.17.10
 
+  '@types/body-parser@1.19.6':
+    dependencies:
+      '@types/connect': 3.4.38
+      '@types/node': 20.17.10
+
   '@types/bunyan@1.8.9':
     dependencies:
       '@types/node': 20.17.10
@@ -11473,18 +11490,24 @@ snapshots:
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
 
-  '@types/express@5.0.0':
+  '@types/express-serve-static-core@5.0.7':
     dependencies:
-      '@types/body-parser': 1.19.5
-      '@types/express-serve-static-core': 5.0.0
+      '@types/node': 20.17.10
       '@types/qs': 6.14.0
-      '@types/serve-static': 1.15.5
+      '@types/range-parser': 1.2.7
+      '@types/send': 0.17.5
 
   '@types/express@5.0.2':
     dependencies:
       '@types/body-parser': 1.19.5
       '@types/express-serve-static-core': 5.0.0
       '@types/serve-static': 1.15.5
+
+  '@types/express@5.0.3':
+    dependencies:
+      '@types/body-parser': 1.19.6
+      '@types/express-serve-static-core': 5.0.7
+      '@types/serve-static': 1.15.8
 
   '@types/flat@5.0.5': {}
 
@@ -11503,6 +11526,8 @@ snapshots:
   '@types/http-assert@1.5.5': {}
 
   '@types/http-errors@2.0.4': {}
+
+  '@types/http-errors@2.0.5': {}
 
   '@types/ignore-walk@4.0.3':
     dependencies:
@@ -11559,13 +11584,9 @@ snapshots:
 
   '@types/ms@0.7.34': {}
 
-  '@types/multer@1.4.12':
+  '@types/multer@2.0.0':
     dependencies:
-      '@types/express': 5.0.0
-
-  '@types/multer@1.4.13':
-    dependencies:
-      '@types/express': 5.0.2
+      '@types/express': 5.0.3
 
   '@types/mysql@2.15.22':
     dependencies:
@@ -11655,6 +11676,11 @@ snapshots:
       '@types/mime': 1.3.5
       '@types/node': 20.17.10
 
+  '@types/send@0.17.5':
+    dependencies:
+      '@types/mime': 1.3.5
+      '@types/node': 20.17.10
+
   '@types/serve-handler@6.1.4':
     dependencies:
       '@types/node': 20.17.10
@@ -11664,6 +11690,12 @@ snapshots:
       '@types/http-errors': 2.0.4
       '@types/mime': 3.0.4
       '@types/node': 20.17.10
+
+  '@types/serve-static@1.15.8':
+    dependencies:
+      '@types/http-errors': 2.0.5
+      '@types/node': 20.17.10
+      '@types/send': 0.17.5
 
   '@types/shimmer@1.0.5': {}
 
@@ -14497,7 +14529,7 @@ snapshots:
 
   ms@2.1.3: {}
 
-  multer@2.0.1:
+  multer@2.0.2:
     dependencies:
       append-field: 1.0.0
       busboy: 1.6.0
