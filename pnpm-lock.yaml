@@ -902,6 +902,60 @@ importers:
         specifier: 6.5.1
         version: 6.5.1(encoding@0.1.13)
 
+  packages/tego-client:
+    dependencies:
+      '@tachybase/components':
+        specifier: workspace:*
+        version: link:../components
+      '@tachybase/evaluators':
+        specifier: workspace:*
+        version: link:../evaluators
+      '@tachybase/requirejs':
+        specifier: workspace:*
+        version: link:../requirejs
+      '@tachybase/sdk':
+        specifier: workspace:*
+        version: link:../sdk
+      '@tachybase/utils':
+        specifier: workspace:*
+        version: link:../utils
+
+  packages/tego-server:
+    dependencies:
+      '@tachybase/acl':
+        specifier: workspace:*
+        version: link:../acl
+      '@tachybase/actions':
+        specifier: workspace:*
+        version: link:../actions
+      '@tachybase/auth':
+        specifier: workspace:*
+        version: link:../auth
+      '@tachybase/cache':
+        specifier: workspace:*
+        version: link:../cache
+      '@tachybase/data-source':
+        specifier: workspace:*
+        version: link:../data-source
+      '@tachybase/database':
+        specifier: workspace:*
+        version: link:../database
+      '@tachybase/evaluators':
+        specifier: workspace:*
+        version: link:../evaluators
+      '@tachybase/logger':
+        specifier: workspace:*
+        version: link:../logger
+      '@tachybase/resourcer':
+        specifier: workspace:*
+        version: link:../resourcer
+      '@tachybase/server':
+        specifier: workspace:*
+        version: link:../server
+      '@tachybase/utils':
+        specifier: workspace:*
+        version: link:../utils
+
   packages/telemetry:
     dependencies:
       '@opentelemetry/api':
