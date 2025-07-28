@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { pathToRegexp } from 'path-to-regexp2';
+import { pathToRegexp } from 'path-to-regexp';
 import qs from 'qs';
 
 import { ResourceType } from './resource';
