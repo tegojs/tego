@@ -913,6 +913,9 @@ importers:
       '@tachybase/requirejs':
         specifier: workspace:*
         version: link:../requirejs
+      '@tachybase/schema':
+        specifier: workspace:*
+        version: link:../schema
       '@tachybase/sdk':
         specifier: workspace:*
         version: link:../sdk

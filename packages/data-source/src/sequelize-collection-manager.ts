@@ -1,6 +1,6 @@
 import Database from '@tachybase/database';
 
-import { CollectionOptions, ICollection, ICollectionManager, IRepository, MergeOptions } from './types';
+import { DataSourceCollectionOptions, ICollection, ICollectionManager, IRepository, MergeOptions } from './types';
 
 export class SequelizeCollectionManager implements ICollectionManager {
   db: Database;
@@ -51,7 +51,7 @@ export class SequelizeCollectionManager implements ICollectionManager {
     return this.db.repositories.get(key);
   }
 
-  defineCollection(options: CollectionOptions) {
+  defineCollection(options: DataSourceCollectionOptions) {
     const collection = this.db.collection(options);
     // @ts-ignore
     collection.model.refreshAttributes();
@@ -61,7 +61,7 @@ export class SequelizeCollectionManager implements ICollectionManager {
     return collection;
   }
 
-  extendCollection(collectionOptions: CollectionOptions, mergeOptions?: MergeOptions): ICollection {
+  extendCollection(collectionOptions: DataSourceCollectionOptions, mergeOptions?: MergeOptions): ICollection {
     return this.db.extendCollection(collectionOptions, mergeOptions) as unknown as ICollection;
   }
 
