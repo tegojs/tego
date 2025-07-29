@@ -34,6 +34,7 @@ export {
 } from '@tachybase/utils/client';
 export type { Dayjs } from '@tachybase/utils/client';
 export {
+  type ArrayBaseMixins,
   ArrayBase,
   ArrayCollapse,
   ArrayItems,
@@ -63,6 +64,8 @@ export {
   formatDayjsValue,
   useFormLayout,
   usePrefixCls,
+  type IArrayBaseAdditionProps,
 } from '@tachybase/components';
+export type { ReactFC } from '@tachybase/schema';
 export { evaluate, evaluators, getOptions } from '@tachybase/evaluators/client';
 export type { Evaluator } from '@tachybase/evaluators/client';

@@ -52,6 +52,7 @@ export type {
   BaseColumnFieldOptions,
   BaseFieldOptions,
   BelongsToGetAssociationMixin,
+  CollectionDef,
   CollectionGroup,
   CollectionOptions,
   CountOptions,
@@ -83,9 +84,12 @@ export {
   Plugin,
   PluginManager,
   WSServer,
+  AesEncryptor,
 } from '@tachybase/server';
 export type {
   AppLoggerOptions,
+  DefaultContext,
+  DefaultState,
   ApplicationOptions,
   Constructor,
   InstallOptions,
@@ -140,6 +144,7 @@ export type { Evaluator } from '@tachybase/evaluators';
 export { Resourcer } from '@tachybase/resourcer';
 export type { ActionParams, HandlerType, ResourceOptions } from '@tachybase/resourcer';
 export {
+  DataSourceCollection,
   CollectionManager,
   DataSource,
   SequelizeCollectionManager,
@@ -147,6 +152,6 @@ export {
   joinCollectionName,
   parseCollectionName,
 } from '@tachybase/data-source';
-export type { ICollection, IField, IRepository } from '@tachybase/data-source';
+export type { DataSourceCollectionOptions, ICollection, IField, IRepository } from '@tachybase/data-source';
 export { ACL, ACLResource, type ACLResourceActions, ACLRole, NoPermissionError } from '@tachybase/acl';
 export type { AvailableActionOptions, AvailableStrategyOptions, RoleActionParams } from '@tachybase/acl';

@@ -7,3 +7,4 @@ export * from './plugin-manager';
 export * from './gateway';
 export * from './app-supervisor';
 export * from './notice';
+export { AesEncryptor } from './aes-encryptor';

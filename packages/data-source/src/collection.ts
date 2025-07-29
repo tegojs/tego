@@ -2,14 +2,14 @@ import merge from 'deepmerge';
 import { default as lodash } from 'lodash';
 
 import { CollectionField } from './collection-field';
-import { CollectionOptions, ICollection, ICollectionManager, IField, IRepository } from './types';
+import { DataSourceCollectionOptions, ICollection, ICollectionManager, IField, IRepository } from './types';
 
-export class Collection implements ICollection {
+export class DataSourceCollection implements ICollection {
   repository: IRepository;
   fields: Map<string, IField> = new Map<string, IField>();
 
   constructor(
-    protected options: CollectionOptions,
+    protected options: DataSourceCollectionOptions,
     protected collectionManager: ICollectionManager,
   ) {
     this.setRepository(options.repository);
@@ -20,7 +20,7 @@ export class Collection implements ICollection {
     }
   }
 
-  updateOptions(options: CollectionOptions, mergeOptions?: any) {
+  updateOptions(options: DataSourceCollectionOptions, mergeOptions?: any) {
     let newOptions = lodash.cloneDeep(options);
     newOptions = merge(this.options, newOptions, mergeOptions);
     this.options = newOptions;

@@ -9,6 +9,7 @@
     "@tachybase/components": "workspace:*",
     "@tachybase/evaluators": "workspace:*",
     "@tachybase/requirejs": "workspace:*",
+    "@tachybase/schema": "workspace:*",
     "@tachybase/sdk": "workspace:*",
     "@tachybase/utils": "workspace:*"
   }
