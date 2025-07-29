@@ -12,7 +12,7 @@
     "@tachybase/utils": "workspace:*",
     "koa": "^2.15.3",
     "lodash": "4.17.21",
-    "sequelize": "^6.37.5"
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "@types/koa": "^2.15.0",
