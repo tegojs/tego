@@ -96,7 +96,7 @@ describe('postgres schema', () => {
        where table_schema = '${db.options.schema}'`,
     );
 
-    expect(newTableInfo[0].find((item) => item['table_name'] == collection.model.tableName)).toBeTruthy();
+    expect(newTableInfo[0].find((item) => item['table_name'] === collection.model.tableName)).toBeTruthy();
   });
 
   it('should update schema options', async () => {

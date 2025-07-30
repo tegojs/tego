@@ -120,9 +120,9 @@ describe('application life cycle', () => {
       });
 
       await app.load();
-      expect(app.listeners('afterLoad').filter((fn) => fn.name == testFunc.name)).toHaveLength(1);
+      expect(app.listeners('afterLoad').filter((fn) => fn.name === testFunc.name)).toHaveLength(1);
       await app.reload();
-      expect(app.listeners('afterLoad').filter((fn) => fn.name == testFunc.name)).toHaveLength(1);
+      expect(app.listeners('afterLoad').filter((fn) => fn.name === testFunc.name)).toHaveLength(1);
     });
 
     it('should init after app.load()', async () => {

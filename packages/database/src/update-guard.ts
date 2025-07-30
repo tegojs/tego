@@ -44,7 +44,7 @@ export class UpdateGuard {
   }
 
   setAssociationKeysToBeUpdate(associationKeysToBeUpdate: AssociationKeysToBeUpdate) {
-    if (this.action == 'create') {
+    if (this.action === 'create') {
       this.associationKeysToBeUpdate = Object.keys(this.model.associations);
     } else {
       this.associationKeysToBeUpdate = associationKeysToBeUpdate;
@@ -122,7 +122,7 @@ export class UpdateGuard {
           .filter((whiteListKey) => whiteListKey.startsWith(`${association}.`))
           .map((whiteListKey) => whiteListKey.replace(`${association}.`, ''));
 
-        if (list.length == 0) {
+        if (list.length === 0) {
           return undefined;
         }
 
@@ -150,7 +150,7 @@ export class UpdateGuard {
         }
 
         const associationKeyName =
-          associationObj.associationType == 'BelongsTo' || associationObj.associationType == 'HasOne'
+          associationObj.associationType === 'BelongsTo' || associationObj.associationType === 'HasOne'
             ? (<any>associationObj).targetKey
             : associationObj.target.primaryKeyAttribute;
 

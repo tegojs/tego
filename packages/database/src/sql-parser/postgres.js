@@ -3870,7 +3870,7 @@ function peg$parse(input, options) {
       let table = (t && t.table) || null;
       if (Array.isArray(v)) {
         v.forEach((row, idx) => {
-          if (row.value.length != c.length) {
+          if (row.value.length !== c.length) {
             throw new Error(`Error: column count doesn't match value count at row ${idx + 1}`);
           }
         });

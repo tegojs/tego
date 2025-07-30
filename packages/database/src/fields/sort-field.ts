@@ -15,7 +15,7 @@ export class SortField extends Field {
     const { name, scopeKey } = this.options;
     const { model } = this.context.collection;
 
-    if (isNumber(instance.get(name)) && instance._previousDataValues[scopeKey] == instance[scopeKey]) {
+    if (isNumber(instance.get(name)) && instance._previousDataValues[scopeKey] === instance[scopeKey]) {
       return;
     }
 
@@ -37,7 +37,7 @@ export class SortField extends Field {
 
   onScopeChange = async (instance, options) => {
     const { scopeKey } = this.options;
-    if (scopeKey && !instance.isNewRecord && instance._previousDataValues[scopeKey] != instance[scopeKey]) {
+    if (scopeKey && !instance.isNewRecord && instance._previousDataValues[scopeKey] !== instance[scopeKey]) {
       await this.setSortValue(instance, options);
     }
   };

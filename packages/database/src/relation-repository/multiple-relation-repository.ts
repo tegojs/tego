@@ -103,7 +103,7 @@ export abstract class MultipleRelationRepository extends RelationRepository {
   async findOne(options?: FindOneOptions): Promise<any> {
     const transaction = await this.getTransaction(options, false);
     const rows = await this.find({ ...options, limit: 1, transaction });
-    return rows.length == 1 ? rows[0] : null;
+    return rows.length === 1 ? rows[0] : null;
   }
 
   @transaction((args, transaction) => {
