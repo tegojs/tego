@@ -4,9 +4,6 @@ import { defineLoader } from '@tachybase/loader';
 
 import { DEFAULT_BUILTIN_PLUGINS_PATH, DEFAULT_DEV_PLUGINS_PATH, DEFAULT_REMOTE_PLUGINS_PATH } from './constants';
 
-// improve error stack
-Error.stackTraceLimit = process.env.ERROR_STACK_TRACE_LIMIT ? +process.env.ERROR_STACK_TRACE_LIMIT : 10;
-
 // 默认 NODE_MODULES_PATH 搜索路径
 if (!process.env.NODE_MODULES_PATH) {
   process.env.NODE_MODULES_PATH = [
