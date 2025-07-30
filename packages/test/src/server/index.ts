@@ -5,8 +5,8 @@ export { mockDatabase } from '@tachybase/database';
 export { default as supertest } from 'supertest';
 export * from './mockServer';
 
-export const pgOnly: () => any = () => (process.env.DB_DIALECT == 'postgres' ? describe : describe.skip);
-export const isPg = () => process.env.DB_DIALECT == 'postgres';
+export const pgOnly: () => any = () => (process.env.DB_DIALECT === 'postgres' ? describe : describe.skip);
+export const isPg = () => process.env.DB_DIALECT === 'postgres';
 
 export function randomStr() {
   // create random string

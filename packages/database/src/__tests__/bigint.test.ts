@@ -1,7 +1,7 @@
 import { Database } from '../database';
 import { mockDatabase } from './index';
 
-const excludeSqlite = () => (process.env.DB_DIALECT != 'sqlite' ? describe : describe.skip);
+const excludeSqlite = () => (process.env.DB_DIALECT !== 'sqlite' ? describe : describe.skip);
 
 excludeSqlite()('collection', () => {
   let db: Database;

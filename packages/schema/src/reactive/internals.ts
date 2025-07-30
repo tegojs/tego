@@ -37,7 +37,7 @@ const createShallowProxy = (target: any) => {
 export const createObservable = (target: any, key?: PropertyKey, value?: any, shallow?: boolean) => {
   if (typeof value !== 'object') return value;
   const raw = ProxyRaw.get(value);
-  if (!!raw) {
+  if (raw) {
     const node = getDataNode(raw);
     if (!node.target) node.target = target;
     node.key = key;

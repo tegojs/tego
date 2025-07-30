@@ -109,7 +109,7 @@ export function getErrorWithCode(errorCode: string): AppError {
   const error = lodash.cloneDeep(errors[errorCode]);
 
   if (!error.code) {
-    error['code'] = errorCode == 'UNKNOWN_ERROR' ? rawCode : errorCode;
+    error['code'] = errorCode === 'UNKNOWN_ERROR' ? rawCode : errorCode;
   }
 
   return error as AppError;

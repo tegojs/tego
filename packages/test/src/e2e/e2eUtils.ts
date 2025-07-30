@@ -463,8 +463,8 @@ const _test = base.extend<ExtendUtils>({
     await use(mockRole);
   },
   updateRole: async ({ page }, use) => {
-    const updateRole = async (roleSetting: AclRoleSetting) => {
-      return updateRole(roleSetting);
+    const updateRole = async () => {
+      return updateRole();
     };
 
     await use(updateRole);

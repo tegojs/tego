@@ -16,7 +16,7 @@ import { parseEnvironment } from './utils';
 parseEnvironment();
 
 const program = new Command();
-program.name('tachybase-engine').version(require('../package.json').version);
+program.name('tego').version(require('../package.json').version);
 
 const run = async () => {
   // 注册 presets 插件

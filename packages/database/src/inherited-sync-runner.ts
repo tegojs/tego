@@ -13,7 +13,7 @@ export class InheritedSyncRunner {
 
     const queryInterface = db.sequelize.getQueryInterface();
 
-    if (dialect != 'postgres') {
+    if (dialect !== 'postgres') {
       throw new Error('Inherit model is only supported on postgres');
     }
 
@@ -119,7 +119,7 @@ export class InheritedSyncRunner {
             transaction,
           });
 
-          if (idColumnQuery[0].length == 0) {
+          if (idColumnQuery[0].length === 0) {
             continue;
           }
 

@@ -38,7 +38,7 @@ export default class FilterParser {
       for (const key of Object.keys(filter)) {
         if (key.endsWith('.$exists') || key.endsWith('.$notExists')) {
           const keyArr = key.split('.');
-          if (keyArr[keyArr.length - 2] == 'id') {
+          if (keyArr[keyArr.length - 2] === 'id') {
             continue;
           }
 
@@ -93,7 +93,7 @@ export default class FilterParser {
       }
 
       // skip empty logic operator value
-      if ((key == '$or' || key == '$and') && Array.isArray(value) && value.length == 0) {
+      if ((key === '$or' || key === '$and') && Array.isArray(value) && value.length === 0) {
         continue;
       }
 

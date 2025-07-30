@@ -228,7 +228,7 @@ describe('gateway', () => {
             return JSON.parse(m);
           })
           .find((m) => {
-            return m.payload.code == 'APP_RUNNING';
+            return m.payload.code === 'APP_RUNNING';
           });
         expect(runningMessage.payload.refresh).not.toBeTruthy();
       });
