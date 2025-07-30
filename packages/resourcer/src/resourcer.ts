@@ -3,7 +3,7 @@ import { getCurrentStacks, importModule, Toposort, ToposortOptions } from '@tach
 import { globSync } from 'glob';
 import compose from 'koa-compose';
 import _ from 'lodash';
-import { pathToRegexp } from 'path-to-regexp2';
+import { pathToRegexp } from 'path-to-regexp';
 
 import Action, { ActionName } from './action';
 import Resource, { ResourceOptions } from './resource';

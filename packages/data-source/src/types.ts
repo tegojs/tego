@@ -1,4 +1,4 @@
-export type CollectionOptions = {
+export type DataSourceCollectionOptions = {
   name: string;
   repository?: string;
   fields: any[];
@@ -63,9 +63,9 @@ export interface ICollectionManager {
 
   getRegisteredRepository(key: string): IRepository;
 
-  defineCollection(options: CollectionOptions): ICollection;
+  defineCollection(options: DataSourceCollectionOptions): ICollection;
 
-  extendCollection(collectionOptions: CollectionOptions, mergeOptions?: MergeOptions): ICollection;
+  extendCollection(collectionOptions: DataSourceCollectionOptions, mergeOptions?: MergeOptions): ICollection;
 
   hasCollection(name: string): boolean;
   getCollection(name: string): ICollection;

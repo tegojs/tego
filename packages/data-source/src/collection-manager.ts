@@ -1,5 +1,5 @@
-import { Collection } from './collection';
-import { CollectionOptions, ICollection, ICollectionManager, IRepository, MergeOptions } from './types';
+import { DataSourceCollection } from './collection';
+import { DataSourceCollectionOptions, ICollection, ICollectionManager, IRepository, MergeOptions } from './types';
 
 export class CollectionManager implements ICollectionManager {
   protected collections = new Map<string, ICollection>();
@@ -38,13 +38,13 @@ export class CollectionManager implements ICollectionManager {
     });
   }
 
-  defineCollection(options: CollectionOptions): ICollection {
+  defineCollection(options: DataSourceCollectionOptions): ICollection {
     const collection = this.newCollection(options);
     this.collections.set(options.name, collection);
     return collection;
   }
 
-  extendCollection(collectionOptions: CollectionOptions, mergeOptions?: MergeOptions): ICollection {
+  extendCollection(collectionOptions: DataSourceCollectionOptions, mergeOptions?: MergeOptions): ICollection {
     const collection = this.getCollection(collectionOptions.name);
     return collection;
   }
@@ -73,6 +73,6 @@ export class CollectionManager implements ICollectionManager {
   }
 
   protected newCollection(options) {
-    return new Collection(options, this);
+    return new DataSourceCollection(options, this);
   }
 }

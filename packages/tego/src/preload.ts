@@ -50,7 +50,6 @@ const defaultWhitelists = [
   'mysql2',
   'pg',
   'react',
-  'react-dom',
   'sequelize',
   'sqlite3',
   'umzug',

@@ -21,6 +21,8 @@ export const EXTERNAL = [
   '@tachybase/utils',
   '@tachybase/globals',
   '@tachybase/loader',
+  '@tego/client',
+  '@tego/server',
 
   // @tachybase/auth
   'jsonwebtoken',
