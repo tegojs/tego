@@ -42,7 +42,7 @@
     "fs-extra": "^11.3.0",
     "lodash": "^4.17.21",
     "npm-packlist": "^10.0.1",
-    "open": "^10.1.2",
+    "open": "^10.2.0",
     "p-all": "^3.0.0",
     "package-json": "^10.0.1",
     "portfinder": "^1.0.37",
