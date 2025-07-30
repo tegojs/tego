@@ -152,7 +152,7 @@ describe('add action', () => {
 
     const tags = await p1.getTags();
     expect(tags.length).toEqual(3);
-    const tag = tags.find((t) => t.id == t3.get('id'));
+    const tag = tags.find((t) => t.id === t3.get('id'));
     expect(tag.posts_tags.tagged_at).toEqual('123');
   });
 });

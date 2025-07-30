@@ -84,25 +84,25 @@ export class SyncRunner {
     try {
       const columnsBePrimaryKey = Object.keys(columns)
         .filter((key) => {
-          return columns[key].primaryKey == true;
+          return columns[key].primaryKey === true;
         })
         .sort();
 
       const columnsWillBePrimaryKey = Object.keys(this.rawAttributes)
         .filter((key) => {
-          return this.rawAttributes[key].primaryKey == true;
+          return this.rawAttributes[key].primaryKey === true;
         })
         .map((key) => {
           return this.rawAttributes[key].field;
         })
         .sort();
 
-      if (columnsWillBePrimaryKey.length == 0) {
+      if (columnsWillBePrimaryKey.length === 0) {
         // skip if no primary key
         return;
       }
 
-      if (JSON.stringify(columnsBePrimaryKey) != JSON.stringify(columnsWillBePrimaryKey)) {
+      if (JSON.stringify(columnsBePrimaryKey) !== JSON.stringify(columnsWillBePrimaryKey)) {
         await this.queryInterface.addConstraint(this.tableName, {
           type: 'primary key',
           fields: columnsWillBePrimaryKey,
@@ -146,7 +146,7 @@ export class SyncRunner {
 
       if (columnDefaultValue === 'NULL' && attributeDefaultValue === null) continue;
 
-      if (columnDefaultValue != attributeDefaultValue) {
+      if (columnDefaultValue !== attributeDefaultValue) {
         const changeAttribute = {
           ...currentAttribute,
           defaultValue: attributeDefaultValue,
@@ -183,12 +183,12 @@ export class SyncRunner {
     const existsUniqueIndexes = existsIndexes.filter((index) => index.unique);
 
     const uniqueAttributes = Object.keys(this.rawAttributes).filter((key) => {
-      return this.rawAttributes[key].unique == true;
+      return this.rawAttributes[key].unique === true;
     });
 
     // remove unique index that not in model
     for (const existUniqueIndex of existsUniqueIndexes) {
-      const isSingleField = existUniqueIndex.fields.length == 1;
+      const isSingleField = existUniqueIndex.fields.length === 1;
       if (!isSingleField) continue;
 
       const columnName = existUniqueIndex.fields[0].attribute;
@@ -221,7 +221,7 @@ export class SyncRunner {
     for (const uniqueAttribute of uniqueAttributes) {
       // check index exists or not
       const indexExists = existsUniqueIndexes.find((index) => {
-        return index.fields.length == 1 && index.fields[0].attribute == this.rawAttributes[uniqueAttribute].field;
+        return index.fields.length === 1 && index.fields[0].attribute === this.rawAttributes[uniqueAttribute].field;
       });
 
       if (!indexExists) {
@@ -278,7 +278,7 @@ export class SyncRunner {
   findAttributeByColumnName(columnName: string): any {
     return Object.values(this.rawAttributes).find((attribute) => {
       // @ts-ignore
-      return attribute.field == columnName;
+      return attribute.field === columnName;
     });
   }
 
@@ -322,7 +322,7 @@ export class SyncRunner {
     // @ts-ignore
     const _schema = this.model._schema;
 
-    if (_schema && _schema != 'public') {
+    if (_schema && _schema !== 'public') {
       await this.sequelize.query(`CREATE SCHEMA IF NOT EXISTS "${_schema}";`, {
         raw: true,
         transaction: options?.transaction,

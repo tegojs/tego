@@ -59,7 +59,7 @@ export class DataNode {
   contains(node: DataNode) {
     if (node === this) return true;
     let parent = node.parent;
-    while (!!parent) {
+    while (parent) {
       if (this.isEqual(parent)) return true;
       parent = parent.parent;
     }

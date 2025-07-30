@@ -108,7 +108,7 @@ describe('set action', () => {
 
     const tags = await p1.getTags();
     expect(tags.length).toEqual(1);
-    const tag = tags.find((t) => t.id == t3.get('id'));
+    const tag = tags.find((t) => t.id === t3.get('id'));
     expect(tag.posts_tags.tagged_at).toEqual('123');
   });
 });

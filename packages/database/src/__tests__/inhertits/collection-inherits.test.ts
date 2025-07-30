@@ -265,7 +265,7 @@ describe.runIf(isPg())('collection inherits', () => {
       },
     });
 
-    expect(recordsWithFilter.every((r) => r.get('__collection') == child1Collection.name)).toBe(true);
+    expect(recordsWithFilter.every((r) => r.get('__collection') === child1Collection.name)).toBe(true);
 
     const filterWithUndefined = await rootCollection.repository.find({
       filter: {

@@ -87,7 +87,7 @@ describe('unique index', () => {
           return indexField === columnName;
         }
 
-        return indexField.length == 1 && indexField[0].attribute === columnName;
+        return indexField.length === 1 && indexField[0].attribute === columnName;
       });
     };
 

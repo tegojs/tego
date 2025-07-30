@@ -33,7 +33,7 @@ export class ACLAvailableStrategy {
     this.allowConfigure = options.allowConfigure;
 
     let actions = this.options.actions;
-    if (lodash.isString(actions) && actions != '*') {
+    if (lodash.isString(actions) && actions !== '*') {
       actions = [actions];
     }
 
@@ -47,7 +47,7 @@ export class ACLAvailableStrategy {
   }
 
   matchAction(actionName: string) {
-    if (this.options.actions == '*') {
+    if (this.options.actions === '*') {
       return true;
     }
 
