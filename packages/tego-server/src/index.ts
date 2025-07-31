@@ -106,18 +106,11 @@ export type {
   TokenInfo,
   TokenPolicyConfig,
 } from '@tachybase/auth';
+export { Action, App, Container, Controller, Db, Inject, InjectLog, Service } from '@tachybase/di';
 export {
-  Action,
-  App,
   AsyncEmitter,
   CollectionsGraph,
-  Container,
-  Controller,
-  Db,
-  Inject,
-  InjectLog,
   Registry,
-  Service,
   applyMixins,
   assign,
   currentProcessNum,
