@@ -1,5 +1,6 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { join, resolve } from 'node:path';
 import { URL } from 'node:url';
 
@@ -10,6 +11,7 @@ import { execa } from 'execa';
 import { genTsConfigPaths } from './util';
 
 const __dirname = new URL('.', import.meta.url).pathname;
+const require = createRequire(import.meta.url);
 
 function camelize(str: string) {
   return str.trim().replace(/[-_\s]+(.)?/g, (match, c) => c.toUpperCase());
@@ -42,7 +44,7 @@ export class PluginGenerator extends Generator {
       ...this.context,
       packageName: name,
       packageVersion,
-      tachybaseVersion: '0.0.1',
+      tegoVersion: require('../package.json').version,
       pascalCaseName: capitalize(camelize(name.split('/').pop())),
     };
   }

@@ -1,6 +1,6 @@
-import { Plugin } from '@tachybase/server';
+import { Plugin } from '@tego/server';
 
-export class {{{pascalCaseName}}}Server extends Plugin {
+export class Plugin{{{pascalCaseName}}} extends Plugin {
   async afterAdd() {}
 
   async beforeLoad() {}
@@ -16,4 +16,4 @@ export class {{{pascalCaseName}}}Server extends Plugin {
   async remove() {}
 }
 
-export default {{{pascalCaseName}}}Server;
+export default Plugin{{{pascalCaseName}}};

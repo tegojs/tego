@@ -11,6 +11,7 @@ export default (cli: Command) => {
     .allowUnknownOption()
     .action(async (name, options) => {
       const generator = new PluginGenerator({
+        baseDir: process.cwd(),
         cwd: resolve(process.cwd(), name),
         args: options,
         context: {
