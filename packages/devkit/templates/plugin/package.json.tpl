@@ -2,10 +2,10 @@
   "name": "{{{packageName}}}",
   "version": "{{{packageVersion}}}",
   "main": "dist/server/index.js",
-  "dependencies": {},
-  "peerDependencies": {
+  "devDependencies": {
     "@tachybase/client": "workspace:*",
-    "@tachybase/server": "workspace:*",
-    "@tachybase/test": "workspace:*"
+    "@tego/client": "{{{tegoVersion}}}",
+    "@tego/server": "{{{tegoVersion}}}",
+    "@tachybase/test": "{{{tegoVersion}}}"
   }
 }
