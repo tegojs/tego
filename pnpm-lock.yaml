@@ -36,8 +36,8 @@ importers:
         specifier: ^4.5.1
         version: 4.5.1(prettier@3.6.2)
       '@inquirer/prompts':
-        specifier: ^7.7.1
-        version: 7.7.1(@types/node@20.17.10)
+        specifier: ^7.8.0
+        version: 7.8.0(@types/node@20.17.10)
       '@tachybase/test':
         specifier: workspace:*
         version: link:packages/test
@@ -2124,8 +2124,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/prompts@7.7.1':
-    resolution: {integrity: sha512-XDxPrEWeWUBy8scAXzXuFY45r/q49R0g72bUzgQXZ1DY/xEFX+ESDMkTQolcb5jRBzaNJX2W8XQl6krMNDTjaA==}
+  '@inquirer/prompts@7.8.0':
+    resolution: {integrity: sha512-JHwGbQ6wjf1dxxnalDYpZwZxUEosT+6CPGD9Zh4sm9WXdtUp9XODCQD3NjSTmu+0OAyxWXNOqf0spjIymJa2Tw==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': 20.17.10
@@ -2142,8 +2142,8 @@ packages:
       '@types/node':
         optional: true
 
-  '@inquirer/search@3.0.17':
-    resolution: {integrity: sha512-CuBU4BAGFqRYors4TNCYzy9X3DpKtgIW4Boi0WNkm4Ei1hvY9acxKdBdyqzqBCEe4YxSdaQQsasJlFlUJNgojw==}
+  '@inquirer/search@3.1.0':
+    resolution: {integrity: sha512-PMk1+O/WBcYJDq2H7foV0aAZSmDdkzZB9Mw2v/DmONRJopwA/128cS9M/TXWLKKdEQKZnKwBzqu2G4x/2Nqx8Q==}
     engines: {node: '>=18'}
     peerDependencies:
       '@types/node': 20.17.10
@@ -9508,7 +9508,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.17.10
 
-  '@inquirer/prompts@7.7.1(@types/node@20.17.10)':
+  '@inquirer/prompts@7.8.0(@types/node@20.17.10)':
     dependencies:
       '@inquirer/checkbox': 4.2.0(@types/node@20.17.10)
       '@inquirer/confirm': 5.1.14(@types/node@20.17.10)
@@ -9518,7 +9518,7 @@ snapshots:
       '@inquirer/number': 3.0.17(@types/node@20.17.10)
       '@inquirer/password': 4.0.17(@types/node@20.17.10)
       '@inquirer/rawlist': 4.1.5(@types/node@20.17.10)
-      '@inquirer/search': 3.0.17(@types/node@20.17.10)
+      '@inquirer/search': 3.1.0(@types/node@20.17.10)
       '@inquirer/select': 4.3.1(@types/node@20.17.10)
     optionalDependencies:
       '@types/node': 20.17.10
@@ -9531,7 +9531,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 20.17.10
 
-  '@inquirer/search@3.0.17(@types/node@20.17.10)':
+  '@inquirer/search@3.1.0(@types/node@20.17.10)':
     dependencies:
       '@inquirer/core': 10.1.15(@types/node@20.17.10)
       '@inquirer/figures': 1.0.13
