@@ -3,7 +3,7 @@ import net from 'node:net';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { CleanOptions, Collection, SyncOptions } from '@tachybase/database';
 import TachybaseGlobal from '@tachybase/globals';
-import { Container, fsExists, importModule, isURL } from '@tachybase/utils';
+import { Container, createDevPluginsSymlink, fsExists, importModule, isURL } from '@tachybase/utils';
 
 import execa from 'execa';
 import fg from 'fast-glob';
@@ -273,6 +273,7 @@ export class PluginManager {
       return;
     }
     this.app.logger.info('attempt to add the plugin to the app');
+    await createDevPluginsSymlink();
     let packageName: string;
     try {
       packageName = await PluginManager.getPackageName(pluginName);
