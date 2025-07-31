@@ -2,8 +2,9 @@ import fs from 'node:fs/promises';
 import net from 'node:net';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { CleanOptions, Collection, SyncOptions } from '@tachybase/database';
+import { Container } from '@tachybase/di';
 import TachybaseGlobal from '@tachybase/globals';
-import { Container, createDevPluginsSymlink, fsExists, importModule, isURL } from '@tachybase/utils';
+import { createDevPluginsSymlink, fsExists, importModule, isURL } from '@tachybase/utils';
 
 import execa from 'execa';
 import fg from 'fast-glob';

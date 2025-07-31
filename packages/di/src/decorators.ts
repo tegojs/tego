@@ -1,4 +1,4 @@
-import Container, { Constructable, Inject, Service } from './typedi';
+import Container, { Constructable, Inject, Service } from '.';
 
 export interface ActionDef {
   type: string;

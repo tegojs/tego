@@ -1,5 +1,5 @@
 import { Context, Next } from '@tachybase/actions';
-import { ActionDef, App, Container, Inject, Service } from '@tachybase/utils';
+import { ActionDef, App, Container, Inject, Service } from '@tachybase/di';
 
 import Application from '../application';
 

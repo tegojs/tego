@@ -7,6 +7,7 @@ import { actions as authActions, AuthManager, AuthManagerOptions } from '@tachyb
 import { Cache, CacheManager, CacheManagerOptions } from '@tachybase/cache';
 import { DataSourceManager, SequelizeDataSource } from '@tachybase/data-source';
 import Database, { CollectionOptions, IDatabaseOptions } from '@tachybase/database';
+import { ContainerInstance } from '@tachybase/di';
 import {
   createLogger,
   createSystemLogger,
@@ -18,15 +19,7 @@ import {
 } from '@tachybase/logger';
 import { ResourceOptions, Resourcer } from '@tachybase/resourcer';
 // import { AppTelemetryOptions, getTelemetry } from '@tachybase/telemetry';
-import {
-  applyMixins,
-  AsyncEmitter,
-  ContainerInstance,
-  getCurrentStacks,
-  importModule,
-  Toposort,
-  ToposortOptions,
-} from '@tachybase/utils';
+import { applyMixins, AsyncEmitter, getCurrentStacks, importModule, Toposort, ToposortOptions } from '@tachybase/utils';
 
 import { Command, CommanderError, CommandOptions, ParseOptions } from 'commander';
 import { globSync } from 'glob';

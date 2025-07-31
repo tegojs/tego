@@ -509,6 +509,8 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4
 
+  packages/di: {}
+
   packages/evaluators:
     dependencies:
       '@formulajs/formulajs':
@@ -653,6 +655,9 @@ importers:
       '@tachybase/database':
         specifier: workspace:*
         version: link:../database
+      '@tachybase/di':
+        specifier: workspace:*
+        version: link:../di
       '@tachybase/globals':
         specifier: workspace:*
         version: link:../globals
@@ -946,6 +951,9 @@ importers:
       '@tachybase/database':
         specifier: workspace:*
         version: link:../database
+      '@tachybase/di':
+        specifier: workspace:*
+        version: link:../di
       '@tachybase/evaluators':
         specifier: workspace:*
         version: link:../evaluators

@@ -2,9 +2,10 @@ import fs from 'node:fs';
 import { basename, resolve } from 'node:path';
 import { isMainThread } from 'node:worker_threads';
 import { Model, Transactionable } from '@tachybase/database';
+import { Container } from '@tachybase/di';
 import TachybaseGlobal from '@tachybase/globals';
 import { LoggerOptions } from '@tachybase/logger';
-import { Container, fsExists, importModule } from '@tachybase/utils';
+import { fsExists, importModule } from '@tachybase/utils';
 
 import { globSync } from 'glob';
 import type { ParseKeys, TOptions } from 'i18next';

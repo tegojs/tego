@@ -20,3 +20,5 @@ export { Token } from './token.class';
 /** We export the default container under the Container alias. */
 export const Container = ContainerInstance.default;
 export default Container;
+
+export * from './decorators';

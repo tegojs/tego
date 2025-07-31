@@ -1,0 +1,8 @@
+{
+  "name": "@tachybase/di",
+  "version": "1.3.42",
+  "description": "",
+  "license": "Apache-2.0",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts"
+}
