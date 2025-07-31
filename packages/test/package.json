@@ -46,7 +46,7 @@
     "@tachybase/schema": "workspace:*",
     "@tachybase/server": "workspace:*",
     "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/supertest": "^2.0.16",
