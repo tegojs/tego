@@ -91,7 +91,6 @@ export type {
   DefaultContext,
   DefaultState,
   ApplicationOptions,
-  Constructor,
   InstallOptions,
   PluginOptions,
 } from '@tachybase/server';
@@ -130,6 +129,7 @@ export {
   tval,
   uid,
 } from '@tachybase/utils';
+export type { Constructable, Constructable as Constructor } from '@tachybase/utils';
 export { Logger, getLoggerFilePath, getLoggerTransport } from '@tachybase/logger';
 export type { LoggerOptions, SystemLogger } from '@tachybase/logger';
 export { appendArrayColumn, evaluate, evaluators } from '@tachybase/evaluators';

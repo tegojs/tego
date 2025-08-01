@@ -1,6 +1,7 @@
+import { Constructable } from '@tachybase/utils';
+
 import { Token } from '../token.class';
 import { AbstractConstructable } from './abstract-constructable.type';
-import { Constructable } from './constructable.type';
 
 /**
  * Unique service identifier.

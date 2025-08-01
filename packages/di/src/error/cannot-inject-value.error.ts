@@ -1,4 +1,4 @@
-import { Constructable } from '../types/constructable.type';
+import { Constructable } from '@tachybase/utils';
 
 /**
  * Thrown when DI cannot inject value into property decorated by @Inject decorator.

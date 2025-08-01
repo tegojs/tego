@@ -1,5 +1,6 @@
+import { Constructable } from '@tachybase/utils';
+
 import { Token } from '../token.class';
-import { Constructable } from '../types/constructable.type';
 import { ServiceIdentifier } from '../types/service-identifier.type';
 
 /**

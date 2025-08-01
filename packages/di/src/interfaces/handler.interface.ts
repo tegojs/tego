@@ -1,5 +1,6 @@
+import { Constructable } from '@tachybase/utils';
+
 import { ContainerInstance } from '../container-instance.class';
-import { Constructable } from '../types/constructable.type';
 
 /**
  * Used to register special "handler" which will be executed on a service class during its initialization.

@@ -1,5 +1,6 @@
+import { Constructable } from '@tachybase/utils';
+
 import { ContainerInstance } from '../container-instance.class';
-import { Constructable } from '../types/constructable.type';
 import { ContainerIdentifier } from '../types/container-identifier.type';
 import { ContainerScope } from '../types/container-scope.type';
 import { ServiceIdentifier } from '../types/service-identifier.type';
