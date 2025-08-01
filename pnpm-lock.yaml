@@ -406,8 +406,8 @@ importers:
         specifier: ^11.0.4
         version: 11.0.4
       '@umijs/utils':
-        specifier: ^4.4.11
-        version: 4.4.11
+        specifier: ^4.4.12
+        version: 4.4.12
       '@vercel/ncc':
         specifier: ^0.38.3
         version: 0.38.3
@@ -3829,8 +3829,8 @@ packages:
   '@types/ws@8.5.13':
     resolution: {integrity: sha512-osM/gWBTPKgHV8XkTunnegTRIsvF6owmf5w+JtAfOw472dptdm0dlGv4xCt6GwQRcC2XVOvvRE/0bAoQcL2QkA==}
 
-  '@umijs/utils@4.4.11':
-    resolution: {integrity: sha512-xhXia0yU8JZzpW75TIKDc0tlzvvDGPuuUUXaN3F6FlSSfR13bCCzX+fOTzjo95M4Sz43Vsgub0MK27hXwpCHlQ==}
+  '@umijs/utils@4.4.12':
+    resolution: {integrity: sha512-1Ea+STKP6IxI7yhsURJooCRX//BXnSjgD86XoR4JiYB9MSOhAeS/vpY9f48PpEe/jpKO+JfieqbY4hWHGZGJZw==}
 
   '@vercel/ncc@0.38.3':
     resolution: {integrity: sha512-rnK6hJBS6mwc+Bkab+PGPs9OiS0i/3kdTO+CkI8V0/VrW3vmz7O2Pxjw/owOlmo6PKEIxRSeZKv/kuL9itnpYA==}
@@ -11588,7 +11588,7 @@ snapshots:
     dependencies:
       '@types/node': 20.17.10
 
-  '@umijs/utils@4.4.11':
+  '@umijs/utils@4.4.12':
     dependencies:
       chokidar: 3.5.3
       pino: 7.11.0
