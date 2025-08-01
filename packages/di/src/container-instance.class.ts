@@ -484,3 +484,5 @@ export class ContainerInstance {
     }
   }
 }
+/** We export the default container under the Container alias. */
+export const Container = ContainerInstance.default;
