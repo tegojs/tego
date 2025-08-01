@@ -7,6 +7,7 @@ import { actions as authActions, AuthManager, AuthManagerOptions } from '@tachyb
 import { Cache, CacheManager, CacheManagerOptions } from '@tachybase/cache';
 import { DataSourceManager, SequelizeDataSource } from '@tachybase/data-source';
 import Database, { CollectionOptions, IDatabaseOptions } from '@tachybase/database';
+import { ContainerInstance } from '@tachybase/di';
 import {
   createLogger,
   createSystemLogger,
@@ -17,11 +18,10 @@ import {
   SystemLoggerOptions,
 } from '@tachybase/logger';
 import { ResourceOptions, Resourcer } from '@tachybase/resourcer';
-// import { AppTelemetryOptions, getTelemetry } from '@tachybase/telemetry';
 import {
   applyMixins,
   AsyncEmitter,
-  ContainerInstance,
+  Constructable,
   getCurrentStacks,
   importModule,
   Toposort,
@@ -65,9 +65,8 @@ import { parseVariables } from './middlewares';
 import { dataTemplate } from './middlewares/data-template';
 import { NoticeManager } from './notice';
 import { Plugin } from './plugin';
-import { Constructor, InstallOptions, PluginManager } from './plugin-manager';
+import { InstallOptions, PluginManager } from './plugin-manager';
 import { createPubSubManager, PubSubManager, PubSubManagerOptions } from './pub-sub-manager';
-import { MemoryPubSubAdapter } from './pub-sub-manager/memory-pub-sub-adapter';
 import { SyncMessageManager } from './sync-message-manager';
 
 // WebSocket 事件类型
@@ -619,7 +618,7 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
    * Use {@link this.pm.get()} instead.
    * @deprecated
    */
-  getPlugin<P extends Plugin>(name: string | Constructor<P>) {
+  getPlugin<P extends Plugin>(name: string | Constructable<P>) {
     return this.pm.get(name) as P;
   }
 

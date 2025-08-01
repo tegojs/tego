@@ -2,8 +2,9 @@ import fs from 'node:fs/promises';
 import net from 'node:net';
 import { basename, dirname, join, resolve, sep } from 'node:path';
 import { CleanOptions, Collection, SyncOptions } from '@tachybase/database';
+import { Container } from '@tachybase/di';
 import TachybaseGlobal from '@tachybase/globals';
-import { Container, createDevPluginsSymlink, fsExists, importModule, isURL } from '@tachybase/utils';
+import { Constructable, createDevPluginsSymlink, fsExists, importModule, isURL } from '@tachybase/utils';
 
 import execa from 'execa';
 import fg from 'fast-glob';
@@ -34,9 +35,6 @@ export const sleep = async (timeout = 0) => {
   });
 };
 
-// TODO migrate to utils
-export type Constructor<T> = new (...args: any[]) => T;
-
 export interface PluginManagerOptions {
   app: Application;
   plugins?: any[];
@@ -65,7 +63,7 @@ export class PluginManager {
   /**
    * @internal
    */
-  pluginInstances = new Map<Constructor<Plugin>, Plugin>();
+  pluginInstances = new Map<Constructable<Plugin>, Plugin>();
 
   /**
    * @internal
@@ -229,27 +227,27 @@ export class PluginManager {
   }
 
   get<T extends Plugin>(name: string): Plugin | undefined;
-  get<T extends Plugin>(name: Constructor<T>): T | undefined;
-  get<T extends Plugin>(name: string | Constructor<T>): Plugin | undefined;
-  get<T extends Plugin>(name: string | Constructor<T>) {
+  get<T extends Plugin>(name: Constructable<T>): T | undefined;
+  get<T extends Plugin>(name: string | Constructable<T>): Plugin | undefined;
+  get<T extends Plugin>(name: string | Constructable<T>) {
     if (typeof name === 'string') {
       return this.app.pm.pluginAliases.get(name);
     }
     return this.app.pm.pluginInstances.get(name) as T;
   }
 
-  has<T extends Plugin>(name: string | Constructor<T>) {
+  has<T extends Plugin>(name: string | Constructable<T>) {
     if (typeof name === 'string') {
       return this.app.pm.pluginAliases.has(name);
     }
     return this.app.pm.pluginInstances.has(name);
   }
 
-  del<T extends Plugin>(name: string | Constructor<T>) {
+  del<T extends Plugin>(name: string | Constructable<T>) {
     const instance = this.get(name);
     if (instance) {
       this.app.pm.pluginAliases.delete(instance.name);
-      this.app.pm.pluginInstances.delete(instance.constructor as Constructor<T>);
+      this.app.pm.pluginInstances.delete(instance.constructor as Constructable<T>);
     }
   }
 

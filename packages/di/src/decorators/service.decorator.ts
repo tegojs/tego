@@ -1,8 +1,9 @@
+import { Constructable } from '@tachybase/utils';
+
 import { ContainerInstance } from '../container-instance.class';
 import { EMPTY_VALUE } from '../empty.const';
 import { ServiceMetadata } from '../interfaces/service-metadata.interface';
 import { ServiceOptions } from '../interfaces/service-options.interface';
-import { Constructable } from '../types/constructable.type';
 
 /**
  * Marks class as a service that can be injected using Container.

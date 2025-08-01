@@ -1,4 +1,8 @@
-import Container, { Constructable, Inject, Service } from './typedi';
+import { Constructable } from '@tachybase/utils';
+
+import { Container } from './container-instance.class';
+import { Inject } from './decorators/inject.decorator';
+import { Service } from './decorators/service.decorator';
 
 export interface ActionDef {
   type: string;

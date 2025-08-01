@@ -24,12 +24,11 @@ export * from './requireModule';
 export * from './toposort';
 export * from './uid';
 export * from './url';
-export * from './typedi';
-export * from './decorators';
 export * from './cluster';
 export * from './plugin-symlink';
 export * from './currencyUtils';
 export * from './getCurrentStacks';
 export * from './i18n';
+export type { Constructable } from './types/constructable.type';
 
 export { dayjs, lodash };

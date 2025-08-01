@@ -12,6 +12,7 @@
     "@tachybase/cache": "workspace:*",
     "@tachybase/data-source": "workspace:*",
     "@tachybase/database": "workspace:*",
+    "@tachybase/di": "workspace:*",
     "@tachybase/evaluators": "workspace:*",
     "@tachybase/logger": "workspace:*",
     "@tachybase/resourcer": "workspace:*",

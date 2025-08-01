@@ -6,7 +6,6 @@ import { Handler } from './interfaces/handler.interface';
 import { ServiceMetadata } from './interfaces/service-metadata.interface';
 import { ServiceOptions } from './interfaces/service-options.interface';
 import { Token } from './token.class';
-import { Constructable } from './types/constructable.type';
 import { ContainerIdentifier } from './types/container-identifier.type';
 import { ContainerScope } from './types/container-scope.type';
 import { ServiceIdentifier } from './types/service-identifier.type';
@@ -484,3 +483,5 @@ export class ContainerInstance {
     }
   }
 }
+/** We export the default container under the Container alias. */
+export const Container = ContainerInstance.default;

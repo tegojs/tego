@@ -91,7 +91,6 @@ export type {
   DefaultContext,
   DefaultState,
   ApplicationOptions,
-  Constructor,
   InstallOptions,
   PluginOptions,
 } from '@tachybase/server';
@@ -106,18 +105,11 @@ export type {
   TokenInfo,
   TokenPolicyConfig,
 } from '@tachybase/auth';
+export { Action, App, Container, Controller, Db, Inject, InjectLog, Service } from '@tachybase/di';
 export {
-  Action,
-  App,
   AsyncEmitter,
   CollectionsGraph,
-  Container,
-  Controller,
-  Db,
-  Inject,
-  InjectLog,
   Registry,
-  Service,
   applyMixins,
   assign,
   currentProcessNum,
@@ -137,6 +129,7 @@ export {
   tval,
   uid,
 } from '@tachybase/utils';
+export type { Constructable, Constructable as Constructor } from '@tachybase/utils';
 export { Logger, getLoggerFilePath, getLoggerTransport } from '@tachybase/logger';
 export type { LoggerOptions, SystemLogger } from '@tachybase/logger';
 export { appendArrayColumn, evaluate, evaluators } from '@tachybase/evaluators';
