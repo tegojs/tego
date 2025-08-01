@@ -868,8 +868,8 @@ importers:
         specifier: 2.0.2
         version: 2.0.2
       mysql2:
-        specifier: 3.14.1
-        version: 3.14.1
+        specifier: 3.14.3
+        version: 3.14.3
       npm-registry-fetch:
         specifier: 19.0.0
         version: 19.0.0
@@ -881,7 +881,7 @@ importers:
         version: 18.3.1
       sequelize:
         specifier: 6.37.7
-        version: 6.37.7(mysql2@3.14.1)(pg@8.16.3)(sqlite3@5.1.7)
+        version: 6.37.7(mysql2@3.14.3)(pg@8.16.3)(sqlite3@5.1.7)
       sqlite3:
         specifier: 5.1.7
         version: 5.1.7
@@ -1058,8 +1058,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       mysql2:
-        specifier: ^3.14.1
-        version: 3.14.1
+        specifier: ^3.14.3
+        version: 3.14.3
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -6275,8 +6275,8 @@ packages:
     resolution: {integrity: sha512-WWdIxpyjEn+FhQJQQv9aQAYlHoNVdzIzUySNV1gHUPDSdZJ3yZn7pAAbQcV7B56Mvu881q9FZV+0Vx2xC44VWA==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
-  mysql2@3.14.1:
-    resolution: {integrity: sha512-7ytuPQJjQB8TNAYX/H2yhL+iQOnIBjAMam361R7UAL0lOVXWjtdrmoL9HYKqKoLp/8UUTRcvo1QPvK9KL7wA8w==}
+  mysql2@3.14.3:
+    resolution: {integrity: sha512-fD6MLV8XJ1KiNFIF0bS7Msl8eZyhlTDCDl75ajU5SJtpdx9ZPEACulJcqJWr1Y8OYyxsFc4j3+nflpmhxCU5aQ==}
     engines: {node: '>= 8.0'}
 
   mz@2.7.0:
@@ -14329,7 +14329,7 @@ snapshots:
 
   mute-stream@2.0.0: {}
 
-  mysql2@3.14.1:
+  mysql2@3.14.3:
     dependencies:
       aws-ssl-profiles: 1.1.2
       denque: 2.1.0
@@ -15820,7 +15820,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  sequelize@6.37.7(mysql2@3.14.1)(pg@8.16.3)(sqlite3@5.1.7):
+  sequelize@6.37.7(mysql2@3.14.3)(pg@8.16.3)(sqlite3@5.1.7):
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.11.7
@@ -15839,7 +15839,7 @@ snapshots:
       validator: 13.11.0
       wkx: 0.5.0
     optionalDependencies:
-      mysql2: 3.14.1
+      mysql2: 3.14.3
       pg: 8.16.3
       sqlite3: 5.1.7
     transitivePeerDependencies:
