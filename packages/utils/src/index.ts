@@ -1,3 +1,5 @@
+import './dayjs';
+
 export * from './assign';
 export * from './collections-graph';
 export * from './common';
