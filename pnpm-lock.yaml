@@ -69,11 +69,11 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1(prettier@3.6.2)
       prettier-plugin-sql:
-        specifier: ^0.19.1
-        version: 0.19.1(prettier@3.6.2)
+        specifier: ^0.19.2
+        version: 0.19.2(prettier@3.6.2)
       pretty-format:
-        specifier: ^30.0.2
-        version: 30.0.2
+        specifier: ^30.0.5
+        version: 30.0.5
       pretty-quick:
         specifier: ^4.2.2
         version: 4.2.2(prettier@3.6.2)
@@ -2152,8 +2152,8 @@ packages:
   '@isaacs/string-locale-compare@1.1.0':
     resolution: {integrity: sha512-SQ7Kzhh9+D+ZW9MA0zkYv3VXhIDNx+LzM6EJ+/65I3QY+enU6Itte7E5XX7EWrqLW2FN4n06GWzBnPoC3th2aQ==}
 
-  '@jest/schemas@30.0.1':
-    resolution: {integrity: sha512-+g/1TKjFuGrf1Hh0QPCv0gISwBxJ+MQSNXmG9zjHy7BmFhtoJ9fdNhWJp3qUKRi93AOZHXtdxZgJ1vAtz6z65w==}
+  '@jest/schemas@30.0.5':
+    resolution: {integrity: sha512-DmdYgtezMkh3cpU8/1uyXakv3tJRcmcXxBOcO0tbaozPwpmh4YMsnWrQm9ZmZMfa5ocbxzbFk6O4bDPEc/iAnA==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   '@jridgewell/gen-mapping@0.3.11':
@@ -6243,8 +6243,8 @@ packages:
     peerDependencies:
       prettier: ^3.0.0
 
-  prettier-plugin-sql@0.19.1:
-    resolution: {integrity: sha512-Kvxs8uRBdwT64dg/+pjZN1dojLTfZjqtRss8jbUVLqGPXRDp0vJuPkR7otzyQz5no6jSkt6TGFvC80aOnXlpXw==}
+  prettier-plugin-sql@0.19.2:
+    resolution: {integrity: sha512-DAu1Jcanpvs32OAOXsqaVXOpPs4nFLVkB3XwzRiZZVNL5/c+XdlNxWFMiMpMhYhmCG5BW3srK8mhikCOv5tPfg==}
     engines: {node: ^14.18.0 || >=16.0.0}
     peerDependencies:
       prettier: ^3.0.3
@@ -6262,8 +6262,8 @@ packages:
     resolution: {integrity: sha512-Qb1gy5OrP5+zDf2Bvnzdl3jsTf1qXVMazbvCoKhtKqVs4/YK4ozX4gKQJJVyNe+cajNPn0KoC0MC3FUmaHWEmQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
 
-  pretty-format@30.0.2:
-    resolution: {integrity: sha512-yC5/EBSOrTtqhCKfLHqoUIAXVRZnukHPwWBJWR7h84Q3Be1DRQZLncwcfLoPA5RPQ65qfiCMqgYwdUuQ//eVpg==}
+  pretty-format@30.0.5:
+    resolution: {integrity: sha512-D1tKtYvByrBkFLe2wHJl2bwMJIiT8rW+XA+TiataH79/FszLQMrpGEvzUVkzPau7OCO0Qnrhpe87PqtOAIB8Yw==}
     engines: {node: ^18.14.0 || ^20.0.0 || ^22.0.0 || >=24.0.0}
 
   pretty-ms@7.0.1:
@@ -8937,7 +8937,7 @@ snapshots:
 
   '@isaacs/string-locale-compare@1.1.0': {}
 
-  '@jest/schemas@30.0.1':
+  '@jest/schemas@30.0.5':
     dependencies:
       '@sinclair/typebox': 0.34.37
 
@@ -13503,7 +13503,7 @@ snapshots:
     dependencies:
       prettier: 3.6.2
 
-  prettier-plugin-sql@0.19.1(prettier@3.6.2):
+  prettier-plugin-sql@0.19.2(prettier@3.6.2):
     dependencies:
       jsox: 1.2.123
       node-sql-parser: 5.3.10
@@ -13521,9 +13521,9 @@ snapshots:
       ansi-styles: 5.2.0
       react-is: 17.0.2
 
-  pretty-format@30.0.2:
+  pretty-format@30.0.5:
     dependencies:
-      '@jest/schemas': 30.0.1
+      '@jest/schemas': 30.0.5
       ansi-styles: 5.2.0
       react-is: 18.3.1
 
