@@ -37,6 +37,7 @@ export const getPluginPackages = (packages: Project[]) =>
   packages.filter((item) => !!item.manifest.name?.match(PATTERN_PLUGIN) || !!item.manifest.name?.match(PATTERN_MODULE));
 export const CORE_APP = path.join(ROOT_PATH, 'apps/web');
 export const CORE_CLIENT = path.join(PACKAGES_PATH, 'client');
+export const PACKAGE_CLIENT = '@tachybase/client';
 export const ESM_PACKAGES = ['@tachybase/test'];
 export const CJS_EXCLUDE_PACKAGES = [path.join(ROOT_PATH, 'apps/devkit'), CORE_CLIENT, CORE_APP];
 export const getCjsPackages = (packages: Project[]) =>

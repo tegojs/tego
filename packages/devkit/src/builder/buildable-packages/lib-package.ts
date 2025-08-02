@@ -2,7 +2,7 @@ import { buildCjs } from '../build/buildCjs';
 import { buildClient } from '../build/buildClient';
 import { buildDeclaration } from '../build/buildDeclaration';
 import { buildEsm } from '../build/buildEsm';
-import { CORE_CLIENT, ESM_PACKAGES } from '../build/constant';
+import { CORE_CLIENT, ESM_PACKAGES, PACKAGE_CLIENT } from '../build/constant';
 import { tarPlugin } from '../build/tarPlugin';
 import { getPkgLog, getUserConfig } from '../build/utils';
 import { IBuildablePackage, IBuildContext } from '../interfaces';
@@ -21,7 +21,7 @@ export class LibPackage implements IBuildablePackage {
     this.context = context;
 
     this.isEsm = ESM_PACKAGES.includes(this.name);
-    this.isClient = this.dir === CORE_CLIENT;
+    this.isClient = this.name === PACKAGE_CLIENT;
   }
   async build() {
     const log = getPkgLog(this.name);
