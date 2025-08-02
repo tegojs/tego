@@ -1,6 +1,5 @@
+import dayjs from 'dayjs';
 import _ from 'lodash';
-
-import { dayjs } from './dayjs';
 
 export interface Str2momentOptions {
   gmt?: boolean;

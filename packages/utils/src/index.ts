@@ -2,7 +2,6 @@ export * from './assign';
 export * from './collections-graph';
 export * from './common';
 export * from './date';
-export * from './dayjs';
 export * from './forEach';
 export * from './fs-exists';
 export * from './json-templates';
