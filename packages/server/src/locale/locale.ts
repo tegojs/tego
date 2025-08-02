@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { Cache } from '@tachybase/cache';
-import { lodash } from '@tachybase/utils';
+
+import lodash from 'lodash';
 
 import Application from '../application';
 import { getResource } from './resource';

@@ -7,7 +7,6 @@ export {
   CollectionsGraph,
   Registry,
   convertUTCToLocal,
-  dayjs,
   error,
   flatten,
   forEach,
@@ -20,7 +19,6 @@ export {
   isPortalInBody,
   isString,
   isURL,
-  lodash,
   merge,
   moment2str,
   nextTick,
@@ -32,7 +30,6 @@ export {
   uid,
   unflatten,
 } from '@tachybase/utils/client';
-export type { Dayjs } from '@tachybase/utils/client';
 export {
   type ArrayBaseMixins,
   ArrayBase,

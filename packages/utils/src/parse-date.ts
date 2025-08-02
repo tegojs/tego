@@ -1,5 +1,6 @@
+import dayjs from 'dayjs';
+
 import { offsetFromString } from './date';
-import { dayjs } from './dayjs';
 
 function parseUTC(value) {
   if (value instanceof Date || dayjs.isDayjs(value)) {

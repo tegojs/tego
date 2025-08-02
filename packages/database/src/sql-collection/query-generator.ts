@@ -1,5 +1,4 @@
-import { lodash } from '@tachybase/utils';
-
+import lodash from 'lodash';
 import { GroupOption, Order, ProjectionAlias, WhereOptions } from 'sequelize';
 
 import { Collection } from '../collection';

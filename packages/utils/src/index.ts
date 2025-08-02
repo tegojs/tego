@@ -1,12 +1,9 @@
-import lodash from 'lodash';
-
-import { dayjs } from './dayjs';
+import './dayjs';
 
 export * from './assign';
 export * from './collections-graph';
 export * from './common';
 export * from './date';
-export * from './dayjs';
 export * from './forEach';
 export * from './fs-exists';
 export * from './json-templates';
@@ -30,5 +27,3 @@ export * from './currencyUtils';
 export * from './getCurrentStacks';
 export * from './i18n';
 export type { Constructable } from './types/constructable.type';
-
-export { dayjs, lodash };
