@@ -1,4 +1,4 @@
-import { Application } from 'packages/core/src';
+import { Application } from '@tego/core';
 
 describe('MainDataSource', () => {
   let app: Application;

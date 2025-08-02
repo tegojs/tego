@@ -1,5 +1,5 @@
+import { Plugin, PluginManager } from '@tego/core';
 import _ from 'lodash';
-import { Plugin, PluginManager } from 'packages/core/src';
 
 export class PluginPresets extends Plugin {
   splitNames(name: string) {

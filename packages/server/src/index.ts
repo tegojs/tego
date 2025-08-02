@@ -85,7 +85,7 @@ export {
   PluginManager,
   WSServer,
   AesEncryptor,
-} from 'packages/core/src';
+} from '@tego/core';
 export type {
   AppLoggerOptions,
   DefaultContext,
@@ -93,7 +93,7 @@ export type {
   ApplicationOptions,
   InstallOptions,
   PluginOptions,
-} from 'packages/core/src';
+} from '@tego/core';
 export { AuthError, AuthErrorCode, AuthManager, BaseAuth } from '@tachybase/auth';
 export type {
   AuthConfig,
