@@ -1,6 +1,7 @@
-import { AppSupervisor } from '@tachybase/server';
 import { mockServer, MockServer } from '@tachybase/test';
 import { uid } from '@tachybase/utils';
+
+import { AppSupervisor } from 'packages/core/src';
 
 import Application from '../application';
 

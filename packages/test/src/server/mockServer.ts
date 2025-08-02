@@ -1,7 +1,7 @@
 import { mockDatabase } from '@tachybase/database';
-import { Application, ApplicationOptions, AppSupervisor, Gateway, PluginManager } from '@tachybase/server';
 
 import jwt from 'jsonwebtoken';
+import { Application, ApplicationOptions, AppSupervisor, Gateway, PluginManager } from 'packages/core/src';
 import qs from 'qs';
 import supertest, { SuperAgentTest } from 'supertest';
 

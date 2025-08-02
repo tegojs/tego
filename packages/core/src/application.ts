@@ -729,7 +729,7 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
   async loadCoreMigrations() {
     const migrations = await this.loadMigrations({
       directory: resolve(__dirname, 'migrations'),
-      namespace: '@tachybase/server',
+      namespace: '@tego/core',
     });
     return {
       beforeLoad: {

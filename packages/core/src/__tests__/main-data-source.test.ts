@@ -1,4 +1,4 @@
-import { Application } from '@tachybase/server';
+import { Application } from 'packages/core/src';
 
 describe('MainDataSource', () => {
   let app: Application;

@@ -4,7 +4,7 @@ export default defineCollection({
   name: 'applicationPlugins',
   dumpRules: 'required',
   repository: 'PluginManagerRepository',
-  origin: '@tachybase/server',
+  origin: '@tego/core',
   fields: [
     { type: 'string', name: 'name', unique: true },
     { type: 'string', name: 'packageName', unique: true },

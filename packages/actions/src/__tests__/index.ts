@@ -6,7 +6,7 @@ import bodyParser from 'koa-bodyparser';
 import qs from 'qs';
 import supertest, { SuperAgentTest } from 'supertest';
 
-import db2resource from '../../../server/src/middlewares/db2resource';
+import db2resource from '../../../core/src/middlewares/db2resource';
 
 interface ActionParams {
   fields?: string[];

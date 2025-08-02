@@ -28,7 +28,7 @@ export default (app: Application) => {
       const dir = await findRealPathFromPaths(pluginPaths, pkg);
       const filename = resolve(
         dir,
-        pkg === '@tachybase/server' ? 'src' : 'src/server',
+        pkg === '@tego/core' ? 'src' : 'src/server',
         'migrations',
         `${dayjs().format('YYYYMMDDHHmmss')}-${name}.ts`,
       );
@@ -36,7 +36,7 @@ export default (app: Application) => {
       const keys: any[] = version.split('.');
       keys.push(1 * keys.pop() + 1);
       const nextVersion = keys.join('.');
-      const from = pkg === '@tachybase/server' ? `../migration` : '@tachybase/server';
+      const from = pkg === '@tego/core' ? `../migration` : '@tego/core';
       const data = `import { Migration } from '${from}';
 
 export default class extends Migration {

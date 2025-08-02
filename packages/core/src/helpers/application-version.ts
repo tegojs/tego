@@ -11,7 +11,7 @@ export class ApplicationVersion {
   constructor(app: Application) {
     this.app = app;
     app.db.collection({
-      origin: '@tachybase/server',
+      origin: '@tego/core',
       name: 'applicationVersion',
       dataType: 'meta',
       timestamps: false,

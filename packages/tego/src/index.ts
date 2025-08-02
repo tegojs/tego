@@ -2,10 +2,10 @@ import './preload';
 
 import { performance } from 'node:perf_hooks';
 import TachybaseGlobal from '@tachybase/globals';
-import { Gateway } from '@tachybase/server';
 import { createDevPluginsSymlink, createStoragePluginsSymlink } from '@tachybase/utils';
 
 import { Command } from 'commander';
+import { Gateway } from 'packages/core/src';
 
 import { getConfig } from './config';
 import PluginPresets from './plugin-presets';

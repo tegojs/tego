@@ -50,7 +50,7 @@ const external = [
   '@tachybase/schema',
   '@tachybase/components',
   '@tachybase/requirejs',
-  '@tachybase/server',
+  '@tego/core',
   '@tachybase/test',
   '@tachybase/utils',
   '@tachybase/globals',
