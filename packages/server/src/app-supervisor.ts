@@ -97,6 +97,7 @@ export class AppSupervisor extends EventEmitter implements AsyncEmitter {
   }
 
   setAppStatus(appName: string, status: AppStatus, options = {}) {
+    console.log('🚀 ~ AppSupervisor ~ setAppStatus ~ appName:', appName, status, options);
     if (this.appStatus[appName] === status) {
       return;
     }

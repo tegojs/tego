@@ -32,13 +32,13 @@ export default (app: Application) => {
         app.logger.info('app has been started');
         return;
       }
-      if (!(await app.isInstalled())) {
-        app['_started'] = true;
-        throw new ApplicationNotInstall(
-          `Application ${app.name} is not installed, Please run 'pnpm tachybase install' command first`,
-        );
-      }
-      await app.load();
+      // if (!(await app.isInstalled())) {
+      //   app['_started'] = true;
+      //   throw new ApplicationNotInstall(
+      //     `Application ${app.name} is not installed, Please run 'pnpm tachybase install' command first`,
+      //   );
+      // }
+      // await app.load();
       await app.start({
         dbSync: options?.dbSync,
         quickstart: options.quickstart,

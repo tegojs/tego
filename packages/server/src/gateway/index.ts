@@ -184,12 +184,6 @@ export class Gateway extends EventEmitter {
     const { pathname } = parse(req.url);
     const { PLUGIN_STATICS_PATH, APP_PUBLIC_PATH } = process.env;
 
-    if (pathname.endsWith('/__umi/api/bundle-status')) {
-      res.statusCode = 200;
-      res.end('ok');
-      return;
-    }
-
     if (pathname.startsWith(APP_PUBLIC_PATH + 'storage/uploads/')) {
       req.url = req.url.substring(APP_PUBLIC_PATH.length - 1);
       await compress(req, res);
@@ -248,7 +242,6 @@ export class Gateway extends EventEmitter {
 
     if (appStatus === 'initialized') {
       const appInstance = await AppSupervisor.getInstance().getApp(handleApp);
-      appInstance.runCommand('start', '--quickstart');
       appStatus = AppSupervisor.getInstance().getAppStatus(handleApp);
     }
 

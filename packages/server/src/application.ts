@@ -826,11 +826,11 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
 
     this._started = true;
 
-    if (options.checkInstall && !(await this.isInstalled())) {
-      throw new ApplicationNotInstall(
-        `Application ${this.name} is not installed, Please run 'pnpm tachybase install' command first`,
-      );
-    }
+    // if (options.checkInstall && !(await this.isInstalled())) {
+    //   throw new ApplicationNotInstall(
+    //     `Application ${this.name} is not installed, Please run 'pnpm tachybase install' command first`,
+    //   );
+    // }
 
     this.setMaintainingMessage('starting app...');
 
