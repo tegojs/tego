@@ -78,7 +78,7 @@ export function parseEnvironment() {
     !process.env.TEGO_RUNTIME_NAME &&
     fs.existsSync(resolve(process.cwd(), 'storage'))
   ) {
-    process.env.TEGO_RUNTIME_HOME = resolve(process.cwd(), 'storage');
+    process.env.TEGO_RUNTIME_HOME = process.cwd();
   }
 
   for (const key in env) {
