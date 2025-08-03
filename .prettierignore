@@ -2,15 +2,8 @@
 **/*.svg
 **/*.ejs
 **/*.html
-.umi
-.umi-production
-.umi-test
 packages/**/lib/**
 packages/**/esm/**
 packages/**/node_modules/**
-**/.dumi/tmp
-**/.dumi/tmp-test
-**/.dumi/tmp-production
-packages/core/cli/templates/plugin/src/client/*.tpl
-packages/app/client/src/.plugins
+packages/**/dist/**
 storage

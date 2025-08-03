@@ -44,7 +44,7 @@
     "@playwright/test": "^1.49.1",
     "@tachybase/database": "workspace:*",
     "@tachybase/schema": "workspace:*",
-    "@tachybase/server": "workspace:*",
+    "@tego/core": "workspace:*",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",

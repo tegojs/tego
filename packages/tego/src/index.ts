@@ -2,9 +2,9 @@ import './preload';
 
 import { performance } from 'node:perf_hooks';
 import TachybaseGlobal from '@tachybase/globals';
-import { Gateway } from '@tachybase/server';
 import { createDevPluginsSymlink, createStoragePluginsSymlink } from '@tachybase/utils';
 
+import { Gateway } from '@tego/core';
 import { Command } from 'commander';
 
 import { getConfig } from './config';

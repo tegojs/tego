@@ -1,5 +1,4 @@
-import { Plugin, PluginManager } from '@tachybase/server';
-
+import { Plugin, PluginManager } from '@tego/core';
 import _ from 'lodash';
 
 export class PluginPresets extends Plugin {

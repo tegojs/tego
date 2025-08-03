@@ -5,9 +5,10 @@ import lodash from 'lodash';
 import { nanoid } from 'nanoid';
 import WebSocket, { WebSocketServer } from 'ws';
 
+import { Gateway } from '.';
 import { AppSupervisor } from '../app-supervisor';
-import { Gateway, IncomingRequest } from '../gateway';
 import { applyErrorWithArgs, getErrorWithCode } from './errors';
+import { IncomingRequest } from './types';
 
 declare class WebSocketWithId extends WebSocket {
   id: string;

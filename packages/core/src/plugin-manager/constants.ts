@@ -16,7 +16,7 @@ export const EXTERNAL = [
   '@tachybase/logger',
   '@tachybase/resourcer',
   '@tachybase/sdk',
-  '@tachybase/server',
+  '@tego/core',
   '@tachybase/test',
   '@tachybase/utils',
   '@tachybase/globals',

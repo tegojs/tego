@@ -24,21 +24,15 @@
     "declaration": true
   },
   "exclude": [
-    "apps/**/node_modules",
-    "apps/**/dist",
-    "apps/**/public",
-    "apps/build/bin",
-    "apps/cli/**/*",
-    "apps/**/lib",
-    "apps/**/es",
     "packages/**/node_modules",
     "packages/**/dist",
     "packages/**/public",
     "packages/**/lib",
+    "packages/**/esm",
     "packages/**/es"
   ],
   "extends": "./tsconfig.paths.json",
-  "include": ["packages/**/*", "apps/**/*", "playwright.config.ts", "vitest.config.mts"],
+  "include": ["packages/**/*", "playwright.config.ts", "vitest.config.mts"],
   "ts-node": {
     "compilerOptions": {
       "module": "commonjs"

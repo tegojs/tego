@@ -1,4 +1,4 @@
-import { Application } from '@tachybase/server';
+import { Application } from '@tego/core';
 
 describe('MainDataSource', () => {
   let app: Application;

@@ -15,43 +15,21 @@ import qs from 'qs';
 import handler from 'serve-handler';
 
 import { AppSupervisor } from '../app-supervisor';
-import { ApplicationOptions } from '../application';
 import { getPackageDirByExposeUrl, getPackageNameByExposeUrl } from '../plugin-manager';
 import { applyErrorWithArgs, getErrorWithCode } from './errors';
 import { IPCSocketClient } from './ipc-socket-client';
 import { IPCSocketServer } from './ipc-socket-server';
+import {
+  AppSelectorMiddleware,
+  AppSelectorMiddlewareContext,
+  Handler,
+  IncomingRequest,
+  RunOptions,
+  StartHttpServerOptions,
+} from './types';
 import { WSServer } from './ws-server';
 
 const compress = promisify(compression());
-
-export interface IncomingRequest {
-  url: string;
-  headers: any;
-}
-
-export type AppSelector = (req: IncomingRequest) => string | Promise<string>;
-export type AppSelectorMiddleware = (ctx: AppSelectorMiddlewareContext, next: () => Promise<void>) => void;
-
-interface StartHttpServerOptions {
-  port: number;
-  host: string;
-  callback?: (server: http.Server) => void;
-}
-
-interface RunOptions {
-  mainAppOptions: ApplicationOptions;
-}
-
-export interface AppSelectorMiddlewareContext {
-  req: IncomingRequest;
-  resolvedAppName: string | null;
-}
-
-export interface Handler {
-  name: string;
-  prefix: string;
-  callback: (req: IncomingMessage, res: ServerResponse) => void;
-}
 
 export class Gateway extends EventEmitter {
   private static instance: Gateway;
@@ -487,5 +465,3 @@ export class Gateway extends EventEmitter {
     }
   }
 }
-
-export { WSServer } from './ws-server';

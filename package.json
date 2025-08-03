@@ -52,15 +52,15 @@
     "prettier": "^3.6.2",
     "prettier-plugin-packagejson": "^2.5.19",
     "prettier-plugin-sort-json": "^4.1.1",
-    "prettier-plugin-sql": "^0.19.1",
-    "pretty-format": "^30.0.2",
+    "prettier-plugin-sql": "^0.19.2",
+    "pretty-format": "^30.0.5",
     "pretty-quick": "^4.2.2",
     "react": "~18.3.1",
     "tego": "workspace:*",
     "tsx": "^4.20.3",
     "vitest": "^3.2.4"
   },
-  "packageManager": "pnpm@10.13.1",
+  "packageManager": "pnpm@10.14.0",
   "engines": {
     "node": ">=20.19.0"
   }
