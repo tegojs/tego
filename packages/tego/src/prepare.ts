@@ -5,7 +5,7 @@ import process from 'node:process';
 import yoctoSpinner from '@socketregistry/yocto-spinner/index.cjs';
 import execa from 'execa';
 
-import { DEFAULT_BUILTIN_PLUGINS_RELATIVE_PATH, DEFAULT_WEB_PACKAGE_NAME } from './constants';
+import { DEFAULT_BUILTIN_PLUGINS_PATH, DEFAULT_WEB_PACKAGE_NAME } from './constants';
 import { defaultModules } from './default-modules';
 import { defaultPlugins } from './default-plugins';
 import { downloadTar, initEnvFile } from './utils';
@@ -38,11 +38,10 @@ export async function prepare({
     npmExist = false;
   }
 
-  const prefix = path.join(name, DEFAULT_BUILTIN_PLUGINS_RELATIVE_PATH);
   // 安装前端代码
   console.log('🚀 ~ start download ~ front end files');
   const spinner = yoctoSpinner({ text: `Loading ${DEFAULT_WEB_PACKAGE_NAME}` }).start();
-  await downloadTar(DEFAULT_WEB_PACKAGE_NAME, `${prefix}/${DEFAULT_WEB_PACKAGE_NAME}`);
+  await downloadTar(DEFAULT_WEB_PACKAGE_NAME, `${DEFAULT_BUILTIN_PLUGINS_PATH}/${DEFAULT_WEB_PACKAGE_NAME}`);
   spinner.success();
   console.log();
 
@@ -52,9 +51,9 @@ export async function prepare({
   let index = 1;
   for (const moduleName of moduleNames) {
     const spinner = yoctoSpinner({ text: `[${index++}/${moduleNames.length}] Loading ${moduleName}` }).start();
-    await downloadTar(moduleName, `${prefix}/${moduleName}`);
+    await downloadTar(moduleName, `${DEFAULT_BUILTIN_PLUGINS_PATH}/${moduleName}`);
     if (npmExist) {
-      await npmInstall(`${prefix}/${moduleName}`, spinner);
+      await npmInstall(`${DEFAULT_BUILTIN_PLUGINS_PATH}/${moduleName}`, spinner);
     }
     spinner.success();
   }
@@ -66,9 +65,9 @@ export async function prepare({
   const pluginNames = plugins.map((pluginName: string) => `@tachybase/plugin-${pluginName}`);
   for (const pluginName of pluginNames) {
     const spinner = yoctoSpinner({ text: `[${index++}/${pluginNames.length}] Loading ${pluginName}` }).start();
-    await downloadTar(pluginName, `${prefix}/${pluginName}`);
+    await downloadTar(pluginName, `${DEFAULT_BUILTIN_PLUGINS_PATH}/${pluginName}`);
     if (npmExist) {
-      await npmInstall(`${prefix}/${pluginName}`, spinner);
+      await npmInstall(`${DEFAULT_BUILTIN_PLUGINS_PATH}/${pluginName}`, spinner);
     }
     spinner.success();
   }

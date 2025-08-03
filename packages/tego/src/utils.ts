@@ -96,13 +96,6 @@ export function parseEnvironment() {
     process.env.API_BASE_URL = process.env.APP_SERVER_BASE_URL + process.env.API_BASE_PATH;
     process.env.__env_modified__ = '1';
   }
-
-  if (!process.env.SERVE_PATH) {
-    const servePath = guessServePath();
-    if (servePath) {
-      process.env.SERVE_PATH = servePath;
-    }
-  }
 }
 
 export function guessServePath() {

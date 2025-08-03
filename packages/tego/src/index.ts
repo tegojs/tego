@@ -3,17 +3,21 @@ import './preload';
 import { performance } from 'node:perf_hooks';
 import TachybaseGlobal from '@tachybase/globals';
 import { createDevPluginsSymlink, createStoragePluginsSymlink } from '@tachybase/utils';
-
 import { Gateway } from '@tego/core';
+
 import { Command } from 'commander';
 
 import { getConfig } from './config';
 import PluginPresets from './plugin-presets';
 import { prepare } from './prepare';
-import { parseEnvironment } from './utils';
+import { guessServePath } from './utils';
 
-// 解析环境变量
-parseEnvironment();
+if (!process.env.SERVE_PATH) {
+  const servePath = guessServePath();
+  if (servePath) {
+    process.env.SERVE_PATH = servePath;
+  }
+}
 
 const program = new Command();
 program.name('tego').version(require('../package.json').version);
