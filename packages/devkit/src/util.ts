@@ -374,7 +374,7 @@ export function initEnv() {
     !process.env.TEGO_RUNTIME_NAME &&
     _existsSync(resolve(process.cwd(), 'storage'))
   ) {
-    process.env.TEGO_RUNTIME_HOME = resolve(process.cwd(), 'storage');
+    process.env.TEGO_RUNTIME_HOME = process.cwd();
   }
 
   for (const key in env) {
