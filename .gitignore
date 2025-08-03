@@ -1,10 +1,3 @@
-!storage/db/.gitignore
-!storage/logs/.gitignore
-!storage/uploads/.gitignore
-**/.dumi/tmp
-**/.dumi/tmp-production
-**/.dumi/tmp-test
-**/.turbo
 *.sqlite
 *.tbdump
 .DS_Store
@@ -17,8 +10,6 @@
 .npmrc
 .pnpm-store
 .swc
-.umi
-.umi-production
 /.idea
 /.vscode
 /playwright

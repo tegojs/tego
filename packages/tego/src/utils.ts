@@ -6,6 +6,7 @@ import fs, {
   createWriteStream,
 } from 'node:fs';
 import { mkdir, unlink } from 'node:fs/promises';
+import os from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import TachybaseGlobal from '@tachybase/globals';
@@ -55,7 +56,6 @@ export function parseEnvironment() {
     MFSU_AD: 'none',
     WS_PATH: '/ws',
     SOCKET_PATH: 'storage/gateway.sock',
-    PM2_HOME: resolve(process.cwd(), './storage/.pm2'),
     PLUGIN_PACKAGE_PREFIX: '@tachybase/plugin-,@tachybase/module-',
     SERVER_TSCONFIG_PATH: './tsconfig.server.json',
     PLAYWRIGHT_AUTH_FILE: resolve(process.cwd(), 'storage/playwright/.auth/admin.json'),
@@ -65,6 +65,8 @@ export function parseEnvironment() {
     LOGGER_BASE_PATH: 'storage/logs',
     APP_SERVER_BASE_URL: '',
     APP_PUBLIC_PATH: '/',
+    TEGO_HOME: join(os.homedir(), '.tego'),
+    TEGO_RUNTIME_NAME: 'current',
   };
 
   config({
@@ -75,6 +77,10 @@ export function parseEnvironment() {
     if (!process.env[key]) {
       process.env[key] = env[key];
     }
+  }
+
+  if (!process.env.TEGO_RUNTIME_NAME) {
+    process.env.TEGO_RUNTIME_NAME = join(process.env.TEGO_HOME!, process.env.TEGO_RUNTIME_NAME!);
   }
 
   if (!process.env.__env_modified__ && process.env.APP_PUBLIC_PATH) {
