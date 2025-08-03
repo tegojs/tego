@@ -376,8 +376,8 @@ export function initEnv() {
     }
   }
 
-  if (!process.env.TEGO_RUNTIME_NAME) {
-    process.env.TEGO_RUNTIME_NAME = join(process.env.TEGO_HOME!, process.env.TEGO_RUNTIME_NAME!);
+  if (!process.env.TEGO_RUNTIME_HOME) {
+    process.env.TEGO_RUNTIME_HOME = join(process.env.TEGO_HOME!, process.env.TEGO_RUNTIME_NAME!);
   }
 
   if (!process.env.__env_modified__ && process.env.APP_PUBLIC_PATH) {
