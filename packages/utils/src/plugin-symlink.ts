@@ -53,7 +53,7 @@ export async function createStoragePluginsSymlink() {
 
 export async function createDevPluginSymLink(pluginName: string) {
   const packagePluginsPath = resolve(process.cwd(), 'packages');
-  const nodeModulesPath = resolve(process.cwd(), 'plugins', 'dev');
+  const nodeModulesPath = resolve(process.env.TEGO_RUNTIME_HOME, 'plugins', 'dev');
   try {
     const packageJson = JSON.parse(
       readFileSync(join(packagePluginsPath, pluginName, 'package.json'), { encoding: 'utf-8' }),
