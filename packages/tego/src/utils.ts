@@ -81,6 +81,10 @@ export function parseEnvironment() {
 
   if (!process.env.TEGO_RUNTIME_HOME) {
     process.env.TEGO_RUNTIME_HOME = join(process.env.TEGO_HOME!, process.env.TEGO_RUNTIME_NAME!);
+    // 兼容旧版本过的用户
+    if (!process.env.TEGO_RUNTIME_NAME && fs.existsSync(resolve(process.cwd(), 'storage'))) {
+      process.env.TEGO_RUNTIME_HOME = resolve(process.cwd(), 'storage');
+    }
   }
 
   if (!process.env.__env_modified__ && process.env.APP_PUBLIC_PATH) {

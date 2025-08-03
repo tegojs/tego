@@ -284,7 +284,7 @@ export async function genTsConfigPaths() {
 
 export function generatePlaywrightPath(clean = false) {
   try {
-    const playwright = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/playwright/tests');
+    const playwright = resolve(process.env.TEGO_RUNTIME_HOME!, 'storage/playwright/tests');
     if (clean && _existsSync(playwright)) {
       rmSync(dirname(playwright), { force: true, recursive: true });
     }
@@ -378,6 +378,10 @@ export function initEnv() {
 
   if (!process.env.TEGO_RUNTIME_HOME) {
     process.env.TEGO_RUNTIME_HOME = join(process.env.TEGO_HOME!, process.env.TEGO_RUNTIME_NAME!);
+    // 兼容旧版本过的用户
+    if (!process.env.TEGO_RUNTIME_NAME && _existsSync(resolve(process.cwd(), 'storage'))) {
+      process.env.TEGO_RUNTIME_HOME = resolve(process.cwd(), 'storage');
+    }
   }
 
   if (!process.env.__env_modified__ && process.env.APP_PUBLIC_PATH) {
