@@ -284,7 +284,7 @@ export async function genTsConfigPaths() {
 
 export function generatePlaywrightPath(clean = false) {
   try {
-    const playwright = resolve(process.cwd(), 'storage/playwright/tests');
+    const playwright = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/playwright/tests');
     if (clean && _existsSync(playwright)) {
       rmSync(dirname(playwright), { force: true, recursive: true });
     }
@@ -321,13 +321,13 @@ export function initEnv() {
     DB_UNDERSCORED: parseEnv('DB_UNDERSCORED'),
     DEFAULT_STORAGE_TYPE: 'local',
     LOCAL_STORAGE_DEST: 'storage/uploads',
-    PLUGIN_STORAGE_PATH: resolve(process.cwd(), 'storage/plugins'),
+    PLUGIN_STORAGE_PATH: 'storage/plugins',
     MFSU_AD: 'none',
     WS_PATH: '/ws',
     SOCKET_PATH: 'storage/gateway.sock',
     PLUGIN_PACKAGE_PREFIX: '@tachybase/plugin-,@tachybase/module-',
     SERVER_TSCONFIG_PATH: './tsconfig.server.json',
-    PLAYWRIGHT_AUTH_FILE: resolve(process.cwd(), 'storage/playwright/.auth/admin.json'),
+    PLAYWRIGHT_AUTH_FILE: 'storage/playwright/.auth/admin.json',
     CACHE_DEFAULT_STORE: 'memory',
     CACHE_MEMORY_MAX: 2000,
     PLUGIN_STATICS_PATH: '/static/plugins/',

@@ -23,8 +23,8 @@ async function getStoragePluginNames(target) {
 }
 
 export async function createStoragePluginSymLink(pluginName) {
-  const storagePluginsPath = resolve(process.cwd(), 'storage', 'plugins');
-  const nodeModulesPath = resolve(process.cwd(), 'plugins', 'remote');
+  const storagePluginsPath = resolve(process.env.TEGO_RUNTIME_HOME, 'storage', 'plugins');
+  const nodeModulesPath = resolve(process.env.TEGO_RUNTIME_HOME, 'plugins', 'remote');
   try {
     if (pluginName.startsWith('@')) {
       const [orgName] = pluginName.split('/');
@@ -43,7 +43,7 @@ export async function createStoragePluginSymLink(pluginName) {
 }
 
 export async function createStoragePluginsSymlink() {
-  const storagePluginsPath = resolve(process.cwd(), 'storage/plugins');
+  const storagePluginsPath = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/plugins');
   if (!(await fsExists(storagePluginsPath))) {
     return;
   }

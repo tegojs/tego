@@ -47,13 +47,13 @@ async function runApp(dir: string, index = 0) {
       APP_PORT: 20000 + index + '',
       DB_DATABASE: `tachybase${index}`,
       SOCKET_PATH: `storage/e2e/gateway-e2e-${index}.sock`,
-      PLAYWRIGHT_AUTH_FILE: resolve(process.cwd(), `storage/playwright/.auth/admin-${index}.json`),
+      PLAYWRIGHT_AUTH_FILE: `storage/playwright/.auth/admin-${index}.json`,
     },
   });
 }
 
 export async function pTest(options: any) {
-  const dir = resolve(process.cwd(), 'storage/e2e');
+  const dir = resolve(process.env.TEGO_RUNTIME_HOME!, 'storage/e2e');
 
   if (!existsSync(dir)) {
     mkdirSync(dir, { recursive: true });

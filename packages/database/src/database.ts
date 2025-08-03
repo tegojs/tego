@@ -250,7 +250,7 @@ export class Database extends EventEmitter implements AsyncEmitter {
 
     if (options.storage && options.storage !== ':memory:') {
       if (!isAbsolute(options.storage)) {
-        opts.storage = resolve(process.cwd(), options.storage);
+        opts.storage = resolve(process.env.TEGO_RUNTIME_HOME, options.storage);
       }
     }
 

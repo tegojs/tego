@@ -43,7 +43,7 @@ export class Gateway extends EventEmitter {
   #port: number = process.env.APP_PORT ? parseInt(process.env.APP_PORT) : null;
   #host = '0.0.0.0';
   private wsServer: WSServer;
-  private socketPath = resolve(process.cwd(), 'storage', 'gateway.sock');
+  private socketPath = resolve(process.env.TEGO_RUNTIME_HOME, 'storage', 'gateway.sock');
   private handlers: Map<string, Handler> = new Map();
 
   loggers = new Registry<SystemLogger>();
@@ -52,7 +52,7 @@ export class Gateway extends EventEmitter {
     super();
     this.reset();
     if (process.env.SOCKET_PATH) {
-      this.socketPath = resolve(process.cwd(), process.env.SOCKET_PATH);
+      this.socketPath = resolve(process.env.TEGO_RUNTIME_HOME, process.env.SOCKET_PATH);
     }
   }
 
@@ -162,17 +162,11 @@ export class Gateway extends EventEmitter {
     const { pathname } = parse(req.url);
     const { PLUGIN_STATICS_PATH, APP_PUBLIC_PATH } = process.env;
 
-    if (pathname.endsWith('/__umi/api/bundle-status')) {
-      res.statusCode = 200;
-      res.end('ok');
-      return;
-    }
-
     if (pathname.startsWith(APP_PUBLIC_PATH + 'storage/uploads/')) {
       req.url = req.url.substring(APP_PUBLIC_PATH.length - 1);
       await compress(req, res);
       return handler(req, res, {
-        public: resolve(process.cwd()),
+        public: resolve(process.env.TEGO_RUNTIME_HOME),
         directoryListing: false,
       });
     }
@@ -280,7 +274,7 @@ export class Gateway extends EventEmitter {
     if (!process.env.IS_DEV_CMD) {
       return;
     }
-    const file = resolve(process.cwd(), 'storage/app.watch.ts');
+    const file = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/app.watch.ts');
     if (!fs.existsSync(file)) {
       await fs.promises.writeFile(file, `export const watchId = '${uid()}';`, 'utf-8');
     }
@@ -457,7 +451,7 @@ export class Gateway extends EventEmitter {
   }
 
   static async getIPCSocketClient() {
-    const socketPath = resolve(process.cwd(), process.env.SOCKET_PATH || 'storage/gateway.sock');
+    const socketPath = resolve(process.env.TEGO_RUNTIME_HOME, process.env.SOCKET_PATH || 'storage/gateway.sock');
     try {
       return await IPCSocketClient.getConnection(socketPath);
     } catch (error) {
