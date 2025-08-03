@@ -14,6 +14,7 @@ import {
 import { mkdir, readFile, stat, unlink, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { Socket } from 'node:net';
+import os from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 
@@ -283,7 +284,7 @@ export async function genTsConfigPaths() {
 
 export function generatePlaywrightPath(clean = false) {
   try {
-    const playwright = resolve(process.cwd(), 'storage/playwright/tests');
+    const playwright = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/playwright/tests');
     if (clean && _existsSync(playwright)) {
       rmSync(dirname(playwright), { force: true, recursive: true });
     }
@@ -320,20 +321,21 @@ export function initEnv() {
     DB_UNDERSCORED: parseEnv('DB_UNDERSCORED'),
     DEFAULT_STORAGE_TYPE: 'local',
     LOCAL_STORAGE_DEST: 'storage/uploads',
-    PLUGIN_STORAGE_PATH: resolve(process.cwd(), 'storage/plugins'),
+    PLUGIN_STORAGE_PATH: 'storage/plugins',
     MFSU_AD: 'none',
     WS_PATH: '/ws',
     SOCKET_PATH: 'storage/gateway.sock',
-    PM2_HOME: resolve(process.cwd(), './storage/.pm2'),
     PLUGIN_PACKAGE_PREFIX: '@tachybase/plugin-,@tachybase/module-',
     SERVER_TSCONFIG_PATH: './tsconfig.server.json',
-    PLAYWRIGHT_AUTH_FILE: resolve(process.cwd(), 'storage/playwright/.auth/admin.json'),
+    PLAYWRIGHT_AUTH_FILE: 'storage/playwright/.auth/admin.json',
     CACHE_DEFAULT_STORE: 'memory',
     CACHE_MEMORY_MAX: 2000,
     PLUGIN_STATICS_PATH: '/static/plugins/',
     LOGGER_BASE_PATH: 'storage/logs',
     APP_SERVER_BASE_URL: '',
     APP_PUBLIC_PATH: '/',
+    TEGO_HOME: join(os.homedir(), '.tego'),
+    TEGO_RUNTIME_NAME: 'current',
   };
 
   if (
@@ -372,6 +374,10 @@ export function initEnv() {
       // @ts-ignore
       process.env[key] = env[key];
     }
+  }
+
+  if (!process.env.TEGO_RUNTIME_HOME) {
+    process.env.TEGO_RUNTIME_HOME = join(process.env.TEGO_HOME!, process.env.TEGO_RUNTIME_NAME!);
   }
 
   if (!process.env.__env_modified__ && process.env.APP_PUBLIC_PATH) {

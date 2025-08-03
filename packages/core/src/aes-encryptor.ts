@@ -67,12 +67,18 @@ export class AesEncryptor {
   }
 
   static async getKeyPath(appName: string) {
-    const appKeyPath = path.resolve(process.cwd(), 'storage', 'apps', appName, 'aes_key.dat');
+    const appKeyPath = path.resolve(process.env.TEGO_RUNTIME_HOME, 'storage', 'apps', appName, 'aes_key.dat');
     const appKeyExists = await fs.exists(appKeyPath);
     if (appKeyExists) {
       return appKeyPath;
     }
-    const envKeyPath = path.resolve(process.cwd(), 'storage', 'environment-variables', appName, 'aes_key.dat');
+    const envKeyPath = path.resolve(
+      process.env.TEGO_RUNTIME_HOME,
+      'storage',
+      'environment-variables',
+      appName,
+      'aes_key.dat',
+    );
     const envKeyExists = await fs.exists(envKeyPath);
     if (envKeyExists) {
       return envKeyPath;

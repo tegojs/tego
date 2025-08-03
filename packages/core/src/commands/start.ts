@@ -15,7 +15,7 @@ export default (app: Application) => {
     .action(async (...cliArgs) => {
       const [options] = cliArgs;
       app.logger.debug('start options', options);
-      const file = resolve(process.cwd(), 'storage/app-upgrading');
+      const file = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/app-upgrading');
       const upgrading = await fsExists(file);
       if (upgrading) {
         await app.upgrade();

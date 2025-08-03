@@ -868,7 +868,7 @@ export class PluginManager {
     } else {
       await this.upgradeByNpm(options as any);
     }
-    const file = resolve(process.cwd(), 'storage/app-upgrading');
+    const file = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/app-upgrading');
     await fs.writeFile(file, '', 'utf-8');
     await this.app.upgrade();
   }

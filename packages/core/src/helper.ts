@@ -124,7 +124,7 @@ export const getCommandFullName = (command: Command) => {
 };
 
 export const tsxRerunning = async () => {
-  const file = resolve(process.cwd(), 'storage/app.watch.ts');
+  const file = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/app.watch.ts');
   await fs.promises.writeFile(file, `export const watchId = '${uid()}';`, 'utf-8');
 };
 

@@ -15,7 +15,7 @@ export default (cli: Command) => {
       .replace(/\{\{publicPath\}\}/g, process.env.APP_PUBLIC_PATH!)
       .replace(/\{\{apiPort\}\}/g, process.env.APP_PORT!);
 
-    const targetFile = resolve(process.cwd(), 'storage', 'tachybase.conf');
+    const targetFile = resolve(process.env.TEGO_RUNTIME_HOME!, 'storage', 'tachybase.conf');
     writeFileSync(targetFile, replaced);
   });
 };

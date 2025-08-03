@@ -36,7 +36,9 @@ export async function getTempDir() {
 
 export function getPluginStoragePath() {
   const pluginStoragePath = process.env.PLUGIN_STORAGE_PATH || DEFAULT_PLUGIN_STORAGE_PATH;
-  return path.isAbsolute(pluginStoragePath) ? pluginStoragePath : path.join(process.cwd(), pluginStoragePath);
+  return path.isAbsolute(pluginStoragePath)
+    ? pluginStoragePath
+    : path.join(process.env.TEGO_RUNTIME_HOME, pluginStoragePath);
 }
 
 export function getLocalPluginPackagesPathArr(): string[] {

@@ -1,12 +1,9 @@
-# Ignore everything under the storage/app-dev directory
-storage/app-dev
-
 # Ignore certain directories under packages
-packages/*/*/lib
-packages/*/*/esm
-packages/*/*/es
-packages/*/*/dist
-packages/*/*/node_modules
+packages/*/lib
+packages/*/esm
+packages/*/es
+packages/*/dist
+packages/*/node_modules
 
 /.vscode
 /.idea
