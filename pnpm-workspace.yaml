@@ -2,7 +2,6 @@ packages:
   - 'packages/**'
 allowedDeprecatedVersions:
   cache-manager-redis-yet: "4.2.0"
-  react-beautiful-dnd: "13.1.1"
 
 overrides:
   "@ant-design/cssinjs": "1.24.0"

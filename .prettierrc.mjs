@@ -15,6 +15,7 @@ export default {
     '^react$',
     '<BUILTIN_MODULES>', // Node.js built-in modules
     '^@tachybase/(.*)$',
+    '^@tego/(.*)$',
     '',
     '<THIRD_PARTY_MODULES>', // Imports not matched by other special words or groups.
     '',
