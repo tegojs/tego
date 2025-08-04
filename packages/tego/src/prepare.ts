@@ -5,14 +5,17 @@ import process from 'node:process';
 import yoctoSpinner from '@socketregistry/yocto-spinner/index.cjs';
 import execa from 'execa';
 
-import { DEFAULT_BUILTIN_PLUGINS_PATH, DEFAULT_WEB_PACKAGE_NAME } from './constants';
-import { defaultModules } from './default-modules';
-import { defaultPlugins } from './default-plugins';
-import { downloadTar, initEnvFile } from './utils';
+import {
+  DEFAULT_BUILTIN_PLUGINS_PATH,
+  DEFAULT_WEB_PACKAGE_NAME,
+  INDEX_TEGO_URL,
+  LAST_UPDATE_FILE_SUFFIX,
+} from './constants';
+import { downloadTar, initEnvFile, TegoIndexManager } from './utils';
 
 export async function prepare({
   name,
-  plugins = defaultPlugins,
+  plugins = [],
   init = false,
 }: {
   name?: string;
@@ -45,24 +48,15 @@ export async function prepare({
   spinner.success();
   console.log();
 
-  console.log('🚀 ~ start download ~ required modules');
-  // 安装必须得模块
-  const moduleNames = defaultModules.map((moduleName) => `@tachybase/module-${moduleName}`);
-  let index = 1;
-  for (const moduleName of moduleNames) {
-    const spinner = yoctoSpinner({ text: `[${index++}/${moduleNames.length}] Loading ${moduleName}` }).start();
-    await downloadTar(moduleName, `${DEFAULT_BUILTIN_PLUGINS_PATH}/${moduleName}`);
-    if (npmExist) {
-      await npmInstall(`${DEFAULT_BUILTIN_PLUGINS_PATH}/${moduleName}`, spinner);
-    }
-    spinner.success();
-  }
-  console.log();
-
   console.log('🚀 ~ start download ~ plugins');
-  // 安装可选的模块，由参数指定
-  index = 1;
-  const pluginNames = plugins.map((pluginName: string) => `@tachybase/plugin-${pluginName}`);
+  const manager = new TegoIndexManager({
+    indexUrl: INDEX_TEGO_URL,
+    baseDir: process.env.TEGO_HOME!,
+  });
+  const pluginIndex = await manager.getIndex();
+  // download plugins
+  const pluginNames = plugins.length > 0 ? plugins : pluginIndex.plugins.map((plugin: { name: string }) => plugin.name);
+  let index = 1;
   for (const pluginName of pluginNames) {
     const spinner = yoctoSpinner({ text: `[${index++}/${pluginNames.length}] Loading ${pluginName}` }).start();
     await downloadTar(pluginName, `${DEFAULT_BUILTIN_PLUGINS_PATH}/${pluginName}`);
