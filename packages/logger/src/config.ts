@@ -5,7 +5,7 @@ export const getLoggerLevel = () =>
 
 export const getLoggerFilePath = (...paths: string[]): string => {
   return path.resolve(
-    process.env.LOGGER_BASE_PATH || path.resolve(process.env.TEGO_RUNTIME_HOME, 'storage', 'logs'),
+    path.resolve(process.env.TEGO_RUNTIME_HOME, process.env.LOGGER_BASE_PATH ?? 'storage/logs'),
     ...paths,
   );
 };
