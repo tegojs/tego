@@ -41,7 +41,7 @@
   "types": "./lib/index.d.ts",
   "dependencies": {
     "@faker-js/faker": "9.9.0",
-    "@playwright/test": "^1.49.1",
+    "@playwright/test": "^1.54.2",
     "@tachybase/database": "workspace:*",
     "@tachybase/schema": "workspace:*",
     "@tego/core": "workspace:*",
