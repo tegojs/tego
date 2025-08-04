@@ -31,6 +31,9 @@ import { WSServer } from './ws-server';
 
 const compress = promisify(compression());
 
+const DEFAULT_PORT = 3000;
+const DEFAULT_HOST = '0.0.0.0';
+
 export class Gateway extends EventEmitter {
   private static instance: Gateway;
   /**
@@ -40,7 +43,7 @@ export class Gateway extends EventEmitter {
 
   public server: http.Server | null = null;
   public ipcSocketServer: IPCSocketServer | null = null;
-  #port: number = process.env.APP_PORT ? parseInt(process.env.APP_PORT) : null;
+  #port: number = process.env.APP_PORT ? parseInt(process.env.APP_PORT) : DEFAULT_PORT;
   #host = '0.0.0.0';
   private wsServer: WSServer;
   private socketPath = resolve(process.env.TEGO_RUNTIME_HOME, 'storage', 'gateway.sock');
@@ -288,8 +291,8 @@ export class Gateway extends EventEmitter {
       await this.watch();
 
       const startOptions = this.getStartOptions();
-      const port = startOptions.port || process.env.APP_PORT || 3000;
-      const host = startOptions.host || process.env.APP_HOST || '0.0.0.0';
+      const port = startOptions.port || process.env.APP_PORT || DEFAULT_PORT;
+      const host = startOptions.host || process.env.APP_HOST || DEFAULT_HOST;
 
       this.start({
         port,
