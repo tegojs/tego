@@ -17,16 +17,6 @@ export async function prepare({
   plugins: string[];
   init?: boolean;
 }) {
-  if (init) {
-    if (fs.existsSync(name)) {
-      console.log(`project folder ${name} already exists, exit now.`);
-      return;
-    }
-    fs.mkdirSync(name);
-  } else {
-    name = process.cwd();
-  }
-
   let npmExist = true;
   // 判断 npm 是否存在
   try {

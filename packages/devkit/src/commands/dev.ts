@@ -1,8 +1,67 @@
+import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { confirm } from '@inquirer/prompts';
 import { createRsbuild, loadConfig } from '@rsbuild/core';
 import { Command } from 'commander';
 import { getPortPromise } from 'portfinder';
+import simpleGit from 'simple-git';
 
-import { fsExists, postCheck, promptForTs, run } from '../util';
+import { fsExists, postCheck, promptForTs, run, runAppCommand } from '../util';
+
+async function prepare() {
+  const git = simpleGit();
+  const branch = (await git.branch()).current;
+  const runtime = branch.replace(/\//g, '__');
+  const runtimeDir = path.resolve(process.env.TEGO_HOME!, runtime);
+  const settingsFile = path.join(runtimeDir, 'settings.js');
+
+  // 判断是否已经存在配置
+  if (!fs.existsSync(settingsFile)) {
+    const answer = await confirm({
+      message: `环境 "${runtime}" 尚未初始化，是否要初始化？`,
+      default: true,
+    });
+
+    if (!answer) {
+      console.log('已取消初始化');
+      process.exit(1);
+    }
+
+    // 调安装
+    process.env.TEGO_RUNTIME_NAME = runtime;
+    process.env.TEGO_RUNTIME_HOME = runtimeDir;
+    await runAppCommand('init', []);
+
+    // // 创建目录
+    // fs.mkdirSync(runtimeDir, { recursive: true });
+
+    // // 找模板文件
+    // const template = path.join(process.env.APP_SERVER_ROOT!, 'presets', 'settings.js');
+
+    // // 拷贝模板
+    // fs.copyFileSync(template, settingsFile);
+    // console.log(`已拷贝模板至 ${settingsFile}`);
+
+    // 用 VSCode 打开让用户修改
+    spawnSync(process.env.VISUAL ?? process.env.EDITOR ?? 'vi', [settingsFile], { stdio: 'inherit' });
+
+    // 再次确认
+    const ok = await confirm({
+      message: '是否已修改好 settings.js ？',
+      default: true,
+    });
+
+    if (!ok) {
+      console.log('请完成修改后再运行 pnpm dev');
+      process.exit(1);
+    }
+
+    // 安装应用
+    await runAppCommand('install', []);
+  }
+}
 
 export default (cli: Command) => {
   cli
@@ -23,6 +82,12 @@ export default (cli: Command) => {
 
       if (!SERVER_TSCONFIG_PATH) {
         throw new Error('SERVER_TSCONFIG_PATH is not set.');
+      }
+
+      try {
+        await prepare();
+      } catch (error) {
+        process.exit(1);
       }
 
       if (process.argv.includes('-h') || process.argv.includes('--help')) {

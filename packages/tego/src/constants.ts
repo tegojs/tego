@@ -9,6 +9,7 @@ parseEnvironment();
 
 // 读取配置
 if (!fs.existsSync(`${process.env.TEGO_RUNTIME_HOME}/settings.js`)) {
+  fs.mkdirSync(`${process.env.TEGO_RUNTIME_HOME}`, { recursive: true });
   fs.copyFileSync(path.join(__dirname, '../presets/settings.js'), `${process.env.TEGO_RUNTIME_HOME}/settings.js`);
 }
 TachybaseGlobal.settings = require(`${process.env.TEGO_RUNTIME_HOME}/settings.js`);
