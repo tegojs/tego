@@ -6,6 +6,7 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "dependencies": {
+    "@tachybase/globals": "workspace:*",
     "@tachybase/logger": "workspace:*",
     "@tachybase/utils": "workspace:*",
     "async-mutex": "^0.5.0",

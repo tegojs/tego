@@ -2,7 +2,7 @@ import { createRsbuild, loadConfig } from '@rsbuild/core';
 import { Command } from 'commander';
 import { getPortPromise } from 'portfinder';
 
-import { nodeCheck, postCheck, promptForTs, run } from '../util';
+import { fsExists, nodeCheck, postCheck, promptForTs, run } from '../util';
 
 export default (cli: Command) => {
   cli
@@ -110,6 +110,9 @@ export default (cli: Command) => {
       }
 
       if (client || !server) {
+        if (!APP_CLIENT_ROOT || !(await fsExists(APP_CLIENT_ROOT))) {
+          return;
+        }
         const runClient = async () => {
           const getDevEnvironment = (clientPort: number, proxyPort: number) => ({
             PORT: clientPort + '',
