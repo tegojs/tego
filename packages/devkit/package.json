@@ -8,7 +8,7 @@
     ".": "./lib/index.mjs"
   },
   "bin": {
-    "tachybase": "./bin/cli.js"
+    "tegod": "./bin/cli.js"
   },
   "files": [
     "assets",
