@@ -23,7 +23,8 @@
     "test": "tachybase test",
     "test:client": "tachybase test:client",
     "test:server": "tachybase test:server",
-    "ts": "tachybase test:server"
+    "ts": "tachybase test:server",
+    "ui": "tachybase ui"
   },
   "lint-staged": {
     "*.{js,json,sql,ts,tsx}": [
