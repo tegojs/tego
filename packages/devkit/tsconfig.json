@@ -9,6 +9,7 @@
     "declaration": true,
     "noEmit": true,
     "esModuleInterop": true,
+    "jsx": "react",
     "skipLibCheck": true
   },
   "exclude": ["./dist"],
