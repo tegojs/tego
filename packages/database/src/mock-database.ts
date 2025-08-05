@@ -1,4 +1,5 @@
 import path from 'node:path';
+import TachybaseGlobal from '@tachybase/globals';
 import { merge } from '@tachybase/utils';
 
 import { customAlphabet } from 'nanoid';
@@ -18,25 +19,25 @@ export class MockDatabase extends Database {
 
 export function getConfigByEnv() {
   const options = {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    dialect: process.env.DB_DIALECT || 'sqlite',
-    logging: process.env.DB_LOGGING === 'on' ? customLogger : false,
-    storage: process.env.DB_STORAGE,
+    username: TachybaseGlobal.settings.database.user,
+    password: TachybaseGlobal.settings.database.password,
+    database: TachybaseGlobal.settings.database.database,
+    host: TachybaseGlobal.settings.database.host,
+    port: TachybaseGlobal.settings.database.port,
+    dialect: TachybaseGlobal.settings.database.dialect,
+    logging: TachybaseGlobal.settings.database.logging ? customLogger : false,
+    storage: TachybaseGlobal.settings.database.storage,
     define: {
       charset: 'utf8mb4',
       collate: 'utf8mb4_unicode_ci',
     },
-    timezone: process.env.DB_TIMEZONE,
-    underscored: process.env.DB_UNDERSCORED === 'true',
-    schema: process.env.DB_SCHEMA !== 'public' ? process.env.DB_SCHEMA : undefined,
+    timezone: TachybaseGlobal.settings.database.timezone,
+    underscored: TachybaseGlobal.settings.database.underscored,
+    schema: TachybaseGlobal.settings.database.schema,
     dialectOptions: {},
   };
 
-  if (process.env.DB_DIALECT === 'postgres') {
+  if (TachybaseGlobal.settings.database.dialect === 'postgres') {
     options.dialectOptions['application_name'] = 'tachybase.main';
   }
 

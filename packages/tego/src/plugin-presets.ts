@@ -1,41 +1,35 @@
+import TachybaseGlobal from '@tachybase/globals';
 import { Plugin, PluginManager } from '@tego/core';
+
 import _ from 'lodash';
 
 export class PluginPresets extends Plugin {
-  splitNames(name: string) {
-    return (name || '').split(',').filter(Boolean);
-  }
-
   getBuiltInPlugins() {
-    const { PRESETS_BULTIN_PLUGINS } = process.env;
-    if (!PRESETS_BULTIN_PLUGINS) {
+    if (!TachybaseGlobal.settings.presets.builtinPlugins) {
       throw new Error(
-        'PRESETS_BUILTIN_PLUGINS is not defined! Please refer to the .env.example file for the correct configuration.',
+        'presets.builtinPlugins is not defined! Please refer to the settings.js file for the correct configuration.',
       );
     }
-    const [installedPlugins] = this.parseNames(PRESETS_BULTIN_PLUGINS);
-    return installedPlugins;
-  }
-
-  parseNames(plugins: string) {
-    const installedPlugins = this.splitNames(plugins).filter((name) => !name.startsWith('!'));
-    const disabledPlugins = this.splitNames(plugins)
-      .filter((name) => name.startsWith('!'))
-      .map((name) => name.slice(1));
-
-    return [installedPlugins, disabledPlugins];
+    return TachybaseGlobal.settings.presets.builtinPlugins;
   }
 
   getExternalPlugins() {
-    const { PRESETS_EXTERNAL_PLUGINS } = process.env;
-    if (!PRESETS_EXTERNAL_PLUGINS) {
+    if (!TachybaseGlobal.settings.presets.externalPlugins) {
       throw new Error(
-        'PRESETS_EXTERNAL_PLUGINS is not defined! Please refer to the .env.example file for the correct configuration.',
+        'presets.externalPlugins is not defined! Please refer to the settings.js file for the correct configuration.',
       );
     }
-    const [installedPlugins, disabledPlugins] = this.parseNames(PRESETS_EXTERNAL_PLUGINS);
-
-    return { installedPlugins, disabledPlugins };
+    return TachybaseGlobal.settings.presets.externalPlugins.reduce(
+      (acc, cur) => {
+        if (cur.enabledByDefault) {
+          acc.installedPlugins.push(cur.name);
+        } else {
+          acc.disabledPlugins.push(cur.name);
+        }
+        return acc;
+      },
+      { installedPlugins: [] as string[], disabledPlugins: [] as string[] },
+    );
   }
 
   async getPackageJson(name) {
@@ -189,8 +183,7 @@ export class PluginPresets extends Plugin {
     if (this.app.name === 'main') {
       return [];
     }
-    const { FORBID_SUB_APP_PLUGINS } = process.env;
-    return FORBID_SUB_APP_PLUGINS ? FORBID_SUB_APP_PLUGINS.split(',') : [];
+    return TachybaseGlobal.settings.misc.forbidSubAppPlugins;
   }
   // 从环境变量读取禁止子应用装载的插件
   async forbidSubAppPlugin() {

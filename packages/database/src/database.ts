@@ -830,7 +830,7 @@ export class Database extends EventEmitter implements AsyncEmitter {
 
       if (result?.Value === '1' && !this.options.underscored) {
         console.log(
-          `Your database lower_case_table_names=1, please add ${chalk.yellow('DB_UNDERSCORED=true')} to the .env file`,
+          `Your database lower_case_table_names=1, please add ${chalk.yellow('database.underscored=true')} to the settings.js file`,
         );
 
         process.exit();

@@ -297,18 +297,6 @@ export function generatePlaywrightPath(clean = false) {
   }
 }
 
-function parseEnv(name: string) {
-  if (name === 'DB_UNDERSCORED') {
-    if (process.env.DB_UNDERSCORED === 'true') {
-      return 'true';
-    }
-    if (process.env.DB_UNDERSCORED) {
-      return 'true';
-    }
-    return 'false';
-  }
-}
-
 export function initEnv() {
   const env = {
     APP_ENV: 'development',
@@ -316,9 +304,7 @@ export function initEnv() {
     APP_PORT: 3000,
     API_BASE_PATH: '/api/',
     DB_DIALECT: 'sqlite',
-    DB_STORAGE: 'storage/db/tachybase.sqlite',
     DB_TIMEZONE: '+00:00',
-    DB_UNDERSCORED: parseEnv('DB_UNDERSCORED'),
     DEFAULT_STORAGE_TYPE: 'local',
     LOCAL_STORAGE_DEST: 'storage/uploads',
     PLUGIN_STORAGE_PATH: 'storage/plugins',
@@ -328,10 +314,7 @@ export function initEnv() {
     PLUGIN_PACKAGE_PREFIX: '@tachybase/plugin-,@tachybase/module-',
     SERVER_TSCONFIG_PATH: './tsconfig.server.json',
     PLAYWRIGHT_AUTH_FILE: 'storage/playwright/.auth/admin.json',
-    CACHE_DEFAULT_STORE: 'memory',
-    CACHE_MEMORY_MAX: 2000,
     PLUGIN_STATICS_PATH: '/static/plugins/',
-    LOGGER_BASE_PATH: 'storage/logs',
     APP_SERVER_BASE_URL: '',
     APP_PUBLIC_PATH: '/',
     TEGO_HOME: join(os.homedir(), '.tego'),

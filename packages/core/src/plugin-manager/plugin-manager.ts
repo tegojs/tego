@@ -1112,8 +1112,8 @@ export class PluginManager {
     if (this['_initRuntimePlugins']) {
       return;
     }
-    if (process.env.RUNTIME_PLUGINS) {
-      const runtimePlugins = process.env.RUNTIME_PLUGINS.split(',');
+    if (TachybaseGlobal.settings.presets.runtimePlugins) {
+      const runtimePlugins = TachybaseGlobal.settings.presets.runtimePlugins;
       for (const plugin of runtimePlugins) {
         await this.add(plugin, { enabled: true });
       }

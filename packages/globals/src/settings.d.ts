@@ -8,16 +8,16 @@ export interface Settings {
     INIT_ROOT_USERNAME: string;
     INIT_ROOT_PASSWORD: string;
     INIT_ROOT_NICKNAME: string;
-    // FORCE_LOCALE_CACHE?: string;
+    FORCE_LOCALE_CACHE?: string;
   };
   logger: {
     /** console | file | dailyRotateFile */
-    transport: 'console' | 'file' | 'dailyRotateFile';
+    transport: ('console' | 'file' | 'dailyRotateFile')[];
     basePath: string;
-    // level?: 'error' | 'warn' | 'info' | 'debug';
-    // maxFiles?: string; // e.g. "14d"
-    // maxSize?: string; // e.g. "10m"
-    // format?: 'json' | 'splitter';
+    level?: 'error' | 'warn' | 'info' | 'debug';
+    maxFiles?: string | number; // e.g. "14d"
+    maxSize?: string | number; // e.g. "10m"
+    format?: 'logfmt' | 'json' | 'delimiter' | 'console';
   };
   database: {
     dialect: 'sqlite' | 'postgres' | 'mysql' | 'mariadb';
@@ -30,7 +30,10 @@ export interface Settings {
     logging?: boolean;
     tablePrefix?: string;
     underscored?: boolean;
+    schema?: string;
+    timezone?: string;
     ssl?: {
+      mode?: string;
       ca?: string;
       key?: string;
       cert?: string;

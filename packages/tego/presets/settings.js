@@ -1,4 +1,4 @@
-/** @type {import('./settings').default} */
+/** @type {import('@tachybase/globals').Settings} */
 module.exports = {
   /**
    * 如果对应的环境变量没设置，则使用这里面的值，如果有设置，不用这里的值
@@ -29,7 +29,7 @@ module.exports = {
     /**
      *  console | file | dailyRotateFile
      */
-    transport: 'dailyRotateFile',
+    transport: ['console', 'dailyRotateFile'],
 
     /**
      *

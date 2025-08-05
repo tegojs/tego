@@ -42,7 +42,6 @@ async function runApp(dir: string, index = 0) {
       CI: process.env.CI,
       __E2E__: true + '',
       APP_BASE_URL: undefined,
-      LOGGER_LEVEL: 'error',
       APP_ENV: 'production',
       APP_PORT: 20000 + index + '',
       DB_DATABASE: `tachybase${index}`,

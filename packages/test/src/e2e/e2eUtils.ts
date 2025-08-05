@@ -1,3 +1,4 @@
+import TachybaseGlobal from '@tachybase/globals';
 import { uid } from '@tachybase/schema';
 
 import { faker } from '@faker-js/faker';
@@ -514,7 +515,7 @@ const _test = base.extend<ExtendUtils>({
 
 export const test = Object.assign(_test, {
   /** 只运行在 postgres 数据库中 */
-  pgOnly: process.env.DB_DIALECT === 'postgres' ? _test : _test.skip,
+  pgOnly: TachybaseGlobal.settings.database.dialect === 'postgres' ? _test : _test.skip,
 });
 
 const getStorageItem = (key: string, storageState: any) => {

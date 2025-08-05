@@ -1,6 +1,7 @@
 import http from 'node:http';
 import path from 'node:path';
 import url from 'node:url';
+import TachybaseGlobal from '@tachybase/globals';
 
 import dotenv from 'dotenv';
 import mariadb from 'mariadb';
@@ -57,11 +58,11 @@ class PostgresClient extends BaseClient<pg.Client> {
 
   async _createConnection(): Promise<pg.Client> {
     const client = new pg.Client({
-      host: process.env['DB_HOST'],
-      port: Number(process.env['DB_PORT']),
-      user: process.env['DB_USER'],
-      password: process.env['DB_PASSWORD'],
-      database: process.env['DB_DATABASE'],
+      host: TachybaseGlobal.settings.database.host,
+      port: TachybaseGlobal.settings.database.port,
+      user: TachybaseGlobal.settings.database.user,
+      password: TachybaseGlobal.settings.database.password,
+      database: TachybaseGlobal.settings.database.database,
     });
 
     await client.connect();
@@ -80,11 +81,11 @@ class MySQLClient extends BaseClient<any> {
 
   async _createConnection(): Promise<mysql.Connection> {
     return mysql.createConnection({
-      host: process.env['DB_HOST'],
-      port: Number(process.env['DB_PORT']),
-      user: process.env['DB_USER'],
-      password: process.env['DB_PASSWORD'],
-      database: process.env['DB_DATABASE'],
+      host: TachybaseGlobal.settings.database.host,
+      port: TachybaseGlobal.settings.database.port,
+      user: TachybaseGlobal.settings.database.user,
+      password: TachybaseGlobal.settings.database.password,
+      database: TachybaseGlobal.settings.database.database,
     });
   }
 }
@@ -100,11 +101,11 @@ class MariaDBClient extends BaseClient<any> {
 
   async _createConnection(): Promise<mariadb.Connection> {
     return await mariadb.createConnection({
-      host: process.env['DB_HOST'],
-      port: Number(process.env['DB_PORT']),
-      user: process.env['DB_USER'],
-      password: process.env['DB_PASSWORD'],
-      database: process.env['DB_DATABASE'],
+      host: TachybaseGlobal.settings.database.host,
+      port: TachybaseGlobal.settings.database.port,
+      user: TachybaseGlobal.settings.database.user,
+      password: TachybaseGlobal.settings.database.password,
+      database: TachybaseGlobal.settings.database.database,
     });
   }
 }
