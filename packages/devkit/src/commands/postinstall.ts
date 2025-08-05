@@ -1,7 +1,3 @@
-import { existsSync } from 'node:fs';
-import { readFile, writeFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
-
 import { Command } from 'commander';
 
 import { generatePlaywrightPath, isDev } from '../util';

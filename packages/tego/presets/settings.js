@@ -7,11 +7,21 @@ module.exports = {
     APP_ENV: 'development',
     APP_PORT: 3000,
     APP_KEY: 'test-key',
+    API_BASE_PATH: '/api/',
     INIT_APP_LANG: 'en-US',
     INIT_ROOT_EMAIL: 'admin@tachybase.com',
     INIT_ROOT_USERNAME: 'admin',
     INIT_ROOT_PASSWORD: 'admin',
     INIT_ROOT_NICKNAME: 'Admin',
+    PLUGIN_STORAGE_PATH: 'storage/plugins',
+    WS_PATH: '/ws',
+    SOCKET_PATH: 'storage/gateway.sock',
+    PLUGIN_PACKAGE_PREFIX: '@tachybase/plugin-,@tachybase/module-',
+    SERVER_TSCONFIG_PATH: './tsconfig.server.json',
+    PLAYWRIGHT_AUTH_FILE: 'storage/playwright/.auth/admin.json',
+    PLUGIN_STATICS_PATH: '/static/plugins/',
+    APP_SERVER_BASE_URL: '',
+    APP_PUBLIC_PATH: '/',
     // 开发环境测试locale 强制使用 cache
     // FORCE_LOCALE_CACHE: '1',
   },
@@ -96,7 +106,12 @@ module.exports = {
     /**
      *
      */
-    // underscored: true,
+    underscored: false,
+
+    /**
+     * mysql/postgres
+     */
+    timezone: '+00:00',
 
     /**
      * ssl config

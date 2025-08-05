@@ -15,64 +15,22 @@ import { config } from 'dotenv';
 import npmRegistryFetch from 'npm-registry-fetch';
 import * as tar from 'tar';
 
-import { DEFAULT_WEB_PACKAGE_NAME, INDEX_TEGO_URL, LAST_UPDATE_FILE_SUFFIX } from './constants';
-
-export function initEnvFile(name: string) {
-  const envPath = resolve(name, '.env');
-  if (!fs.existsSync(envPath)) {
-    fs.copyFileSync(resolve(__dirname, '../presets/.env.example'), envPath);
-    console.info('.env file created.');
-  } else {
-    console.info('.env file already exists.');
-  }
-}
-
-function parseEnv(name: string) {
-  if (name === 'DB_UNDERSCORED') {
-    if (process.env.DB_UNDERSCORED === 'true') {
-      return 'true';
-    }
-    if (process.env.DB_UNDERSCORED) {
-      return 'true';
-    }
-    return 'false';
-  }
-}
+import { DEFAULT_WEB_PACKAGE_NAME, LAST_UPDATE_FILE_SUFFIX } from './constants';
 
 export function parseEnvironment() {
   const env = {
-    APP_ENV: 'development',
-    APP_KEY: 'test-jwt-secret',
-    APP_PORT: 3000,
-    API_BASE_PATH: '/api/',
-    DB_DIALECT: 'sqlite',
-    DB_STORAGE: 'storage/db/tachybase.sqlite',
-    DB_TIMEZONE: '+00:00',
-    DB_UNDERSCORED: parseEnv('DB_UNDERSCORED'),
-    DEFAULT_STORAGE_TYPE: 'local',
-    RUN_MODE: 'engine',
-    LOCAL_STORAGE_DEST: 'storage/uploads',
-    PLUGIN_STORAGE_PATH: 'storage/plugins',
-    MFSU_AD: 'none',
-    WS_PATH: '/ws',
-    SOCKET_PATH: 'storage/gateway.sock',
-    PLUGIN_PACKAGE_PREFIX: '@tachybase/plugin-,@tachybase/module-',
-    SERVER_TSCONFIG_PATH: './tsconfig.server.json',
-    PLAYWRIGHT_AUTH_FILE: 'storage/playwright/.auth/admin.json',
-    CACHE_DEFAULT_STORE: 'memory',
-    CACHE_MEMORY_MAX: 2000,
-    PLUGIN_STATICS_PATH: '/static/plugins/',
-    LOGGER_BASE_PATH: 'storage/logs',
-    APP_SERVER_BASE_URL: '',
-    APP_PUBLIC_PATH: '/',
     TEGO_HOME: join(os.homedir(), '.tego'),
     TEGO_RUNTIME_NAME: 'current',
   };
 
-  config({
-    path: resolve(process.cwd(), process.env.APP_ENV_PATH || '.env'),
-  });
+  // 允许 .env 不存在
+  if (_existsSync(resolve(process.cwd(), '.env'))) {
+    config({
+      path: resolve(process.cwd(), '.env'),
+    });
+  }
 
+  // 如果存在 storage 的话，TEGO_RUNTIME_HOME 默认指向当前路径
   if (
     !process.env.TEGO_RUNTIME_HOME &&
     !process.env.TEGO_RUNTIME_NAME &&
@@ -87,6 +45,7 @@ export function parseEnvironment() {
     }
   }
 
+  // 如果 TEGO_RUNTIME_HOME 还未设置，那就设置为 TEGO_HOME/TEGO_RUNTIME_NAME
   if (!process.env.TEGO_RUNTIME_HOME) {
     process.env.TEGO_RUNTIME_HOME = join(process.env.TEGO_HOME!, process.env.TEGO_RUNTIME_NAME!);
   }
@@ -205,7 +164,7 @@ export class TegoIndexManager {
   constructor({
     indexUrl,
     baseDir,
-    lastUpdateSuffix = '.last-update-at',
+    lastUpdateSuffix = LAST_UPDATE_FILE_SUFFIX,
   }: {
     indexUrl: string;
     baseDir: string;
