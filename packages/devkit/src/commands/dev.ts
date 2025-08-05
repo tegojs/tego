@@ -2,7 +2,7 @@ import { createRsbuild, loadConfig } from '@rsbuild/core';
 import { Command } from 'commander';
 import { getPortPromise } from 'portfinder';
 
-import { fsExists, nodeCheck, postCheck, promptForTs, run } from '../util';
+import { fsExists, postCheck, promptForTs, run } from '../util';
 
 export default (cli: Command) => {
   cli
@@ -20,8 +20,6 @@ export default (cli: Command) => {
     .action(async (opts) => {
       promptForTs();
       const { APP_SERVER_ROOT, APP_CLIENT_ROOT, SERVER_TSCONFIG_PATH } = process.env;
-      // @ts-ignore
-      process.env.IS_DEV_CMD = true;
 
       if (!SERVER_TSCONFIG_PATH) {
         throw new Error('SERVER_TSCONFIG_PATH is not set.');
@@ -53,8 +51,6 @@ export default (cli: Command) => {
       if (APP_PORT) {
         clientPort = Number(APP_PORT);
       }
-
-      nodeCheck();
 
       await postCheck(opts);
 

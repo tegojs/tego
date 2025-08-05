@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 
-import { generatePlaywrightPath, isDev } from '../util';
+import { generatePlaywrightPath } from '../util';
 
 export default (cli: Command) => {
   cli
@@ -8,8 +8,5 @@ export default (cli: Command) => {
     .allowUnknownOption()
     .action(async () => {
       generatePlaywrightPath(true);
-      if (!isDev()) {
-        return;
-      }
     });
 };
