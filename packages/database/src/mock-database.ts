@@ -3,7 +3,6 @@ import TachybaseGlobal from '@tachybase/globals';
 import { merge } from '@tachybase/utils';
 
 import { customAlphabet } from 'nanoid';
-import fetch from 'node-fetch';
 
 import { Database, IDatabaseOptions } from './database';
 

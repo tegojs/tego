@@ -519,9 +519,6 @@ importers:
       nanoid:
         specifier: ^3.3.8
         version: 3.3.8
-      node-fetch:
-        specifier: ^2.7.0
-        version: 2.7.0(encoding@0.1.13)
       qs:
         specifier: ^6.14.0
         version: 6.14.0
