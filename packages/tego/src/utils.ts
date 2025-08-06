@@ -207,3 +207,65 @@ export class TegoIndexManager {
     return await this.fetchIndexFile();
   }
 }
+
+export function convertEnvToSettings(flatEnv: Record<string, string | undefined>) {
+  const settings: any = {
+    env: {},
+    logger: {},
+    database: {},
+    cache: {},
+    encryptionField: {},
+    presets: {},
+    worker: {},
+    export: {},
+    misc: {},
+  };
+
+  // LOGGER_
+  for (const key in flatEnv) {
+    const value = flatEnv[key];
+    if (value === undefined) continue;
+
+    if (key.startsWith('LOGGER_')) {
+      const subKey = key.replace('LOGGER_', '').toLowerCase();
+      if (subKey === 'transport') {
+        settings.logger.transport = value.split(',').map((x) => x.trim());
+      } else if (subKey === 'maxfiles') {
+        settings.logger.maxFiles = value;
+      } else if (subKey === 'maxsize') {
+        settings.logger.maxSize = value;
+      } else if (subKey === 'format') {
+        settings.logger.format = value;
+      } else {
+        settings.logger[subKey] = value;
+      }
+      continue;
+    }
+
+    // DB_
+    if (key.startsWith('DB_')) {
+      const subKey = key.replace('DB_', '').toLowerCase();
+      if (subKey.startsWith('dialect_options_ssl_')) {
+        // e.g. DB_DIALECT_OPTIONS_SSL_CA
+        const sslKey = subKey.replace('dialect_options_ssl_', '');
+        settings.database.ssl = settings.database.ssl || {};
+        settings.database.ssl[sslKey] = value;
+      } else {
+        settings.database[subKey] = value;
+      }
+      continue;
+    }
+
+    // CACHE_
+    if (key.startsWith('CACHE_')) {
+      const subKey = key.replace('CACHE_', '').toLowerCase();
+      settings.cache[subKey] = value;
+      continue;
+    }
+
+    // 其它 => 默认归到 settings.env
+    settings.env[key] = value;
+  }
+
+  return settings;
+}

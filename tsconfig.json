@@ -21,7 +21,8 @@
     "noUnusedLocals": false,
     "preserveConstEnums": true,
     "emitDeclarationOnly": true,
-    "declaration": true
+    "declaration": true,
+    "types": ["vitest/globals"]
   },
   "exclude": [
     "packages/devkit/templates/plugin/*.d.ts",
