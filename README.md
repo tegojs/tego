@@ -1,8 +1,10 @@
 > ⚠️ **Caution: This repository is currently undergoing a core refactor.Using the Git version may lead to various unexpected issues.If you encounter problems, feel free to submit an issue on GitHub.**
 >
 > ✅ For stable production usage, please use:
-> - [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
-> - The officially released Docker images: [tegojs/tego-all](https://hub.docker.com/r/tegojs/tego-all)
+> - Official frontend and plugin collection: [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
+> - Official Docker image: [tegojs/tego-all](https://hub.docker.com/r/tegojs/tego-all)
+> - Official npm package [tego](https://www.npmjs.com/package/tego)
+
 
 <h1 align="center" style="border-bottom: none">
     <div>
