@@ -1,3 +1,5 @@
+import TachybaseGlobal from '@tachybase/globals';
+
 import { describe } from 'vitest';
 import ws from 'ws';
 
@@ -5,8 +7,9 @@ export { mockDatabase } from '@tachybase/database';
 export { default as supertest } from 'supertest';
 export * from './mockServer';
 
-export const pgOnly: () => any = () => (process.env.DB_DIALECT === 'postgres' ? describe : describe.skip);
-export const isPg = () => process.env.DB_DIALECT === 'postgres';
+export const pgOnly: () => any = () =>
+  TachybaseGlobal.settings.database.dialect === 'postgres' ? describe : describe.skip;
+export const isPg = () => TachybaseGlobal.settings.database.dialect === 'postgres';
 
 export function randomStr() {
   // create random string

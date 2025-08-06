@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import { resolve } from 'node:path';
 import { createHistogram, RecordableHistogram } from 'node:perf_hooks';
+import TachybaseGlobal from '@tachybase/globals';
+import { defineResolver } from '@tachybase/loader';
 import { requestLogger } from '@tachybase/logger';
 import { Resourcer } from '@tachybase/resourcer';
 import { uid } from '@tachybase/utils';
@@ -159,3 +161,8 @@ export const enablePerfHooks = (app: Application) => {
 
   app.acl.allow('perf', '*', 'public');
 };
+
+const globals = TachybaseGlobal.getInstance();
+const lookingPaths = globals.get('WORKER_PATHS');
+const whitelists = new Set<string>(globals.get('WORKER_MODULES'));
+export const resolveRequest = defineResolver(whitelists, require.resolve, lookingPaths);

@@ -5,13 +5,8 @@ import process from 'node:process';
 import yoctoSpinner from '@socketregistry/yocto-spinner/index.cjs';
 import execa from 'execa';
 
-import {
-  DEFAULT_BUILTIN_PLUGINS_PATH,
-  DEFAULT_WEB_PACKAGE_NAME,
-  INDEX_TEGO_URL,
-  LAST_UPDATE_FILE_SUFFIX,
-} from './constants';
-import { downloadTar, initEnvFile, TegoIndexManager } from './utils';
+import { DEFAULT_BUILTIN_PLUGINS_PATH, DEFAULT_WEB_PACKAGE_NAME, INDEX_TEGO_URL } from './constants';
+import { downloadTar, TegoIndexManager } from './utils';
 
 export async function prepare({
   name,
@@ -22,17 +17,6 @@ export async function prepare({
   plugins: string[];
   init?: boolean;
 }) {
-  if (init) {
-    if (fs.existsSync(name)) {
-      console.log(`project folder ${name} already exists, exit now.`);
-      return;
-    }
-    fs.mkdirSync(name);
-    initEnvFile(name);
-  } else {
-    name = process.cwd();
-  }
-
   let npmExist = true;
   // 判断 npm 是否存在
   try {

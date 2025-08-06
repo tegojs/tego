@@ -12,6 +12,7 @@ import install from './install';
 import postinstall from './postinstall';
 import tar from './tar';
 import test from './test';
+import ui from './ui';
 import upgrade from './upgrade';
 
 export default async (cli: Command) => {
@@ -21,6 +22,7 @@ export default async (cli: Command) => {
   build(cli);
   tar(cli);
   dev(cli);
+  ui(cli);
   e2e(cli);
   clean(cli);
   test(cli);

@@ -358,7 +358,7 @@ export class ACL extends EventEmitter {
       const { resourceName: rawResourceName, actionName } = ctx.action;
 
       let resourceName = rawResourceName;
-      if (rawResourceName.includes('.')) {
+      if (rawResourceName?.includes('.')) {
         resourceName = rawResourceName.split('.').pop();
       }
 
@@ -393,7 +393,7 @@ export class ACL extends EventEmitter {
     const { resourceName: rawResourceName, actionName } = ctx.action;
 
     let resourceName = rawResourceName;
-    if (rawResourceName.includes('.')) {
+    if (rawResourceName?.includes('.')) {
       resourceName = rawResourceName.split('.').pop();
     }
 

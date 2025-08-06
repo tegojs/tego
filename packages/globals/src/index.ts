@@ -1,3 +1,5 @@
+import { Settings } from './settings';
+
 class TachybaseGlobal {
   // 私有静态实例
   private static instance: TachybaseGlobal;
@@ -53,6 +55,15 @@ class TachybaseGlobal {
   public toJSON(): Record<string, any> {
     return { ...Object.fromEntries([...this.dataMap.entries()].filter(([key]) => key !== 'PRESETS')), id: this.#id };
   }
+
+  static set settings(settings: Settings) {
+    TachybaseGlobal.getInstance().set('settings', settings);
+  }
+  static get settings(): Settings {
+    return TachybaseGlobal.getInstance().get('settings')!;
+  }
 }
 
 export default TachybaseGlobal;
+
+export type { Settings };

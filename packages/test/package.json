@@ -34,7 +34,7 @@
       }
     },
     "./package.json": "./package.json",
-    "./vitest.mjs": "./vitest.mjs"
+    "./vitest": "./vitest.ts"
   },
   "main": "lib/index.js",
   "module": "./src/index.ts",
@@ -43,6 +43,7 @@
     "@faker-js/faker": "9.9.0",
     "@playwright/test": "^1.54.2",
     "@tachybase/database": "workspace:*",
+    "@tachybase/globals": "workspace:*",
     "@tachybase/schema": "workspace:*",
     "@tego/core": "workspace:*",
     "@testing-library/dom": "^10.4.0",

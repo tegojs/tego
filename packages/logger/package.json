@@ -6,6 +6,7 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "dependencies": {
+    "@tachybase/globals": "workspace:*",
     "chalk": "^4.1.2",
     "lodash": "^4.17.21",
     "triple-beam": "^1.4.1",

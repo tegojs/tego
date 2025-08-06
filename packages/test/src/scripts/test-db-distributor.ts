@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
 import url from 'node:url';
+import TachybaseGlobal from '@tachybase/globals';
 
 import dotenv from 'dotenv';
 import pg from 'pg';
@@ -156,15 +157,15 @@ class PostgresPool extends BasePool {
 
   getDatabaseConfiguration() {
     return {
-      host: process.env.DB_HOST,
-      port: process.env.DB_PORT,
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
+      host: TachybaseGlobal.settings.database.host,
+      port: TachybaseGlobal.settings.database.port,
+      username: TachybaseGlobal.settings.database.user,
+      password: TachybaseGlobal.settings.database.password,
     };
   }
 
   getConfiguredDatabaseName() {
-    return process.env.DB_DATABASE;
+    return TachybaseGlobal.settings.database.database;
   }
 }
 
@@ -179,19 +180,19 @@ class SqlitePool extends BasePool {
 
   getDatabaseConfiguration(): any {
     return {
-      storage: process.env.DB_STORAGE,
+      storage: TachybaseGlobal.settings.database.storage,
     };
   }
 
   getConfiguredDatabaseName() {
-    const storagePath = process.env.DB_STORAGE;
+    const storagePath = TachybaseGlobal.settings.database.storage;
     if (storagePath && storagePath !== ':memory:') {
       return path.basename(storagePath);
     }
   }
 
   getStoragePath() {
-    const storagePath = process.env.DB_STORAGE;
+    const storagePath = TachybaseGlobal.settings.database.storage;
     if (storagePath && storagePath !== ':memory:') {
       // return path without file name
       return path.dirname(storagePath);

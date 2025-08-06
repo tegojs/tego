@@ -1,17 +1,17 @@
 import path from 'node:path';
+import TachybaseGlobal from '@tachybase/globals';
 
-export const getLoggerLevel = () =>
-  process.env.LOGGER_LEVEL || (process.env.APP_ENV === 'development' ? 'debug' : 'info');
+export const getLoggerLevel = () => TachybaseGlobal.settings.logger.level ?? 'info';
 
 export const getLoggerFilePath = (...paths: string[]): string => {
   return path.resolve(
-    path.resolve(process.env.TEGO_RUNTIME_HOME, process.env.LOGGER_BASE_PATH ?? 'storage/logs'),
+    path.resolve(process.env.TEGO_RUNTIME_HOME, TachybaseGlobal.settings.logger.basePath ?? 'storage/logs'),
     ...paths,
   );
 };
 
 export const getLoggerTransport = (): ('console' | 'file' | 'dailyRotateFile')[] =>
-  ((process.env.LOGGER_TRANSPORT as any) || 'console,dailyRotateFile').split(',');
+  TachybaseGlobal.settings.logger.transport ?? ['console', 'dailyRotateFile'];
 
 export const getLoggerFormat = (): 'logfmt' | 'json' | 'delimiter' | 'console' =>
-  (process.env.LOGGER_FORMAT as any) || (process.env.APP_ENV === 'development' ? 'console' : 'json');
+  TachybaseGlobal.settings.logger.format ?? 'console';
