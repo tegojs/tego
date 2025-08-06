@@ -498,15 +498,23 @@ export interface DepCompatible {
 }
 export async function getCompatible(packageName: string) {
   let externalVersion: Record<string, string>;
-  if (!process.env.IS_DEV_CMD) {
+  const hasSrc = fs.existsSync(path.join(getPackageDir(packageName), 'src'));
+  let hasError = false;
+  if (hasSrc) {
+    try {
+      externalVersion = await getExternalVersionFromSource(packageName);
+    } catch {
+      hasError = true;
+    }
+  }
+
+  if (hasError || !hasSrc) {
     const res = await getExternalVersionFromDistFile(packageName);
     if (!res) {
       return false;
     } else {
       externalVersion = res;
     }
-  } else {
-    externalVersion = await getExternalVersionFromSource(packageName);
   }
 
   return Object.keys(externalVersion).reduce<DepCompatible[]>((result, packageName) => {

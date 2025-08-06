@@ -35,3 +35,36 @@ export const defineLoader = (
     // 相对路径、绝对路径不动
     return originalLoad(request, parent, isMain);
   };
+
+/**
+ * 与 defineLoader 相同逻辑的 resolve 方法
+ * @returns 返回解析后的绝对路径
+ */
+export const defineResolver = (
+  whitelists: Set<string>,
+  originalResolve: typeof require.resolve,
+  lookingPaths: string[],
+) => {
+  return function resolveRequest(request: string): string {
+    if (whitelists.has(request) || request.startsWith('@tachybase/') || request.startsWith('@tego/')) {
+      try {
+        return originalResolve(request, { paths: lookingPaths });
+      } catch (err: any) {
+        for (const basePath of lookingPaths) {
+          try {
+            const pluginRoot = resolve(basePath, request);
+            const fakeRequire = createRequire(pluginRoot + '/index.js');
+            return fakeRequire.resolve(pluginRoot);
+          } catch {}
+        }
+        // 回退
+        if (err.code === 'MODULE_NOT_FOUND') {
+          return originalResolve(request);
+        }
+        throw err;
+      }
+    }
+    // 默认逻辑
+    return originalResolve(request);
+  };
+};

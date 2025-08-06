@@ -66,6 +66,7 @@ async function prepare() {
 export default (cli: Command) => {
   cli
     .command('dev')
+    .option('--no-prepare', 'skip prepare')
     .option('-p, --port [port]')
     .option('--proxy-port [port]')
     .option('--client')
@@ -85,7 +86,9 @@ export default (cli: Command) => {
       }
 
       try {
-        await prepare();
+        if (opts.prepare) {
+          await prepare();
+        }
       } catch (error) {
         process.exit(1);
       }

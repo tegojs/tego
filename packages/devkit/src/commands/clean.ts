@@ -11,7 +11,7 @@ export default (cli: Command) => {
     .option('--all')
     .allowUnknownOption()
     .action((opts) => {
-      rimrafSync('{packages}/*/{lib,esm,es,dist,node_modules}', { glob: true });
+      rimrafSync('packages/*/{lib,esm,es,dist,node_modules}', { glob: true });
       if (opts.all) {
         rimrafSync('node_modules', { glob: true });
       }

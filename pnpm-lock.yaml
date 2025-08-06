@@ -307,6 +307,9 @@ importers:
       '@tachybase/globals':
         specifier: workspace:*
         version: link:../globals
+      '@tachybase/loader':
+        specifier: workspace:*
+        version: link:../loader
       '@tachybase/logger':
         specifier: workspace:*
         version: link:../logger
