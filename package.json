@@ -47,7 +47,7 @@
     "@types/node": "20.17.10",
     "@types/react": "~18.3.23",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
+    "lint-staged": "^16.1.4",
     "oxlint": "^1.9.0",
     "prettier": "^3.6.2",
     "prettier-plugin-packagejson": "^2.5.19",
