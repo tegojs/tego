@@ -1,4 +1,4 @@
-name: "Lint PR"
+name: "Lint PR Title"
 
 on:
   pull_request_target:
@@ -9,7 +9,7 @@ on:
       - synchronize
 
 jobs:
-  main:
+  lint-pr-title:
     name: Validate PR title
     runs-on: ubuntu-latest
     permissions:

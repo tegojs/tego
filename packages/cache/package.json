@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.17.20",
-    "redis": "^5.6.1",
+    "redis": "^5.8.0",
     "vitest": "^3.2.4"
   }
 }

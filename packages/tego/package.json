@@ -61,7 +61,7 @@
     "execa": "^5.1.1",
     "i18next": "23.16.8",
     "jsonwebtoken": "8.5.1",
-    "koa": "^2.16.1",
+    "koa": "^2.16.2",
     "koa-bodyparser": "4.4.1",
     "lodash": "4.17.21",
     "multer": "2.0.2",

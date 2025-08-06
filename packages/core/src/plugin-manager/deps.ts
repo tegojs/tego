@@ -23,7 +23,7 @@ const deps: Record<string, string> = {
   'react-router-dom': '6.x',
   antd: '5.x',
   'antd-style': '3.x',
-  '@ant-design/icons': '5.x',
+  '@ant-design/icons': '6.x',
   '@ant-design/cssinjs': '1.x',
   i18next: '23.x',
   'react-i18next': '15.x',
