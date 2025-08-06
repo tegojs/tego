@@ -1,4 +1,4 @@
-name: Code Inspector Tests
+name: Tests
 on:
   push:
     branches:
@@ -20,7 +20,7 @@ jobs:
         with:
           node-version: 20
           cache: 'pnpm'
-      - name: Install deps
+      - name: Install
         run: pnpm install
-      - name: Vites
-        run: pnpm vitest
+      - name: Tests
+        run: pnpm vitest run  --silent --reporter=dot
