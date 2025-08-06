@@ -10,9 +10,9 @@
     "@tachybase/database": "workspace:*",
     "@tachybase/resourcer": "workspace:*",
     "@tachybase/utils": "workspace:*",
-    "koa": "^2.15.3",
+    "koa": "^2.16.2",
     "lodash": "4.17.21",
-    "sequelize": "^6.37.5"
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
     "@types/koa": "^2.15.0",

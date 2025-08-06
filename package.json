@@ -40,7 +40,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@commitlint/prompt-cli": "^19.8.1",
-    "@ianvs/prettier-plugin-sort-imports": "^4.5.1",
+    "@ianvs/prettier-plugin-sort-imports": "^4.6.0",
     "@inquirer/prompts": "^7.8.0",
     "@tachybase/test": "workspace:*",
     "@tego/devkit": "workspace:*",

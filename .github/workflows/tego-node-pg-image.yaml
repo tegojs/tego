@@ -1,4 +1,4 @@
-name: Tachybase Base Image With Postgres
+name: Tego Node PG Image
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Code Inspector
+name: Full Build
 on:
   push:
     branches:
@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 jobs:
-  CI:
+  full-build:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
