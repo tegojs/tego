@@ -69,11 +69,11 @@ export default defineConfig({
             '**/{vitest,commitlint}.config.*',
             'packages/**/{sdk,client,schema}/**/__tests__/**/*.{test,spec}.{ts,tsx}',
           ],
-          testTimeout: 300000,
-          hookTimeout: 300000,
         },
       },
       {
+        // @ts-ignore
+        plugins: [react()],
         resolve: {
           mainFields: ['module'],
         },
@@ -97,7 +97,6 @@ export default defineConfig({
             '**/__e2e__/**',
             '**/{vitest,commitlint}.config.*',
           ],
-          testTimeout: 300000,
         },
       },
     ],

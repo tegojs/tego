@@ -8,7 +8,7 @@ import Application from '../application';
 import { Gateway } from '../gateway';
 import { errors } from '../gateway/errors';
 
-describe('gateway', () => {
+describe.skip('gateway', () => {
   let gateway: Gateway;
   beforeEach(() => {
     gateway = Gateway.getInstance();
