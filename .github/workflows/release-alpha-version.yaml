@@ -1,17 +1,7 @@
-name: Release New Version
+name: Release Alpha Version
 
 on:
-  workflow_dispatch:
-    inputs:
-      bump:
-        description: 'Version bump type'
-        required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
+  workflow_dispatch
 
 jobs:
   release:
@@ -36,17 +26,8 @@ jobs:
       - name: Do major version release
         id: do_version
         run: |
-          bump="${{ github.event.inputs.bump }}"
-          if [ "$bump" = "major" ]; then
-            pnpm -r exec -- npm version major
-            version=$(npm version major --no-git-tag-version)
-          elif [ "$bump" = "minor" ]; then
-            pnpm -r exec -- npm version minor
-            version=$(npm version minor --no-git-tag-version)
-          else
-            pnpm -r exec -- npm version patch
-            version=$(npm version patch --no-git-tag-version)
-          fi
+          pnpm -r exec -- npm version prerelease --preid=alpha
+          version=$(npm version prerelease --preid=alpha --no-git-tag-version)
           echo "version=$version" >> $GITHUB_OUTPUT
 
       - name: Commit
@@ -86,19 +67,5 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          pnpm -r publish --provenance --access public --no-git-checks
-      - name: Build with pkg
-        run: pnpm --filter tego run build
-
-      - name: Upload release assets
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.release.outputs.version }}
-          files: |
-            packages/tego/dist/tego-linux-x64
-            packages/tego/dist/tego-macos-x64
-            packages/tego/dist/tego-win-x64.exe
-            packages/tego/dist/tego-linux-arm64
-            packages/tego/dist/tego-macos-arm64
-
+          pnpm -r publish --provenance --access public --no-git-checks --tag alpha
 

@@ -6,6 +6,7 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "dependencies": {
+    "@tachybase/globals": "workspace:*",
     "@tachybase/logger": "workspace:*",
     "@tachybase/utils": "workspace:*",
     "async-mutex": "^0.5.0",
@@ -19,11 +20,10 @@
     "flat": "^5.0.2",
     "glob": "11.0.0",
     "lodash": "^4.17.21",
-    "nanoid": "^3.3.8",
-    "node-fetch": "^2.7.0",
+    "nanoid": "^3.3.11",
     "qs": "^6.14.0",
     "semver": "7.7.2",
-    "sequelize": "^6.37.5",
+    "sequelize": "^6.37.7",
     "umzug": "^3.8.2"
   },
   "devDependencies": {
