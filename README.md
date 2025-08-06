@@ -1,10 +1,10 @@
-> ⚠️ **Caution: This repository is under active refactoring and is not recommended for current use.**
+> ⚠️ **Caution: This repository is currently undergoing a core refactor.Using the Git version may lead to various unexpected issues.If you encounter problems, feel free to submit an issue on GitHub.**
 >
-> If you are looking for the previous version of Tego with the original plugin setup and frontend integration, please refer to:
->
-> 🔗 [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
->
-> That repository maintains the older usage pattern and plugin collection during the ongoing restructuring of this core package.
+> ✅ For stable production usage, please use:
+> - Official frontend and plugin collection: [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
+> - Official Docker image: [tegojs/tego-all](https://hub.docker.com/r/tegojs/tego-all)
+> - Official npm package [tego](https://www.npmjs.com/package/tego)
+
 
 <h1 align="center" style="border-bottom: none">
     <div>
