@@ -3,7 +3,7 @@ import { Logger } from '@tachybase/logger';
 
 import lodash from 'lodash';
 import { nanoid } from 'nanoid';
-import WebSocket, { WebSocketServer } from 'ws';
+import WebSocket, { Server, WebSocketServer } from 'ws';
 
 import { Gateway } from '.';
 import { AppSupervisor } from '../app-supervisor';
@@ -41,7 +41,7 @@ function getPayloadByErrorCode(code, options) {
 }
 
 export class WSServer {
-  wss: WebSocket.Server;
+  wss: Server;
   webSocketClients = new Map<string, WebSocketClient>();
   static KEY_CORE_MESSAGE = 'KEY_CORE_MESSAGE';
   private currentId = nanoid();
