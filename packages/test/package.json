@@ -57,7 +57,7 @@
     "jsdom-worker": "^0.3.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "4.17.21",
-    "mariadb": "^2.5.6",
+    "mariadb": "^3.4.5",
     "mockjs": "^1.1.0",
     "mysql2": "^3.14.3",
     "pg": "^8.16.3",
