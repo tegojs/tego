@@ -151,6 +151,15 @@ importers:
       '@types/lodash':
         specifier: ^4.17.20
         version: 4.17.20
+      koa-bodyparser:
+        specifier: ^4.4.1
+        version: 4.4.1
+      qs:
+        specifier: ^6.14.0
+        version: 6.14.0
+      supertest:
+        specifier: ^7.1.4
+        version: 7.1.4
 
   packages/auth:
     dependencies:
