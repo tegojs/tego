@@ -16,7 +16,7 @@
     "start": "tego start",
     "tego": "tego",
     "tegod": "tegod",
-    "test": "tegod test",
+    "test": "vitest",
     "tg": "tegod",
     "tgi": "tegod install",
     "tgu": "tegod upgrade",
