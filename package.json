@@ -41,6 +41,7 @@
     "@tego/devkit": "workspace:*",
     "@types/node": "20.17.10",
     "@types/react": "~18.3.23",
+    "@vitest/coverage-v8": "3.2.4",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.4",
     "oxlint": "^1.10.0",

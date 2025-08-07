@@ -46,6 +46,9 @@ function tsConfigPathsToAlias() {
 
 export default defineConfig({
   test: {
+    coverage: {
+      provider: 'v8',
+    },
     silent: !!process.env.GITHUB_ACTIONS,
     globals: true,
     alias: tsConfigPathsToAlias(),
