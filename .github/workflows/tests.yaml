@@ -23,4 +23,4 @@ jobs:
       - name: Install
         run: pnpm install
       - name: Tests
-        run: pnpm vitest run  --silent --reporter=dot,github-actions
+        run: pnpm vitest run  --silent --reporter=dot --reporter=github-actions
