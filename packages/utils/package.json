@@ -40,6 +40,6 @@
     "@types/lodash": "4.17.20",
     "@types/multer": "^2.0.0",
     "@types/node": "20.17.10",
-    "i18next": "23.16.8"
+    "i18next": "25.3.2"
   }
 }
