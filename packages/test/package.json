@@ -55,7 +55,7 @@
     "dotenv": "16.6.1",
     "jsdom": "^16.7.0",
     "jsdom-worker": "^0.3.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "4.17.21",
     "mariadb": "^2.5.6",
     "mockjs": "^1.1.0",
