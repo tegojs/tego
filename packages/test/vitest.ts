@@ -87,7 +87,7 @@ export default defineConfig({
           environment: 'jsdom',
           css: false,
           alias: tsConfigPathsToAlias(),
-          include: ['packages/**/{sdk,client,schema}/**/__tests__/**/*.{test,spec}.{ts,tsx}'],
+          include: ['packages/**/{sdk,client,schema,components}/**/__tests__/**/*.{test,spec}.{ts,tsx}'],
           exclude: [
             '**/node_modules/**',
             '**/dist/**',
