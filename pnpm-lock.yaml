@@ -38,6 +38,9 @@ importers:
       '@inquirer/prompts':
         specifier: ^7.8.0
         version: 7.8.0(@types/node@20.17.10)
+      '@playwright/test':
+        specifier: ^1.54.2
+        version: 1.54.2
       '@tachybase/test':
         specifier: workspace:*
         version: link:packages/test
@@ -80,6 +83,9 @@ importers:
       react:
         specifier: 18.3.1
         version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
       tego:
         specifier: workspace:*
         version: link:packages/tego

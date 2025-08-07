@@ -36,6 +36,7 @@
     "@commitlint/prompt-cli": "^19.8.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.6.0",
     "@inquirer/prompts": "^7.8.0",
+    "@playwright/test": "^1.54.2",
     "@tachybase/test": "workspace:*",
     "@tego/devkit": "workspace:*",
     "@types/node": "20.17.10",
@@ -50,6 +51,7 @@
     "pretty-format": "^30.0.5",
     "pretty-quick": "^4.2.2",
     "react": "~18.3.1",
+    "react-dom": "~18.3.1",
     "tego": "workspace:*",
     "tsx": "^4.20.3",
     "vitest": "^3.2.4"
