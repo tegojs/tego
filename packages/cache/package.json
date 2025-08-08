@@ -7,7 +7,7 @@
   "types": "./lib/index.d.ts",
   "dependencies": {
     "bloom-filters": "^3.0.4",
-    "cache-manager": "^5.7.6",
+    "cache-manager": "^7.1.1",
     "cache-manager-redis-yet": "^4.2.0",
     "deepmerge": "^4.3.1",
     "lodash": "4.17.21"
