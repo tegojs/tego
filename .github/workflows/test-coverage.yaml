@@ -1,11 +1,11 @@
-name: PR Coverage
+name: Test Coverage
 on:
   pull_request:
     branches:
       - main
 
 jobs:
-  pr-coverage:
+  test-coverage:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
@@ -21,8 +21,7 @@ jobs:
         run: pnpm install
       - name: Tests
         run: vitest --coverage.enabled true
-      - name: Report Coverage
-        run: vitest --coverage.enabled true
+      - name: 'Report Coverage'
         # Set if: always() to also generate the report if tests are failing
         # Only works if you set `reportOnFailure: true` in your vite config as specified above
         if: always()
