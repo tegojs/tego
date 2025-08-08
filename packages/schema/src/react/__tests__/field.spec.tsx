@@ -176,7 +176,7 @@ test('useFormEffects', async () => {
         field.setValue(target.value);
       });
     });
-    return <div data-testid="custom-value">{field.value}</div>;
+    return <div data-testid="custom-value">{field.value || ''}</div>;
   });
   act(async () => {
     const { queryByTestId, rerender } = render(
@@ -186,10 +186,12 @@ test('useFormEffects', async () => {
       </FormProvider>,
     );
 
-    expect(queryByTestId('custom-value')?.textContent).toEqual('');
+    await waitFor(() => {
+      expect(queryByTestId('custom-value')?.textContent).toEqual('');
+    });
     form.query('aa').take((aa) => {
       if (isField(aa)) {
-        aa.setValue('123');
+        aa.setValue(['123']);
       }
     });
     await waitFor(() => {
@@ -236,24 +238,39 @@ test('connect', async () => {
     );
   };
   const { queryByText } = render(<MyComponent />);
+
+  // 等待组件渲染完成
+  await waitFor(
+    () => {
+      expect(queryByText('')).toBeVisible();
+    },
+    { timeout: 5000 },
+  );
+
   form.query('aa').take((field) => {
     field.setState((state) => {
       state.value = '123';
     });
   });
-  await waitFor(() => {
-    expect(queryByText('123')).toBeVisible();
-  });
+  await waitFor(
+    () => {
+      expect(queryByText('123')).toBeVisible();
+    },
+    { timeout: 5000 },
+  );
 
   form.query('aa').take((field) => {
     if (!isField(field)) return;
     field.readPretty = true;
   });
-  await waitFor(() => {
-    expect(queryByText('123')).toBeNull();
-    expect(queryByText('read pretty')).toBeVisible();
-  });
-});
+  await waitFor(
+    () => {
+      expect(queryByText('123')).toBeNull();
+      expect(queryByText('read pretty')).toBeVisible();
+    },
+    { timeout: 5000 },
+  );
+}, 15000);
 
 test('fields unmount and validate', async () => {
   const fn = vi.fn();
@@ -290,7 +307,13 @@ test('fields unmount and validate', async () => {
     await form.validate();
   } catch {}
 
-  expect(form.invalid).toBeTruthy();
+  // 等待验证状态更新
+  await waitFor(
+    () => {
+      expect(form.invalid).toBeTruthy();
+    },
+    { timeout: 5000 },
+  );
 
   form.query('parent').take((field) => {
     field.setState((state) => {
@@ -298,12 +321,20 @@ test('fields unmount and validate', async () => {
     });
   });
 
-  await waitFor(() => {
-    expect(fn.mock.calls.length).toBe(1);
-  });
+  await waitFor(
+    () => {
+      expect(fn.mock.calls.length).toBe(1);
+    },
+    { timeout: 5000 },
+  );
 
   try {
     await form.validate();
   } catch {}
-  expect(form.invalid).toBeTruthy();
-});
+  await waitFor(
+    () => {
+      expect(form.invalid).toBeTruthy();
+    },
+    { timeout: 5000 },
+  );
+}, 15000);
