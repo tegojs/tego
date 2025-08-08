@@ -237,12 +237,12 @@ test('connect', async () => {
       </FormProvider>
     );
   };
-  const { queryByText } = render(<MyComponent />);
+  const { queryByText, container } = render(<MyComponent />);
 
-  // 等待组件渲染完成
+  // 等待组件渲染完成，检查是否有 div 元素
   await waitFor(
     () => {
-      expect(queryByText('')).toBeInTheDocument();
+      expect(container.innerHTML).toContain('<div>');
     },
     { timeout: 5000 },
   );
@@ -303,9 +303,16 @@ test('fields unmount and validate', async () => {
   };
   render(<MyComponent />);
 
-  try {
-    await form.validate();
-  } catch {}
+  // 等待组件渲染完成
+  await waitFor(
+    () => {
+      expect(form.query('parent.child').take()).toBeDefined();
+    },
+    { timeout: 5000 },
+  );
+
+  // 手动触发验证
+  await form.validate();
 
   // 等待验证状态更新
   await waitFor(
@@ -328,9 +335,8 @@ test('fields unmount and validate', async () => {
     { timeout: 5000 },
   );
 
-  try {
-    await form.validate();
-  } catch {}
+  // 再次验证，此时 child 字段已被卸载
+  await form.validate();
   await waitFor(
     () => {
       expect(form.invalid).toBeFalsy();
