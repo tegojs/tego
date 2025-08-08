@@ -20,7 +20,7 @@ jobs:
       - name: Install
         run: pnpm install
       - name: Tests
-        run: vitest --coverage.enabled true
+        run: pnpm vitest --coverage.enabled true
       - name: 'Report Coverage'
         # Set if: always() to also generate the report if tests are failing
         # Only works if you set `reportOnFailure: true` in your vite config as specified above
