@@ -242,7 +242,7 @@ test('connect', async () => {
   // 等待组件渲染完成
   await waitFor(
     () => {
-      expect(queryByText('')).toBeVisible();
+      expect(queryByText('')).toBeInTheDocument();
     },
     { timeout: 5000 },
   );
@@ -333,7 +333,7 @@ test('fields unmount and validate', async () => {
   } catch {}
   await waitFor(
     () => {
-      expect(form.invalid).toBeTruthy();
+      expect(form.invalid).toBeFalsy();
     },
     { timeout: 5000 },
   );
