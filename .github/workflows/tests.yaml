@@ -23,4 +23,4 @@ jobs:
       - name: Install
         run: pnpm install
       - name: Tests
-        run: pnpm vitest --coverage
+        run: pnpm vitest run --silent --reporter=dot

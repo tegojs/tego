@@ -70,7 +70,7 @@ export default defineConfig({
             '**/e2e/**',
             '**/__e2e__/**',
             '**/{vitest,commitlint}.config.*',
-            'packages/**/{sdk,client,schema}/**/__tests__/**/*.{test,spec}.{ts,tsx}',
+            'packages/**/{sdk,client,schema,components}/**/__tests__/**/*.{test,spec}.{ts,tsx}',
           ],
         },
       },
