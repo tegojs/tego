@@ -1,14 +1,11 @@
-name: Tests
+name: PR Coverage
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
 
 jobs:
-  tests:
+  pr-coverage:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
@@ -23,4 +20,11 @@ jobs:
       - name: Install
         run: pnpm install
       - name: Tests
-        run: pnpm vitest run --silent --reporter=dot
+        run: vitest --coverage.enabled true
+      - name: Report Coverage
+        run: vitest --coverage.enabled true
+        # Set if: always() to also generate the report if tests are failing
+        # Only works if you set `reportOnFailure: true` in your vite config as specified above
+        if: always()
+        uses:  davelosert/vitest-coverage-report-action@v2
+

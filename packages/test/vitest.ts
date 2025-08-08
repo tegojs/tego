@@ -46,6 +46,9 @@ function tsConfigPathsToAlias() {
 
 export default defineConfig({
   test: {
+    coverage: {
+      provider: 'v8',
+    },
     silent: !!process.env.GITHUB_ACTIONS,
     globals: true,
     alias: tsConfigPathsToAlias(),
@@ -67,7 +70,7 @@ export default defineConfig({
             '**/e2e/**',
             '**/__e2e__/**',
             '**/{vitest,commitlint}.config.*',
-            'packages/**/{sdk,client,schema}/**/__tests__/**/*.{test,spec}.{ts,tsx}',
+            'packages/**/{sdk,client,schema,components}/**/__tests__/**/*.{test,spec}.{ts,tsx}',
           ],
         },
       },
@@ -87,7 +90,7 @@ export default defineConfig({
           environment: 'jsdom',
           css: false,
           alias: tsConfigPathsToAlias(),
-          include: ['packages/**/{sdk,client,schema}/**/__tests__/**/*.{test,spec}.{ts,tsx}'],
+          include: ['packages/**/{sdk,client,schema,components}/**/__tests__/**/*.{test,spec}.{ts,tsx}'],
           exclude: [
             '**/node_modules/**',
             '**/dist/**',
