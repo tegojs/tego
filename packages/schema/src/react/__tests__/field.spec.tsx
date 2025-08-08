@@ -238,7 +238,13 @@ test('connect', async () => {
       </FormProvider>
     );
   };
-  const { queryByText, container } = render(<MyComponent />);
+  const { queryByText, container, queryByTestId } = render(<MyComponent />);
+
+  // 检查是否有错误
+  const errorMessage = queryByTestId('error-boundary-message');
+  if (errorMessage) {
+    console.error('React Error:', errorMessage.textContent);
+  }
 
   // 等待组件渲染完成，检查是否有内容
   await waitFor(
@@ -302,7 +308,13 @@ test('fields unmount and validate', async () => {
       </FormProvider>
     );
   };
-  render(<MyComponent />);
+  const { queryByTestId } = render(<MyComponent />);
+
+  // 检查是否有错误
+  const errorMessage = queryByTestId('error-boundary-message');
+  if (errorMessage) {
+    console.error('React Error:', errorMessage.textContent);
+  }
 
   // 等待组件渲染完成
   await waitFor(
