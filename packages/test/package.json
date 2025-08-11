@@ -50,7 +50,7 @@
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@types/supertest": "^2.0.16",
+    "@types/supertest": "^6.0.3",
     "@vitejs/plugin-react": "^4.7.0",
     "dotenv": "16.6.1",
     "jsdom": "^26.1.0",
