@@ -188,7 +188,7 @@ test('useFormEffects', async () => {
 });
 
 test('fields unmount and validate', async () => {
-  // 测试基本的表单创建
+  // test basic form create
   const form = createForm({
     initialValues: {
       parent: {
@@ -198,7 +198,7 @@ test('fields unmount and validate', async () => {
   });
   expect(form).toBeDefined();
 
-  // 测试字段值更新
+  // test field value update
   form.query('parent').take((field) => {
     field.setState((state) => {
       state.value.type = 'unmounted';
