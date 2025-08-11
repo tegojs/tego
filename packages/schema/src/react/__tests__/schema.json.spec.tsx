@@ -62,7 +62,7 @@ describe('json schema field', () => {
   });
   test('x-component-props children', () => {
     const form = createForm();
-    const Text: React.FC = ({ children }) => {
+    const Text: React.FC<{ children: string }> = ({ children }) => {
       return <div data-testid="children-test">{children}</div>;
     };
     const SchemaField = createSchemaField({
@@ -94,7 +94,7 @@ describe('json schema field', () => {
   });
   test('x-content', async () => {
     const form = createForm();
-    const Text: React.FC = ({ children }) => {
+    const Text: React.FC<{ children: string }> = ({ children }) => {
       return <div data-testid="content-test">{children}</div>;
     };
     const SchemaField = createSchemaField({
