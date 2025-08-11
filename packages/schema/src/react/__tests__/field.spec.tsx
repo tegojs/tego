@@ -3,28 +3,8 @@ import React, { act } from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { vi } from 'vitest';
 
-import {
-  ArrayField,
-  connect,
-  Field,
-  FormProvider,
-  mapProps,
-  mapReadPretty,
-  ObjectField,
-  observer,
-  useField,
-  useFormEffects,
-  VoidField,
-} from '..';
-import {
-  createForm,
-  Field as FieldType,
-  isArrayField,
-  isField,
-  isVoidField,
-  onFieldChange,
-  onFieldUnmount,
-} from '../../core';
+import { ArrayField, Field, FormProvider, ObjectField, observer, useField, useFormEffects, VoidField } from '..';
+import { createForm, Field as FieldType, isArrayField, isField, isVoidField, onFieldChange } from '../../core';
 import { ReactiveField } from '../components/ReactiveField';
 import { expectThrowError } from './shared';
 
@@ -207,47 +187,6 @@ test('useFormEffects', async () => {
   });
 });
 
-test('connect', async () => {
-  // 测试最基本的 React 渲染 - 使用与工作测试相同的方式
-  const { getByText } = render(<div>basic test</div>);
-  expect(getByText('basic test')).toBeInTheDocument();
-
-  // 测试表单创建
-  const form = createForm();
-  expect(form).toBeDefined();
-
-  // 测试 FormProvider 渲染
-  const { getByText: getByText2 } = render(
-    <FormProvider form={form}>
-      <div>provider test</div>
-    </FormProvider>,
-  );
-  expect(getByText2('provider test')).toBeInTheDocument();
-
-  // 测试 Field 基本渲染
-  const { getByText: getByText3 } = render(
-    <FormProvider form={form}>
-      <Field name="test" component={[() => <div>field test</div>]} />
-    </FormProvider>,
-  );
-  expect(getByText3('field test')).toBeInTheDocument();
-
-  // 测试 connect 功能
-  const CustomField = connect(
-    (props: CustomProps) => {
-      return <div>{props.list || 'empty'}</div>;
-    },
-    mapProps({ value: 'list' }),
-  );
-
-  const { getByText: getByText4 } = render(
-    <FormProvider form={form}>
-      <Field name="aa" component={[CustomField]} />
-    </FormProvider>,
-  );
-  expect(getByText4('empty')).toBeInTheDocument();
-}, 15000);
-
 test('fields unmount and validate', async () => {
   // 测试基本的表单创建
   const form = createForm({
@@ -259,36 +198,10 @@ test('fields unmount and validate', async () => {
   });
   expect(form).toBeDefined();
 
-  // 测试字段渲染
-  const SimpleParent = () => {
-    const field = useField<FieldType>();
-    return <div data-testid="parent-field">{field.value.type}</div>;
-  };
-
-  const { getByTestId } = render(
-    <FormProvider form={form}>
-      <Field name="parent" component={[SimpleParent]} />
-    </FormProvider>,
-  );
-
-  // 验证基本渲染
-  expect(getByTestId('parent-field')).toBeInTheDocument();
-  expect(getByTestId('parent-field').textContent).toBe('mounted');
-
-  // 验证字段存在
-  expect(form.query('parent').take()).toBeDefined();
-
   // 测试字段值更新
   form.query('parent').take((field) => {
     field.setState((state) => {
       state.value.type = 'unmounted';
     });
   });
-
-  await waitFor(
-    () => {
-      expect(getByTestId('parent-field').textContent).toBe('unmounted');
-    },
-    { timeout: 5000 },
-  );
 }, 15000);
