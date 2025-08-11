@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "@types/lodash": "4.17.20",
-    "@yao-pkg/pkg": "6.5.1"
+    "@yao-pkg/pkg": "6.6.0"
   },
   "pkg": {
     "targets": [
