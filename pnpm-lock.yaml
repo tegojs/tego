@@ -904,8 +904,8 @@ importers:
         specifier: 3.1.0
         version: 3.1.0(multer@2.0.2)
       '@socketregistry/yocto-spinner':
-        specifier: 1.0.20
-        version: 1.0.20
+        specifier: 1.0.21
+        version: 1.0.21
       '@tachybase/acl':
         specifier: workspace:*
         version: link:../acl
@@ -3015,8 +3015,8 @@ packages:
   '@sinclair/typebox@0.34.37':
     resolution: {integrity: sha512-2TRuQVgQYfy+EzHRTIvkhv2ADEouJ2xNS/Vq+W5EuuewBdOrvATvljZTxHWZSTYr2sTjTHpGvucaGAt67S2akw==}
 
-  '@socketregistry/yocto-spinner@1.0.20':
-    resolution: {integrity: sha512-vOWDmfMaGbpwrEk+9aL8xlzrDQdeULEjoH4/GR1xex25ET1FamyzDQZhSKRcrafHa4mn36Qe7p9rZxYjSNjtpQ==}
+  '@socketregistry/yocto-spinner@1.0.21':
+    resolution: {integrity: sha512-RP5dooIGrWZtF+JD/r76IlzUALiwJGivyupmeuyG4n7pq/i1jLREGJw/UjQg46o4quDJwAr6QUASWXSrabYzGw==}
     engines: {node: '>=18'}
 
   '@swc/helpers@0.5.17':
@@ -9672,7 +9672,7 @@ snapshots:
 
   '@sinclair/typebox@0.34.37': {}
 
-  '@socketregistry/yocto-spinner@1.0.20':
+  '@socketregistry/yocto-spinner@1.0.21':
     dependencies:
       yoctocolors-cjs: 2.1.2
 
