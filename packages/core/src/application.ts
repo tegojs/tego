@@ -133,6 +133,7 @@ declare module 'koa' {
     cache: Cache;
     resourcer: Resourcer;
     i18n: any;
+    reqId: string;
 
     [key: string]: any;
   }
@@ -968,38 +969,16 @@ export class Application extends EventEmitter implements AsyncEmitter {
     const migrator3 = await this.pm.loadOtherMigrations();
     await migrator3.beforeLoad.up();
     // load other plugins
-    // TODO：改成约定式
     await this.load({ sync: true });
-    // await this.db.sync();
     await migrator3.afterSync.up();
-    // upgrade plugins
     await this.pm.upgrade();
     await migrator1.afterLoad.up();
     await migrator2.afterLoad.up();
     await migrator3.afterLoad.up();
     await this.pm.repository.updateVersions();
     await this.version.update();
-    // await this.emitAsync('beforeUpgrade', this, options);
-    // const force = false;
-    // await measureExecutionTime(async () => {
-    //   await this.db.migrator.up();
-    // }, 'Migrator');
-    // await measureExecutionTime(async () => {
-    //   await this.db.sync({
-    //     force,
-    //     alter: {
-    //       drop: force,
-    //     },
-    //   });
-    // }, 'Sync');
     await this.emitAsync('afterUpgrade', this, options);
     await this.restart();
-    // this.log.debug(chalk.green(`✨  TachyBase has been upgraded to v${this.getVersion()}`));
-    // if (this._started) {
-    //   await measureExecutionTime(async () => {
-    //     await this.restart();
-    //   }, 'Restart');
-    // }
   }
 
   toJSON() {
@@ -1046,7 +1025,6 @@ export class Application extends EventEmitter implements AsyncEmitter {
 
     this.reInitEvents();
 
-    const middleware = new Toposort<Koa.Middleware>();
     this.plugins = new Map<string, Plugin>();
 
     if (this.db) {
@@ -1081,7 +1059,7 @@ export class Application extends EventEmitter implements AsyncEmitter {
       ...this.options.authManager,
     });
 
-    this.resource({
+    this.resourcer.define({
       name: 'auth',
       actions: authActions,
     });

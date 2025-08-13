@@ -38,7 +38,7 @@ export function createResourcer(options: ApplicationOptions) {
 export function registerMiddlewares(app: Application, options: ApplicationOptions) {
   app.use(
     async (ctx, next) => {
-      app.context.reqId = randomUUID();
+      ctx.reqId = randomUUID();
       await next();
     },
     { tag: 'UUID' },
