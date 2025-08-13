@@ -37,6 +37,7 @@ import lodash from 'lodash';
 import _ from 'lodash';
 import { nanoid } from 'nanoid';
 import semver from 'semver';
+import winston from 'winston';
 import WebSocket from 'ws';
 
 import packageJson from '../package.json';
@@ -135,6 +136,7 @@ declare module 'koa' {
     resourcer: Resourcer;
     i18n: any;
     reqId: string;
+    logger: winston.Logger;
 
     [key: string]: any;
   }
@@ -374,14 +376,6 @@ export class Application extends EventEmitter implements AsyncEmitter {
 
   get version() {
     return this._version;
-  }
-
-  /**
-   * Use {@link logger}
-   * @deprecated
-   */
-  get log() {
-    return this._logger;
   }
 
   get name() {
