@@ -128,7 +128,8 @@ declare module 'koa' {
 }
 
 declare module 'koa' {
-  interface DefaultContext {
+  interface ExtendableContext {
+    tego: Application;
     db: Database;
     cache: Cache;
     resourcer: Resourcer;

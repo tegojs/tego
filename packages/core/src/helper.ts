@@ -39,6 +39,7 @@ export function registerMiddlewares(app: Application, options: ApplicationOption
   app.use(
     async (ctx, next) => {
       ctx.reqId = randomUUID();
+      ctx.tego = app;
       await next();
     },
     { tag: 'UUID' },
@@ -143,7 +144,7 @@ export const enablePerfHooks = (app: Application) => {
     actions: {
       view: async (ctx, next) => {
         const result = {};
-        const histograms = ctx.app.perfHistograms as Map<string, RecordableHistogram>;
+        const histograms = ctx.tego.perfHistograms as Map<string, RecordableHistogram>;
         const sortedHistograms = [...histograms.entries()].sort(([i, a], [j, b]) => b.mean - a.mean);
         sortedHistograms.forEach(([name, histogram]) => {
           result[name] = histogram;
@@ -152,7 +153,7 @@ export const enablePerfHooks = (app: Application) => {
         await next();
       },
       reset: async (ctx, next) => {
-        const histograms = ctx.app.perfHistograms as Map<string, RecordableHistogram>;
+        const histograms = ctx.tego.perfHistograms as Map<string, RecordableHistogram>;
         histograms.forEach((histogram: RecordableHistogram) => histogram.reset());
         await next();
       },

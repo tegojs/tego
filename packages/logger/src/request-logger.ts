@@ -29,8 +29,7 @@ export const requestLogger = (appName: string, options?: RequestLoggerOptions) =
   return async (ctx, next) => {
     const reqId = ctx.reqId;
     const path = /^\/api\/(.+):(.+)/.exec(ctx.path);
-    const contextLogger = ctx.app.log.child({ reqId, module: path?.[1], submodule: path?.[2] });
-    // ctx.reqId = reqId;
+    const contextLogger = ctx.tego.log.child({ reqId, module: path?.[1], submodule: path?.[2] });
     ctx.logger = ctx.log = contextLogger;
     const startTime = Date.now();
     const requestInfo = {
