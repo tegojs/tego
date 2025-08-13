@@ -109,7 +109,7 @@ export class AuthManager {
       const name = ctx.get(self.options.authKey) || self.options.default;
       let authenticator: Auth;
       try {
-        authenticator = await ctx.app.authManager.get(name, ctx);
+        authenticator = await ctx.tego.authManager.get(name, ctx);
         ctx.auth = authenticator;
       } catch (err) {
         ctx.auth = {} as Auth;

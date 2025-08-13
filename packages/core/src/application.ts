@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { IncomingMessage, ServerResponse } from 'node:http';
 import { basename, resolve } from 'node:path';
 import { RecordableHistogram } from 'node:perf_hooks';
+import { EventEmitter } from 'node:stream';
 import { registerActions } from '@tachybase/actions';
 import { actions as authActions, AuthManager, AuthManagerOptions } from '@tachybase/auth';
 import { Cache, CacheManager, CacheManagerOptions } from '@tachybase/cache';
@@ -31,12 +32,12 @@ import {
 import { Command, CommanderError, CommandOptions, ParseOptions } from 'commander';
 import { globSync } from 'glob';
 import { i18n, InitOptions } from 'i18next';
-import Koa, { DefaultContext as KoaDefaultContext, DefaultState as KoaDefaultState } from 'koa';
-import compose from 'koa-compose';
+import Koa from 'koa';
 import lodash from 'lodash';
 import _ from 'lodash';
 import { nanoid } from 'nanoid';
 import semver from 'semver';
+import winston from 'winston';
 import WebSocket from 'ws';
 
 import packageJson from '../package.json';
@@ -121,39 +122,29 @@ export interface ApplicationOptions {
   tmpl?: any;
 }
 
-export interface DefaultState extends KoaDefaultState {
-  currentUser?: any;
-
-  [key: string]: any;
+declare module 'koa' {
+  interface DefaultState {
+    currentUser?: any;
+  }
 }
 
-export interface DefaultContext extends KoaDefaultContext {
-  db: Database;
-  cache: Cache;
-  resourcer: Resourcer;
-  i18n: any;
+declare module 'koa' {
+  interface ExtendableContext {
+    tego: Application;
+    db: Database;
+    cache: Cache;
+    resourcer: Resourcer;
+    i18n: any;
+    reqId: string;
+    logger: winston.Logger;
 
-  [key: string]: any;
+    [key: string]: any;
+  }
 }
 
 interface ActionsOptions {
   resourceName?: string;
   resourceNames?: string[];
-}
-
-interface ListenOptions {
-  port?: number | undefined;
-  host?: string | undefined;
-  backlog?: number | undefined;
-  path?: string | undefined;
-  exclusive?: boolean | undefined;
-  readableAll?: boolean | undefined;
-  writableAll?: boolean | undefined;
-  /**
-   * @default false
-   */
-  ipv6Only?: boolean | undefined;
-  signal?: AbortSignal | undefined;
 }
 
 interface StartOptions {
@@ -175,11 +166,7 @@ export type MaintainingCommandStatus = {
   error?: Error;
 };
 
-export class Application<StateT = DefaultState, ContextT = DefaultContext> extends Koa implements AsyncEmitter {
-  /**
-   * @internal
-   */
-  declare middleware: any;
+export class Application extends EventEmitter implements AsyncEmitter {
   /**
    * @internal
    */
@@ -223,10 +210,12 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
   private _maintainingStatusBeforeCommand: MaintainingCommandStatus | null;
   private _actionCommand: Command;
   private _noticeManager: NoticeManager;
+  private _koa = new Koa();
   static KEY_CORE_APP_PREFIX = 'KEY_CORE_APP_';
   private currentId = nanoid();
   public container: ContainerInstance;
   public modules: Record<string, any> = {};
+  private _middleware = new Toposort<Koa.Middleware>();
   public middlewareSourceMap: WeakMap<Function, string> = new WeakMap();
 
   // WebSocket 事件处理器集合
@@ -255,6 +244,13 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
 
   get noticeManager() {
     return this._noticeManager;
+  }
+
+  /**
+   * @deprecated
+   */
+  get context() {
+    return this._koa.context;
   }
 
   protected _loaded: boolean;
@@ -382,14 +378,6 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
     return this._version;
   }
 
-  /**
-   * Use {@link logger}
-   * @deprecated
-   */
-  get log() {
-    return this._logger;
-  }
-
   get name() {
     return this.options.name || 'main';
   }
@@ -444,13 +432,10 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
     return packageJson.version;
   }
 
-  // @ts-ignore
-  use<NewStateT = {}, NewContextT = {}>(
-    middleware: Koa.Middleware<StateT & NewStateT, ContextT & NewContextT>,
-    options?: ToposortOptions,
-  ) {
+  use(middleware: Koa.Middleware, options?: ToposortOptions) {
     this.middlewareSourceMap.set(middleware, getCurrentStacks());
-    this.middleware.add(middleware, options);
+    this._middleware.add(middleware, options);
+    this._koa.middleware = this._middleware.nodes;
     return this;
   }
 
@@ -458,16 +443,7 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
    * @internal
    */
   callback() {
-    const fn = compose(this.middleware.nodes);
-
-    if (!this.listenerCount('error')) this.on('error', this.onerror);
-
-    return (req: IncomingMessage, res: ServerResponse) => {
-      const ctx = this.createContext(req, res);
-
-      // @ts-ignore
-      return this.handleRequest(ctx, fn);
-    };
+    return this._koa.callback();
   }
 
   /**
@@ -988,38 +964,16 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
     const migrator3 = await this.pm.loadOtherMigrations();
     await migrator3.beforeLoad.up();
     // load other plugins
-    // TODO：改成约定式
     await this.load({ sync: true });
-    // await this.db.sync();
     await migrator3.afterSync.up();
-    // upgrade plugins
     await this.pm.upgrade();
     await migrator1.afterLoad.up();
     await migrator2.afterLoad.up();
     await migrator3.afterLoad.up();
     await this.pm.repository.updateVersions();
     await this.version.update();
-    // await this.emitAsync('beforeUpgrade', this, options);
-    // const force = false;
-    // await measureExecutionTime(async () => {
-    //   await this.db.migrator.up();
-    // }, 'Migrator');
-    // await measureExecutionTime(async () => {
-    //   await this.db.sync({
-    //     force,
-    //     alter: {
-    //       drop: force,
-    //     },
-    //   });
-    // }, 'Sync');
     await this.emitAsync('afterUpgrade', this, options);
     await this.restart();
-    // this.log.debug(chalk.green(`✨  TachyBase has been upgraded to v${this.getVersion()}`));
-    // if (this._started) {
-    //   await measureExecutionTime(async () => {
-    //     await this.restart();
-    //   }, 'Restart');
-    // }
   }
 
   toJSON() {
@@ -1066,7 +1020,6 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
 
     this.reInitEvents();
 
-    this.middleware = new Toposort<any>();
     this.plugins = new Map<string, Plugin>();
 
     if (this.db) {
@@ -1101,7 +1054,7 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
       ...this.options.authManager,
     });
 
-    this.resource({
+    this.resourcer.define({
       name: 'auth',
       actions: authActions,
     });
@@ -1221,8 +1174,6 @@ export class Application<StateT = DefaultState, ContextT = DefaultContext> exten
 
     return this;
   }
-
-  [key: string]: any;
 }
 
 applyMixins(Application, [AsyncEmitter]);

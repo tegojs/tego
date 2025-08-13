@@ -6,6 +6,7 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "dependencies": {
+    "@tachybase/actions": "workspace:*",
     "@tachybase/resourcer": "workspace:*",
     "@tachybase/utils": "workspace:*",
     "koa-compose": "^4.1.0",
@@ -14,6 +15,7 @@
   },
   "devDependencies": {
     "@types/lodash": "4.17.20",
+    "@types/minimatch": "^6.0.0",
     "@types/node": "20.17.10"
   }
 }

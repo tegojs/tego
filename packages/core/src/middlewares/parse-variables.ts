@@ -1,6 +1,7 @@
+import { Context } from '@tachybase/actions';
 import { getDateVars, parseFilter } from '@tachybase/utils';
 
-function getUser(ctx) {
+function getUser(ctx: Context) {
   return async ({ fields }) => {
     const userFields = fields.filter((f) => f && ctx.db.getFieldByPath('users.' + f));
     ctx.logger?.info('filter-parse: ', { userFields });

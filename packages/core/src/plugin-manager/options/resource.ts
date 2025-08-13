@@ -12,7 +12,7 @@ export default {
   name: 'pm',
   actions: {
     async add(ctx, next) {
-      const app = ctx.app as Application;
+      const app = ctx.tego as Application;
       const { values = {} } = ctx.action.params;
       if (values?.packageName) {
         const args = [];
@@ -47,7 +47,7 @@ export default {
       await next();
     },
     async update(ctx, next) {
-      const app = ctx.app as Application;
+      const app = ctx.tego as Application;
       const values = ctx.action.params.values || {};
       const args = [];
       if (values.registry) {
@@ -87,13 +87,13 @@ export default {
       if (!filterByTk) {
         ctx.throw(400, 'plugin name invalid');
       }
-      const pm = ctx.app.pm;
+      const pm = ctx.tego.pm;
       ctx.body = await pm.getNpmVersionList(filterByTk);
       await next();
     },
     async enable(ctx, next) {
       const { filterByTk } = ctx.action.params;
-      const app = ctx.app as Application;
+      const app = ctx.tego as Application;
       if (!filterByTk) {
         ctx.throw(400, 'plugin name invalid');
       }
@@ -106,7 +106,7 @@ export default {
       if (!filterByTk) {
         ctx.throw(400, 'plugin name invalid');
       }
-      const app = ctx.app as Application;
+      const app = ctx.tego as Application;
       app.runAsCLI(['pm', 'disable', filterByTk], { from: 'user' });
       ctx.body = filterByTk;
       await next();
@@ -116,15 +116,15 @@ export default {
       if (!filterByTk) {
         ctx.throw(400, 'plugin name invalid');
       }
-      const app = ctx.app as Application;
+      const app = ctx.tego as Application;
       app.runAsCLI(['pm', 'remove', filterByTk], { from: 'user' });
       ctx.body = filterByTk;
       await next();
     },
     async list(ctx, next) {
       const locale = ctx.getCurrentLocale();
-      const pm = ctx.app.pm as PluginManager;
-      if (ctx.app.name === 'main') {
+      const pm = ctx.tego.pm as PluginManager;
+      if (ctx.tego.name === 'main') {
         ctx.body = await pm.list({ locale, isPreset: false });
       } else {
         ctx.body = await pm.list({ locale, isPreset: false, subView: true });
@@ -159,7 +159,7 @@ export default {
     },
     async get(ctx, next) {
       const locale = ctx.getCurrentLocale();
-      const pm = ctx.app.pm as PluginManager;
+      const pm = ctx.tego.pm as PluginManager;
       const { filterByTk } = ctx.action.params;
       if (!filterByTk) {
         ctx.throw(400, 'plugin name invalid');

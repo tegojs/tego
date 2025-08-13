@@ -1,3 +1,5 @@
+import { Context } from '@tachybase/actions';
+
 import { ACL } from './acl';
 
 export type ConditionFunc = (ctx: any) => Promise<boolean> | boolean;
@@ -8,7 +10,7 @@ export class AllowManager {
   protected registeredCondition = new Map<string, ConditionFunc>();
 
   constructor(public acl: ACL) {
-    this.registerAllowCondition('loggedIn', (ctx) => {
+    this.registerAllowCondition('loggedIn', (ctx: Context) => {
       return ctx.state.currentUser;
     });
 

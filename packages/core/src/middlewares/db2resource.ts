@@ -1,7 +1,7 @@
-import Database from '@tachybase/database';
-import { getNameByParams, parseRequest, ResourcerContext, ResourceType } from '@tachybase/resourcer';
+import { Context } from '@tachybase/actions';
+import { getNameByParams, parseRequest, ResourceType } from '@tachybase/resourcer';
 
-export async function db2resource(ctx: ResourcerContext & { db: Database }, next: () => Promise<any>) {
+export async function db2resource(ctx: Context, next: () => Promise<any>) {
   const dataSource = ctx.get('x-data-source');
   if (dataSource) {
     return next();
