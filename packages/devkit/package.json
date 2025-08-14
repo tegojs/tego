@@ -61,7 +61,7 @@
     "tsx": "^4.20.3",
     "typescript": "^5.9.2",
     "update-notifier": "^7.3.1",
-    "vite": "^7.1.1",
+    "vite": "^7.1.2",
     "vite-plugin-css-injected-by-js": "^3.5.2"
   },
   "devDependencies": {
