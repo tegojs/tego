@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "dependencies": {
-    "camel-case": "^4.1.1",
+    "camel-case": "^5.0.0",
     "hoist-non-react-statics": "^3.3.2",
     "lower-case": "^2.0.1",
     "param-case": "^3.0.4",
