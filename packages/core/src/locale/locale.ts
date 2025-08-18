@@ -55,7 +55,6 @@ export class Locale {
       resources: await this.getCacheResources(lang),
     };
     for (const [name, fn] of this.localeFn) {
-      // this.app.log.debug(`load [${name}] locale resource `);
       const result = await this.wrapCache(`${name}:${lang}`, async () => {
         this.cache.del(`eTag:${lang}`);
         return await fn(lang);
@@ -114,8 +113,6 @@ export class Locale {
         if (!packageName) {
           continue;
         }
-        // this.app.log.debug(`load [${packageName}] locale resource `);
-        // this.app.setMaintainingMessage(`load [${packageName}] locale resource `);
         const res = getResource(packageName, lang);
         if (res) {
           resources[packageName] = { ...res };

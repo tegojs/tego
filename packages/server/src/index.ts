@@ -86,14 +86,7 @@ export {
   WSServer,
   AesEncryptor,
 } from '@tego/core';
-export type {
-  AppLoggerOptions,
-  DefaultContext,
-  DefaultState,
-  ApplicationOptions,
-  InstallOptions,
-  PluginOptions,
-} from '@tego/core';
+export type { AppLoggerOptions, ApplicationOptions, InstallOptions, PluginOptions } from '@tego/core';
 export { AuthError, AuthErrorCode, AuthManager, BaseAuth } from '@tachybase/auth';
 export type {
   AuthConfig,
