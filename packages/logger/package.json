@@ -7,7 +7,7 @@
   "types": "./lib/index.d.ts",
   "dependencies": {
     "@tachybase/globals": "workspace:*",
-    "chalk": "^4.1.2",
+    "chalk": "^5.6.0",
     "lodash": "^4.17.21",
     "triple-beam": "^1.4.1",
     "winston": "^3.17.0",

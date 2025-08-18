@@ -10,7 +10,7 @@
     "@tachybase/logger": "workspace:*",
     "@tachybase/utils": "workspace:*",
     "async-mutex": "^0.5.0",
-    "chalk": "^4.1.2",
+    "chalk": "^5.6.0",
     "dayjs": "1.11.13",
     "debug": "4.4.1",
     "deepmerge": "^4.3.1",
