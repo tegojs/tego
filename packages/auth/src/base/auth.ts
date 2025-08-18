@@ -29,11 +29,11 @@ export class BaseAuth extends Auth {
   }
 
   get jwt(): JwtService {
-    return this.ctx.app.authManager.jwt;
+    return this.ctx.tego.authManager.jwt;
   }
 
   get tokenController(): ITokenControlService {
-    return this.ctx.app.authManager.tokenController;
+    return this.ctx.tego.authManager.tokenController;
   }
 
   set user(user: Model) {
@@ -89,7 +89,7 @@ export class BaseAuth extends Auth {
     const { userId, roleName, iat, temp, jti, exp, signInTime } = payload ?? {};
 
     const user = userId
-      ? await this.ctx.app.cache.wrap(this.getCacheKey(userId), () =>
+      ? await this.ctx.tego.cache.wrap(this.getCacheKey(userId), () =>
           this.userRepository.findOne({
             filter: {
               id: userId,
@@ -311,7 +311,7 @@ export class BaseAuth extends Auth {
         });
       }
     }
-    await this.ctx.app.emitAsync('cache:del:roles', { userId });
+    await this.ctx.tego.emitAsync('cache:del:roles', { userId });
     await this.ctx.cache.del(this.getCacheKey(userId));
     return await this.jwt.block(token);
   }
