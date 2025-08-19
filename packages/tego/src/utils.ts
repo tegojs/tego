@@ -32,15 +32,6 @@ export function parseEnvironment() {
     });
   }
 
-  // 如果存在 storage 的话，TEGO_RUNTIME_HOME 默认指向当前路径
-  if (
-    !process.env.TEGO_RUNTIME_HOME &&
-    !process.env.TEGO_RUNTIME_NAME &&
-    fs.existsSync(resolve(process.cwd(), 'storage'))
-  ) {
-    process.env.TEGO_RUNTIME_HOME = process.cwd();
-  }
-
   for (const key in env) {
     if (!process.env[key]) {
       process.env[key] = env[key];

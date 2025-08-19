@@ -247,14 +247,6 @@ export function initEnv() {
     process.env.APP_BASE_URL = `http://127.0.0.1:${process.env.APP_PORT}`;
   }
 
-  if (
-    !process.env.TEGO_RUNTIME_HOME &&
-    !process.env.TEGO_RUNTIME_NAME &&
-    _existsSync(resolve(process.cwd(), 'storage'))
-  ) {
-    process.env.TEGO_RUNTIME_HOME = process.cwd();
-  }
-
   for (const key in env) {
     if (!process.env[key]) {
       // @ts-ignore
