@@ -37,7 +37,7 @@
     "@types/terminal-kit": "^2.5.7",
     "@umijs/utils": "^4.4.12",
     "@vercel/ncc": "^0.38.3",
-    "@vitejs/plugin-react": "^5.0.0",
+    "@vitejs/plugin-react": "^5.0.1",
     "chalk": "^5.5.0",
     "commander": "^12.1.0",
     "dotenv": "16.6.1",
