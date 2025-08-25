@@ -40,7 +40,7 @@
   "module": "./src/index.ts",
   "types": "./lib/index.d.ts",
   "dependencies": {
-    "@faker-js/faker": "9.9.0",
+    "@faker-js/faker": "10.0.0",
     "@playwright/test": "^1.55.0",
     "@tachybase/database": "workspace:*",
     "@tachybase/globals": "workspace:*",
