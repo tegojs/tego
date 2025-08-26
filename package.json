@@ -54,7 +54,7 @@
     "react": "~18.3.1",
     "react-dom": "~18.3.1",
     "tego": "workspace:*",
-    "tsx": "^4.20.4",
+    "tsx": "^4.20.5",
     "vitest": "^3.2.4"
   },
   "packageManager": "pnpm@10.14.0",
