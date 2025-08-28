@@ -275,7 +275,7 @@ importers:
         version: 2.5.1
       dayjs:
         specifier: 1.11.13
-        version: 1.11.13
+        version: 1.11.15
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -297,7 +297,7 @@ importers:
         version: 9.5.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-picker:
         specifier: 4.11.3
-        version: 4.11.3(date-fns@3.6.0)(dayjs@1.11.13)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 4.11.3(date-fns@3.6.0)(dayjs@1.11.15)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       rc-tree-select:
         specifier: 5.27.0
         version: 5.27.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -363,7 +363,7 @@ importers:
         version: 1.8.1
       dayjs:
         specifier: 1.11.13
-        version: 1.11.13
+        version: 1.11.15
       decompress:
         specifier: 4.2.1
         version: 4.2.1
@@ -521,7 +521,7 @@ importers:
         version: 4.1.2
       dayjs:
         specifier: 1.11.13
-        version: 1.11.13
+        version: 1.11.15
       debug:
         specifier: 4.4.1
         version: 4.4.1
@@ -974,7 +974,7 @@ importers:
         version: 9.5.0
       dayjs:
         specifier: 1.11.13
-        version: 1.11.13
+        version: 1.11.15
       dotenv:
         specifier: 16.6.1
         version: 16.6.1
@@ -1134,7 +1134,7 @@ importers:
         version: 1.1.0
       dayjs:
         specifier: 1.11.13
-        version: 1.11.13
+        version: 1.11.15
       dedupe:
         specifier: ^3.0.3
         version: 3.0.3
@@ -4316,6 +4316,9 @@ packages:
 
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
+
+  dayjs@1.11.15:
+    resolution: {integrity: sha512-MC+DfnSWiM9APs7fpiurHGCoeIx0Gdl6QZBy+5lu8MbYKN5FZEXqOgrundfibdfhGZ15o9hzmZ2xJjZnbvgKXQ==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -11456,6 +11459,8 @@ snapshots:
 
   dayjs@1.11.13: {}
 
+  dayjs@1.11.15: {}
+
   debug@2.6.9:
     dependencies:
       ms: 2.0.0
@@ -14003,7 +14008,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  rc-picker@4.11.3(date-fns@3.6.0)(dayjs@1.11.13)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  rc-picker@4.11.3(date-fns@3.6.0)(dayjs@1.11.15)(luxon@3.7.1)(moment@2.30.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@babel/runtime': 7.28.2
       '@rc-component/trigger': 2.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -14015,7 +14020,7 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
     optionalDependencies:
       date-fns: 3.6.0
-      dayjs: 1.11.13
+      dayjs: 1.11.15
       luxon: 3.7.1
       moment: 2.30.1
 

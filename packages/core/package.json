@@ -24,7 +24,7 @@
     "axios": "0.29.0",
     "commander": "^9.5.0",
     "compression": "^1.8.1",
-    "dayjs": "1.11.13",
+    "dayjs": "1.11.15",
     "decompress": "4.2.1",
     "execa": "^5.1.1",
     "fast-glob": "^3.3.3",
