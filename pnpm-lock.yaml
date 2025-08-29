@@ -33,8 +33,8 @@ importers:
         specifier: ^19.8.1
         version: 19.8.1(@types/node@20.17.10)(typescript@5.9.2)
       '@ianvs/prettier-plugin-sort-imports':
-        specifier: ^4.6.2
-        version: 4.6.2(prettier@3.6.2)
+        specifier: ^4.7.0
+        version: 4.7.0(prettier@3.6.2)
       '@inquirer/prompts':
         specifier: ^7.8.3
         version: 7.8.3(@types/node@20.17.10)
@@ -2039,8 +2039,8 @@ packages:
   '@hapi/topo@6.0.2':
     resolution: {integrity: sha512-KR3rD5inZbGMrHmgPxsJ9dbi6zEK+C3ZwUwTa+eMwWLz7oijWUTWD2pMSNNYJAU6Qq+65NkxXjqHr/7LM2Xkqg==}
 
-  '@ianvs/prettier-plugin-sort-imports@4.6.2':
-    resolution: {integrity: sha512-kHiL1IghIodo43clNQaJJU2rPqXEioPG+Ink4/T5za46A0ggSNvIx4NM3hGgciQ2VpDaR/X8cTJIZDKRurWjPw==}
+  '@ianvs/prettier-plugin-sort-imports@4.7.0':
+    resolution: {integrity: sha512-soa2bPUJAFruLL4z/CnMfSEKGznm5ebz29fIa9PxYtu8HHyLKNE1NXAs6dylfw1jn/ilEIfO2oLLN6uAafb7DA==}
     peerDependencies:
       '@prettier/plugin-oxc': ^0.0.4
       '@vue/compiler-sfc': 2.7.x || 3.x
@@ -8872,7 +8872,7 @@ snapshots:
     dependencies:
       '@hapi/hoek': 11.0.4
 
-  '@ianvs/prettier-plugin-sort-imports@4.6.2(prettier@3.6.2)':
+  '@ianvs/prettier-plugin-sort-imports@4.7.0(prettier@3.6.2)':
     dependencies:
       '@babel/generator': 7.28.3
       '@babel/parser': 7.28.3
