@@ -30,7 +30,7 @@
     "@pnpm/workspace.find-packages": "^1.1.12",
     "@rsbuild/core": "^1.5.1",
     "@rsbuild/plugin-less": "^1.5.0",
-    "@rsbuild/plugin-react": "^1.3.5",
+    "@rsbuild/plugin-react": "^1.4.0",
     "@rslib/core": "^0.12.4",
     "@tachybase/test": "workspace:*",
     "@types/fs-extra": "^11.0.4",
