@@ -59,7 +59,7 @@
     "dayjs": "1.11.13",
     "dotenv": "16.6.1",
     "execa": "^5.1.1",
-    "i18next": "23.16.8",
+    "i18next": "25.5.2",
     "jsonwebtoken": "8.5.1",
     "koa": "^2.16.2",
     "koa-bodyparser": "4.4.1",
