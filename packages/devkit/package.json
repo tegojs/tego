@@ -70,7 +70,7 @@
     "@types/node": "20.17.10",
     "@types/npm-packlist": "^7.0.3",
     "@types/npmcli__arborist": "^6.3.1",
-    "@types/semver": "^7.7.0",
+    "@types/semver": "^7.7.1",
     "@types/tar": "^6.1.13",
     "@types/update-notifier": "^6.0.8",
     "esbuild-plugin-file-path-extensions": "^2.1.4"
