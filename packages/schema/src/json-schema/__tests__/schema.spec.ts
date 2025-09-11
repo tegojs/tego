@@ -234,7 +234,7 @@ test('all methods', () => {
   expect(schema4.toJSON()).toMatchSnapshot();
 });
 
-describe('all static methods', () => {
+test('all static methods', () => {
   expect(Schema.compile({ aa: '{{123}}' })).toEqual({ aa: 123 });
   expect(Schema.shallowCompile('{{123}}')).toEqual(123);
   expect(Schema.getOrderProperties()).toEqual([]);
