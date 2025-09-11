@@ -12,7 +12,7 @@ export interface Settings {
   };
   logger: {
     /** console | file | dailyRotateFile */
-    transport: ('console' | 'file' | 'dailyRotateFile')[];
+    transport?: ('console' | 'file' | 'dailyRotateFile')[];
     basePath: string;
     level?: 'error' | 'warn' | 'info' | 'debug';
     maxFiles?: string | number; // e.g. "14d"
