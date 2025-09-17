@@ -152,7 +152,7 @@ importers:
         version: 4.17.21
       sequelize:
         specifier: ^6.37.7
-        version: 6.37.7(mysql2@3.14.4)(pg@8.16.3)(sqlite3@5.1.7)
+        version: 6.37.7(mysql2@3.15.0)(pg@8.16.3)(sqlite3@5.1.7)
     devDependencies:
       '@types/koa':
         specifier: ^2.15.0
@@ -557,7 +557,7 @@ importers:
         version: 7.7.2
       sequelize:
         specifier: ^6.37.7
-        version: 6.37.7(mysql2@3.14.4)(pg@8.16.3)(sqlite3@5.1.7)
+        version: 6.37.7(mysql2@3.15.0)(pg@8.16.3)(sqlite3@5.1.7)
       umzug:
         specifier: ^3.8.2
         version: 3.8.2
@@ -1000,8 +1000,8 @@ importers:
         specifier: 2.0.2
         version: 2.0.2
       mysql2:
-        specifier: 3.14.4
-        version: 3.14.4
+        specifier: 3.15.0
+        version: 3.15.0
       npm-registry-fetch:
         specifier: 19.0.0
         version: 19.0.0
@@ -1013,7 +1013,7 @@ importers:
         version: 18.3.1
       sequelize:
         specifier: 6.37.7
-        version: 6.37.7(mysql2@3.14.4)(pg@8.16.3)(sqlite3@5.1.7)
+        version: 6.37.7(mysql2@3.15.0)(pg@8.16.3)(sqlite3@5.1.7)
       sqlite3:
         specifier: 5.1.7
         version: 5.1.7
@@ -1097,8 +1097,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0
       mysql2:
-        specifier: ^3.14.4
-        version: 3.14.4
+        specifier: ^3.15.0
+        version: 3.15.0
       pg:
         specifier: ^8.16.3
         version: 8.16.3
@@ -5845,8 +5845,8 @@ packages:
     resolution: {integrity: sha512-WWdIxpyjEn+FhQJQQv9aQAYlHoNVdzIzUySNV1gHUPDSdZJ3yZn7pAAbQcV7B56Mvu881q9FZV+0Vx2xC44VWA==}
     engines: {node: ^18.17.0 || >=20.5.0}
 
-  mysql2@3.14.4:
-    resolution: {integrity: sha512-Cs/jx3WZPNrYHVz+Iunp9ziahaG5uFMvD2R8Zlmc194AqXNxt9HBNu7ZsPYrUtmJsF0egETCWIdMIYAwOGjL1w==}
+  mysql2@3.15.0:
+    resolution: {integrity: sha512-tT6pomf5Z/I7Jzxu8sScgrYBMK9bUFWd7Kbo6Fs1L0M13OOIJ/ZobGKS3Z7tQ8Re4lj+LnLXIQVZZxa3fhYKzA==}
     engines: {node: '>= 8.0'}
 
   mz@2.7.0:
@@ -13064,7 +13064,7 @@ snapshots:
 
   mute-stream@2.0.0: {}
 
-  mysql2@3.14.4:
+  mysql2@3.15.0:
     dependencies:
       aws-ssl-profiles: 1.1.2
       denque: 2.1.0
@@ -14573,7 +14573,7 @@ snapshots:
 
   sequelize-pool@7.1.0: {}
 
-  sequelize@6.37.7(mysql2@3.14.4)(pg@8.16.3)(sqlite3@5.1.7):
+  sequelize@6.37.7(mysql2@3.15.0)(pg@8.16.3)(sqlite3@5.1.7):
     dependencies:
       '@types/debug': 4.1.12
       '@types/validator': 13.11.7
@@ -14592,7 +14592,7 @@ snapshots:
       validator: 13.11.0
       wkx: 0.5.0
     optionalDependencies:
-      mysql2: 3.14.4
+      mysql2: 3.15.0
       pg: 8.16.3
       sqlite3: 5.1.7
     transitivePeerDependencies:
