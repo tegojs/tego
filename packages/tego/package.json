@@ -55,7 +55,7 @@
     "axios": "0.29.0",
     "cache-manager": "5.7.6",
     "chalk": "^4.1.2",
-    "commander": "^9.5.0",
+    "commander": "^14.0.1",
     "dayjs": "1.11.13",
     "dotenv": "16.6.1",
     "execa": "^5.1.1",
