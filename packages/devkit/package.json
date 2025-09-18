@@ -28,7 +28,7 @@
     "@inquirer/prompts": "^7.8.6",
     "@npmcli/arborist": "^9.1.4",
     "@pnpm/workspace.find-packages": "^1.1.12",
-    "@rsbuild/core": "^1.5.7",
+    "@rsbuild/core": "^1.5.9",
     "@rsbuild/plugin-less": "^1.5.0",
     "@rsbuild/plugin-react": "^1.3.5",
     "@rslib/core": "^0.13.2",
