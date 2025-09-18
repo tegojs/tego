@@ -21,7 +21,7 @@
     "@types/decompress": "4.2.7",
     "@types/ini": "^4.1.1",
     "async-mutex": "^0.5.0",
-    "axios": "0.29.0",
+    "axios": "1.12.2",
     "commander": "^9.5.0",
     "compression": "^1.8.1",
     "dayjs": "1.11.13",
