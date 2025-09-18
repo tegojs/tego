@@ -35,7 +35,7 @@
   "dependencies": {
     "@koa/cors": "5.0.0",
     "@koa/multer": "3.1.0",
-    "@socketregistry/yocto-spinner": "1.0.22",
+    "@socketregistry/yocto-spinner": "1.0.23",
     "@tachybase/acl": "workspace:*",
     "@tachybase/actions": "workspace:*",
     "@tachybase/auth": "workspace:*",
