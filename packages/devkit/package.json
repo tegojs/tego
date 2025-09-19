@@ -36,7 +36,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/terminal-kit": "^2.5.7",
     "@umijs/utils": "^4.4.12",
-    "@vercel/ncc": "^0.38.3",
+    "@vercel/ncc": "^0.38.4",
     "@vitejs/plugin-react": "^5.0.2",
     "chalk": "^5.5.0",
     "commander": "^12.1.0",
