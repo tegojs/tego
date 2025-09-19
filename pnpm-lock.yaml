@@ -650,8 +650,8 @@ importers:
         specifier: ^10.2.0
         version: 10.2.0
       p-all:
-        specifier: ^3.0.0
-        version: 3.0.0
+        specifier: ^5.0.1
+        version: 5.0.1
       package-json:
         specifier: ^10.0.1
         version: 10.0.1
@@ -6138,9 +6138,9 @@ packages:
       oxlint-tsgolint:
         optional: true
 
-  p-all@3.0.0:
-    resolution: {integrity: sha512-qUZbvbBFVXm6uJ7U/WDiO0fv6waBMbjlCm4E66oZdRR+egswICarIdHyVSZZHudH8T5SF8x/JG0q0duFzPnlBw==}
-    engines: {node: '>=10'}
+  p-all@5.0.1:
+    resolution: {integrity: sha512-LMT7WX9ZSaq3J1zjloApkIVmtz0ZdMFSIqbuiEa3txGYPLjUPOvgOPOx3nFjo+f37ZYL+1aY666I2SG7GVwLOA==}
+    engines: {node: '>=16'}
 
   p-defer@1.0.0:
     resolution: {integrity: sha512-wB3wfAxZpk2AzOfUMJNL+d36xothRSyj8EXOa4f6GMqYDN9BJaaSISbsk+wS9abmnebVw95C2Kb5t85UmpCxuw==}
@@ -6169,6 +6169,10 @@ packages:
   p-map@4.0.0:
     resolution: {integrity: sha512-/bjOqmgETBYB5BoEeGVea8dmvHb2m9GLy1E9W43yeyfP6QQCZGFNa+XRceJEuDB6zqr+gKpIAmlLebMpykw/MQ==}
     engines: {node: '>=10'}
+
+  p-map@6.0.0:
+    resolution: {integrity: sha512-T8BatKGY+k5rU+Q/GTYgrEf2r4xRMevAN5mtXc2aPc4rS1j3s+vWTaO2Wag94neXuCAUAs8cxBL9EeB5EA6diw==}
+    engines: {node: '>=16'}
 
   p-map@7.0.3:
     resolution: {integrity: sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA==}
@@ -10682,6 +10686,7 @@ snapshots:
     dependencies:
       clean-stack: 2.2.0
       indent-string: 4.0.0
+    optional: true
 
   ajv@8.17.1:
     dependencies:
@@ -11209,7 +11214,8 @@ snapshots:
 
   classnames@2.5.1: {}
 
-  clean-stack@2.2.0: {}
+  clean-stack@2.2.0:
+    optional: true
 
   cli-boxes@2.2.1: {}
 
@@ -13429,9 +13435,9 @@ snapshots:
       '@oxlint/win32-arm64': 1.14.0
       '@oxlint/win32-x64': 1.14.0
 
-  p-all@3.0.0:
+  p-all@5.0.1:
     dependencies:
-      p-map: 4.0.0
+      p-map: 6.0.0
 
   p-defer@1.0.0: {}
 
@@ -13454,6 +13460,9 @@ snapshots:
   p-map@4.0.0:
     dependencies:
       aggregate-error: 3.1.0
+    optional: true
+
+  p-map@6.0.0: {}
 
   p-map@7.0.3: {}
 
