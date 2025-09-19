@@ -617,8 +617,8 @@ importers:
         specifier: ^4.4.12
         version: 4.4.12
       '@vercel/ncc':
-        specifier: ^0.38.3
-        version: 0.38.3
+        specifier: ^0.38.4
+        version: 0.38.4
       '@vitejs/plugin-react':
         specifier: ^5.0.2
         version: 5.0.2(vite@7.1.5(@types/node@20.17.10)(jiti@2.5.1)(less@4.2.1)(lightningcss@1.26.0)(sass@1.77.8)(terser@5.43.1)(tsx@4.20.5)(yaml@2.8.1))
@@ -3534,8 +3534,8 @@ packages:
   '@umijs/utils@4.4.12':
     resolution: {integrity: sha512-1Ea+STKP6IxI7yhsURJooCRX//BXnSjgD86XoR4JiYB9MSOhAeS/vpY9f48PpEe/jpKO+JfieqbY4hWHGZGJZw==}
 
-  '@vercel/ncc@0.38.3':
-    resolution: {integrity: sha512-rnK6hJBS6mwc+Bkab+PGPs9OiS0i/3kdTO+CkI8V0/VrW3vmz7O2Pxjw/owOlmo6PKEIxRSeZKv/kuL9itnpYA==}
+  '@vercel/ncc@0.38.4':
+    resolution: {integrity: sha512-8LwjnlP39s08C08J5NstzriPvW1SP8Zfpp1BvC2sI35kPeZnHfxVkCwu4/+Wodgnd60UtT1n8K8zw+Mp7J9JmQ==}
     hasBin: true
 
   '@vitejs/plugin-react@5.0.2':
@@ -10535,7 +10535,7 @@ snapshots:
       chokidar: 3.5.3
       pino: 7.11.0
 
-  '@vercel/ncc@0.38.3': {}
+  '@vercel/ncc@0.38.4': {}
 
   '@vitejs/plugin-react@5.0.2(vite@7.1.5(@types/node@20.17.10)(jiti@2.5.1)(less@4.2.1)(lightningcss@1.26.0)(sass@1.77.8)(terser@5.43.1)(tsx@4.20.5)(yaml@2.8.1))':
     dependencies:
