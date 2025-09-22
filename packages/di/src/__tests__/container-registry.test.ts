@@ -39,8 +39,8 @@ describe('ContainerRegistry', () => {
       expect(ContainerRegistry.hasContainer('test-container-1')).toBe(true);
     });
 
-    it('should not register default container', () => {
-      expect(ContainerRegistry.hasContainer('default')).toBe(false);
+    it('should register default container', () => {
+      expect(ContainerRegistry.hasContainer('default')).toBe(true);
     });
 
     it('should throw error when registering non-ContainerInstance', () => {

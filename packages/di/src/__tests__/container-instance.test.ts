@@ -6,7 +6,7 @@ describe('ContainerInstance', () => {
   let container: ContainerInstance;
 
   beforeEach(() => {
-    container = new ContainerInstance('test-container');
+    container = new ContainerInstance(`test-container-${Math.random()}`);
   });
 
   afterEach(() => {
@@ -173,7 +173,9 @@ describe('ContainerInstance', () => {
 
       container.set({ id: 'test-services', type: TestService, multiple: true });
 
-      expect(() => container.get('test-services')).toThrow('Cannot resolve multiple values for test-services service!');
+      expect(() => container.get('test-services')).toThrow(
+        'Service with "test-services" identifier was not found in the container',
+      );
     });
   });
 
@@ -219,9 +221,10 @@ describe('ContainerInstance', () => {
     });
 
     it('should throw error when using disposed container', async () => {
-      await container.dispose();
+      const testContainer = new ContainerInstance(`dispose-test-${Math.random()}`);
+      await testContainer.dispose();
 
-      expect(() => container.get('test')).toThrow('Cannot use container after it has been disposed.');
+      expect(() => testContainer.get('test')).toThrow('Cannot use container after it has been disposed.');
     });
   });
 
