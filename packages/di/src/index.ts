@@ -14,6 +14,7 @@ export type { ServiceOptions } from './interfaces/service-options.interface';
 export type { ServiceIdentifier } from './types/service-identifier.type';
 
 export { ContainerInstance, Container } from './container-instance.class';
+export { ContainerRegistry } from './container-registry.class';
 export { Token } from './token.class';
 
 export default Container;
