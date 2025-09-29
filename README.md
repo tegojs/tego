@@ -1,3 +1,4 @@
+English|[ 简体中文 ](./README.zh-CN.md) 
 > ⚠️ **Caution: This repository is currently undergoing a core refactor.Using the Git version may lead to various unexpected issues.If you encounter problems, feel free to submit an issue on GitHub.**
 >
 > ✅ For stable production usage, please use:
