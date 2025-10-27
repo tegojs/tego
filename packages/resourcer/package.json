@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@types/node": "20.17.10",
-    "koa": "^3.0.1",
+    "koa": "^3.0.3",
     "koa-bodyparser": "^4.4.1",
     "supertest": "^7.1.4"
   }
