@@ -85,6 +85,27 @@ export async function postCheck(opts: { port?: string }) {
   }
 }
 
+/**
+ * 兼容性函数：先尝试使用 tsx 命令，如果失败则回退到 node --import tsx
+ * 这样可以确保在所有平台上都能正常工作
+ */
+async function runWithTsx(argv: string[], options?: Options<any>) {
+  try {
+    // 先尝试使用 tsx 命令（保持原有实现）
+    await run('tsx', argv, options);
+  } catch (error: any) {
+    // 如果 tsx 命令失败（可能在某些平台上不可用），使用 node --import tsx 作为后备方案
+    // 这样可以确保在所有平台上都能正常工作
+    if (error.code === 'ENOENT' || error.message?.includes('tsx') || error.exitCode) {
+      // 使用 node --import tsx 来运行，保留所有参数
+      // tsx 作为导入钩子会处理这些参数
+      await run('node', ['--import', 'tsx', ...argv], options);
+    } else {
+      throw error;
+    }
+  }
+}
+
 export async function runInstall() {
   const { APP_SERVER_ROOT, SERVER_TSCONFIG_PATH } = process.env;
 
@@ -101,7 +122,7 @@ export async function runInstall() {
     'install',
     '-s',
   ];
-  await run('tsx', argv);
+  await runWithTsx(argv);
 }
 
 export async function runAppCommand(command: string, args: string[] = []) {
@@ -120,7 +141,7 @@ export async function runAppCommand(command: string, args: string[] = []) {
     command,
     ...args,
   ];
-  await run('tsx', argv);
+  await runWithTsx(argv);
 }
 
 export function promptForTs() {
