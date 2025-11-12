@@ -10,3 +10,5 @@ export * from './notice';
 export { AesEncryptor } from './aes-encryptor';
 export * from './logger';
 export * from './tokens';
+export * from './ipc-socket-client';
+export * from './ipc-socket-server';
