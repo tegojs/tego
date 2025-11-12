@@ -12,6 +12,7 @@ import { registerAppSupervisor } from './app-supervisor';
 import { registerCache } from './cache';
 import { registerCron } from './cron';
 import { registerGateway } from './gateway/gateway';
+import { registerI18n, registerLocale } from './locale';
 import { registerAdvancedLogger } from './logger';
 import { registerMiddlewares } from './middlewares';
 import { registerNoticeManager } from './notice';
@@ -31,12 +32,12 @@ export {
   registerAesEncryptor,
   registerNoticeManager,
   registerSyncMessageManager,
+  registerI18n,
+  registerLocale,
 };
 
 export * from './database-service';
 export * from './datasource-service';
 export * from './resourcer-service';
 export * from './auth-service';
-export * from './i18n-service';
-export * from './locale-service';
-export * from './app-supervisor';
+export * from './locale';

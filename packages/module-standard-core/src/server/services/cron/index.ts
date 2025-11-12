@@ -29,19 +29,19 @@ export class CronJobManager {
   private _started = false;
 
   constructor(private tego: Tego) {
-    tego.on('tego:beforeStop', async () => {
+    this.tego.on('tego:beforeStop', async () => {
       this.stop();
     });
 
-    tego.on('tego:afterStart', async () => {
+    this.tego.on('tego:afterStart', async () => {
       this.start();
     });
 
-    tego.on('tego:beforeReload', async () => {
+    this.tego.on('tego:beforeReload', async () => {
       this.stop();
     });
 
-    tego.container.set({ id: TOKENS.CronJobManager, value: this });
+    this.tego.container.set({ id: TOKENS.CronJobManager, value: this });
   }
 
   get started() {

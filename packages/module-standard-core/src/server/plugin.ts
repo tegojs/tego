@@ -9,6 +9,8 @@ import {
   registerCommands,
   registerCron,
   registerGateway,
+  registerI18n,
+  registerLocale,
   registerPubSub,
 } from './services';
 
@@ -32,6 +34,8 @@ export class StandardCorePlugin extends Plugin {
     registerCron(this.tego);
     registerPubSub(this.tego, this.options.pubSubManager ?? this.tego.options.pubSubManager);
     await registerAesEncryptor(this.tego);
+    registerI18n(this.tego);
+    registerLocale(this.tego, this.options.locale);
     registerCommands(this.tego);
     registerGateway(this.tego, {
       host: this.options.gateway?.host,
@@ -68,6 +72,8 @@ export class StandardCorePlugin extends Plugin {
       'PubSubManager',
       'Gateway',
       'AppSupervisor',
+      'I18n',
+      'Locale',
     ];
 
     for (const serviceName of requiredServices) {
