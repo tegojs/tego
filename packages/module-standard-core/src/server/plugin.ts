@@ -1,27 +1,13 @@
 import { Plugin } from '@tego/core';
 
+import { registerAdvancedLogger } from './services';
+
 /**
  * Standard Core Plugin
  *
- * This plugin will eventually contain all the standard services that are
- * currently in @tego/core. For Tego 2.0, services remain in core but are
- * accessible via DI container. Future versions will move service initialization
- * to this plugin.
- *
- * Services to be moved here:
- * - DataSourceManager
- * - Database
- * - Resourcer
- * - ACL
- * - AuthManager
- * - CacheManager
- * - I18n
- * - LocaleManager
- * - CronJobManager
- * - PubSubManager
- * - SyncMessageManager
- * - NoticeManager
- * - AesEncryptor
+ * This plugin provides all the standard services that were
+ * previously in @tego/core. Services are now registered into the DI
+ * container from here.
  */
 export class StandardCorePlugin extends Plugin {
   getName(): string {
@@ -29,22 +15,16 @@ export class StandardCorePlugin extends Plugin {
   }
 
   async beforeLoad() {
-    // In future versions, services will be registered here
-    // For now, services are initialized in Tego core and registered in DI
+    registerAdvancedLogger(this.tego);
     this.tego.logger.info('StandardCorePlugin: beforeLoad');
   }
 
   async load() {
-    // In future versions, service initialization will happen here
-    // For now, this plugin serves as a placeholder and documentation
     this.tego.logger.info('StandardCorePlugin: load');
-
-    // Verify that services are available in DI container
     this.verifyServices();
   }
 
   async install() {
-    // One-time installation logic
     this.tego.logger.info('StandardCorePlugin: install');
   }
 
@@ -57,6 +37,7 @@ export class StandardCorePlugin extends Plugin {
     const { container } = this.tego;
 
     const requiredServices = [
+      'Logger',
       'DataSourceManager',
       'CronJobManager',
       'I18n',

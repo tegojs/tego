@@ -1,7 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { EventEmitter } from 'node:events';
-import { createSystemLogger, getLoggerFilePath, SystemLogger, SystemLoggerOptions } from '@tachybase/logger';
-import { Container } from '@tego/di';
+import { Container, ContainerInstance } from '@tego/di';
 
 import { Command, CommandOptions } from 'commander';
 import lodash from 'lodash';
@@ -12,6 +11,7 @@ import { registerCli } from './commands';
 import { Environment } from './environment';
 import { EventBus } from './event-bus';
 import { ApplicationVersion } from './helpers/application-version';
+import { ConsoleLogger, Logger } from './logger';
 import { Plugin } from './plugin';
 import { InstallOptions, PluginManager } from './plugin-manager';
 
@@ -20,9 +20,7 @@ export type PluginConfiguration = PluginType | [PluginType, any];
 
 export interface TegoOptions {
   name?: string;
-  logger?: {
-    system?: SystemLoggerOptions;
-  };
+  logger?: Record<string, any>;
   plugins?: PluginConfiguration[];
   [key: string]: any; // Allow plugins to extend options
 }
@@ -75,7 +73,7 @@ export class Tego extends EventEmitter {
   /**
    * Dependency injection container
    */
-  public container: Container;
+  public container: ContainerInstance;
 
   /**
    * @internal
@@ -101,7 +99,7 @@ export class Tego extends EventEmitter {
 
   protected plugins = new Map<string, Plugin>();
   protected _started: boolean;
-  protected _logger: SystemLogger;
+  protected _logger: Logger;
   private _maintaining = false;
   private _maintainingCommandStatus: MaintainingCommandStatus;
   private _maintainingStatusBeforeCommand: MaintainingCommandStatus | null;
@@ -126,16 +124,7 @@ export class Tego extends EventEmitter {
     this.eventBus = new EventBus();
 
     // Initialize logger
-    this._logger = createSystemLogger({
-      dirname: getLoggerFilePath(this.name),
-      filename: 'system',
-      seperateError: true,
-      ...options.logger?.system,
-    }).child({
-      reqId: this.reqId,
-      app: this.name,
-      module: 'tego',
-    });
+    this._logger = new ConsoleLogger({ reqId: this.reqId, app: this.name, module: 'tego' });
 
     // Initialize environment
     this._env = new Environment();
@@ -164,6 +153,12 @@ export class Tego extends EventEmitter {
 
   get logger() {
     return this._logger;
+  }
+
+  setLogger(logger: Logger) {
+    const { TOKENS } = require('./tokens');
+    this._logger = logger;
+    this.container.set({ id: TOKENS.Logger, value: logger });
   }
 
   get environment() {
@@ -355,7 +350,7 @@ export class Tego extends EventEmitter {
 
     if (options?.reqId) {
       this.reqId = options.reqId;
-      this._logger = this._logger.child({ reqId: this.reqId });
+      this.setLogger(this._logger.child({ reqId: this.reqId }));
     }
 
     this._maintainingStatusBeforeCommand = this._maintainingCommandStatus;
@@ -544,25 +539,25 @@ export class Tego extends EventEmitter {
     const { TOKENS } = require('./tokens');
 
     // Register Tego itself
-    this.container.set(TOKENS.Tego, this);
+    this.container.set({ id: TOKENS.Tego, value: this });
 
     // Register EventBus
-    this.container.set(TOKENS.EventBus, this.eventBus);
+    this.container.set({ id: TOKENS.EventBus, value: this.eventBus });
 
     // Register Logger
-    this.container.set(TOKENS.Logger, this._logger);
+    this.container.set({ id: TOKENS.Logger, value: this._logger });
 
     // Register Config
-    this.container.set(TOKENS.Config, this.options);
+    this.container.set({ id: TOKENS.Config, value: this.options });
 
     // Register Environment
-    this.container.set(TOKENS.Environment, this._env);
+    this.container.set({ id: TOKENS.Environment, value: this._env });
 
     // Register PluginManager
-    this.container.set(TOKENS.PluginManager, this._pm);
+    this.container.set({ id: TOKENS.PluginManager, value: this._pm });
 
     // Register CLI
-    this.container.set(TOKENS.Command, this._cli);
+    this.container.set({ id: TOKENS.Command, value: this._cli });
   }
 
   /**

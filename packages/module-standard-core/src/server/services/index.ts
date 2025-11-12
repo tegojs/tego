@@ -5,6 +5,9 @@
  * but are now provided by the module-standard-core plugin.
  */
 
+// Logger
+export * from './logger';
+
 // Database and Data Source
 export * from './database-service';
 export * from './datasource-service';
@@ -24,7 +27,7 @@ export * from './i18n-service';
 export * from './locale-service';
 
 // Background Jobs
-export * from './cronjob-service';
+export * from './cron';
 
 // Messaging
 export * from './pub-sub';
