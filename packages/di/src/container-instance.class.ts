@@ -236,11 +236,39 @@ export class ContainerInstance {
     if (Array.isArray(identifierOrIdentifierArray)) {
       identifierOrIdentifierArray.forEach((id) => this.remove(id));
     } else {
+      // Check if it's a singleton service in the default container
+      const globalMetadata = ContainerInstance.default.metadataMap.get(identifierOrIdentifierArray);
+      if (globalMetadata?.scope === 'singleton' && this !== ContainerInstance.default) {
+        // Delegate to default container for singleton services
+        ContainerInstance.default.remove(identifierOrIdentifierArray);
+        return this;
+      }
+
       const serviceMetadata = this.metadataMap.get(identifierOrIdentifierArray);
 
       if (serviceMetadata) {
         this.disposeServiceInstance(serviceMetadata);
         this.metadataMap.delete(identifierOrIdentifierArray);
+      }
+
+      // Also handle multiple services
+      const multiServiceGroup = this.multiServiceIds.get(identifierOrIdentifierArray);
+      if (multiServiceGroup) {
+        // Check if it's a singleton multiple service group
+        if (multiServiceGroup.scope === 'singleton' && this !== ContainerInstance.default) {
+          ContainerInstance.default.remove(identifierOrIdentifierArray);
+          return this;
+        }
+
+        // Dispose all instances in the multiple service group
+        multiServiceGroup.tokens.forEach((token) => {
+          const metadata = this.metadataMap.get(token);
+          if (metadata) {
+            this.disposeServiceInstance(metadata);
+            this.metadataMap.delete(token);
+          }
+        });
+        this.multiServiceIds.delete(identifierOrIdentifierArray);
       }
     }
 
@@ -402,57 +430,14 @@ export class ContainerInstance {
   }
 
   /**
-   * Initializes all parameter types for a given target service class.
-   */
-  private initializeParams(target: Function, paramTypes: any[]): unknown[] {
-    return paramTypes.map((paramType, index) => {
-      const paramHandler =
-        this.handlers.find((handler) => {
-          /**
-           * @Inject()-ed values are stored as parameter handlers and they reference their target
-           * when created. So when a class is extended the @Inject()-ed values are not inherited
-           * because the handler still points to the old object only.
-           *
-           * As a quick fix a single level parent lookup is added via `Object.getPrototypeOf(target)`,
-           * however this should be updated to a more robust solution.
-           *
-           * TODO: Add proper inheritance handling: either copy the handlers when a class is registered what
-           * TODO: has it's parent already registered as dependency or make the lookup search up to the base Object.
-           */
-          return handler.object === target && handler.index === index;
-        }) ||
-        this.handlers.find((handler) => {
-          return handler.object === Object.getPrototypeOf(target) && handler.index === index;
-        });
-
-      if (paramHandler) return paramHandler.value(this);
-
-      if (paramType && paramType.name && !this.isPrimitiveParamType(paramType.name)) {
-        return this.get(paramType);
-      }
-
-      return undefined;
-    });
-  }
-
-  /**
-   * Checks if given parameter type is primitive type or not.
-   */
-  private isPrimitiveParamType(paramTypeName: string): boolean {
-    return ['string', 'boolean', 'number', 'object'].includes(paramTypeName.toLowerCase());
-  }
-
-  /**
    * Applies all registered handlers on a given target class.
+   * Handlers are used to inject dependencies into class properties.
    */
   private applyPropertyHandlers(target: Function, instance: { [key: string]: any }) {
     this.handlers.forEach((handler) => {
-      if (typeof handler.index === 'number') return;
       if (handler.object !== target && !(target.prototype instanceof handler.object)) return;
 
-      if (handler.propertyName) {
-        instance[handler.propertyName] = handler.value(this);
-      }
+      instance[handler.propertyName] = handler.value(this);
     });
   }
 
@@ -471,7 +456,11 @@ export class ContainerInstance {
 
     if (shouldResetValue) {
       /** If we wound a function named destroy we call it without any params. */
-      if (typeof (serviceMetadata?.value as Record<string, unknown>)['dispose'] === 'function') {
+      if (
+        serviceMetadata?.value &&
+        typeof serviceMetadata.value === 'object' &&
+        typeof (serviceMetadata.value as Record<string, unknown>)['dispose'] === 'function'
+      ) {
         try {
           (serviceMetadata.value as { dispose: CallableFunction }).dispose();
         } catch (error) {

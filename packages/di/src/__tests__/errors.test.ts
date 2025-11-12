@@ -161,8 +161,8 @@ describe('Error Handling', () => {
       const error = new CannotInjectValueError(TestService, propertyName);
 
       expect(error.message).toContain('Cannot inject value into "TestService.testProperty"');
-      expect(error.message).toContain('setup reflect-metadata properly');
-      expect(error.message).toContain('interfaces without service tokens');
+      expect(error.message).toContain('provide a type function (() => MyType), string identifier, or Token');
+      expect(error.message).toContain("don't exist at runtime");
     });
   });
 

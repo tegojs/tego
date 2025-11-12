@@ -228,6 +228,9 @@ describe('Service Lifecycle and Cleanup', () => {
       container.set({ id: 'multi-service', type: Service1, multiple: true });
       container.set({ id: 'multi-service', type: Service2, multiple: true });
 
+      // Need to instantiate services before they can be disposed
+      const services = container.getMany('multi-service');
+
       container.remove('multi-service');
 
       expect(service1Disposed).toBe(true);

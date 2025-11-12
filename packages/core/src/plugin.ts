@@ -9,11 +9,11 @@ import { fsExists, importModule } from '@tachybase/utils';
 import { globSync } from 'glob';
 import type { ParseKeys, TOptions } from 'i18next';
 
-import { Application } from './application';
 import { resolveRequest } from './helper';
 import { getExposeChangelogUrl, getExposeReadmeUrl, InstallOptions } from './plugin-manager';
 import { checkAndGetCompatible } from './plugin-manager/utils';
 import { PubSubManagerPublishOptions } from './pub-sub-manager';
+import { Application, Tego } from './tego';
 
 export type { ParseKeys, TOptions } from 'i18next';
 export interface PluginInterface {
@@ -39,7 +39,7 @@ export interface PluginOptions {
 
 export abstract class Plugin implements PluginInterface {
   options: any;
-  app: Application;
+  tego: Tego;
   features: (typeof Plugin)[];
   featureInstances: Plugin[];
 
@@ -58,16 +58,23 @@ export abstract class Plugin implements PluginInterface {
    */
   private _sourceDir: string;
 
-  constructor(app: Application, options?: any) {
-    this.app = app;
+  constructor(tego: Tego, options?: any) {
+    this.tego = tego;
     this.setOptions(options);
     this.features = [];
     this.featureInstances = [];
   }
 
-  addFeature<T extends Plugin>(plugin: new (app: Application, options?: any) => T) {
+  /**
+   * @deprecated Use tego instead
+   */
+  get app(): Tego {
+    return this.tego;
+  }
+
+  addFeature<T extends Plugin>(plugin: new (tego: Tego, options?: any) => T) {
     this.features.push(plugin);
-    this.featureInstances.push(new plugin(this.app, this.options));
+    this.featureInstances.push(new plugin(this.tego, this.options));
   }
 
   get log() {
