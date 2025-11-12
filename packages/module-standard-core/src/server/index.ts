@@ -1,1 +1,2 @@
-export { ModuleStandardCorePlugin as default } from './plugin';
+export { StandardCorePlugin as default } from './plugin';
+export * from './plugin';
