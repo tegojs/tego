@@ -8,7 +8,6 @@ import { actions as authActions, AuthManager, AuthManagerOptions } from '@tachyb
 import { Cache, CacheManager, CacheManagerOptions } from '@tachybase/cache';
 import { DataSourceManager, SequelizeDataSource } from '@tachybase/data-source';
 import Database, { CollectionOptions, IDatabaseOptions } from '@tachybase/database';
-import { ContainerInstance } from '@tachybase/di';
 import {
   createLogger,
   createSystemLogger,
@@ -28,6 +27,7 @@ import {
   Toposort,
   ToposortOptions,
 } from '@tachybase/utils';
+import { Container } from '@tego/di';
 
 import { Command, CommanderError, CommandOptions, ParseOptions } from 'commander';
 import { globSync } from 'glob';
@@ -188,6 +188,11 @@ export class Tego extends EventEmitter implements AsyncEmitter {
   public eventBus: EventBus;
 
   /**
+   * Dependency injection container
+   */
+  public container: Container;
+
+  /**
    * @internal
    */
   public rawOptions: TegoOptions;
@@ -224,7 +229,6 @@ export class Tego extends EventEmitter implements AsyncEmitter {
   private _koa = new Koa();
   static KEY_CORE_APP_PREFIX = 'KEY_CORE_APP_';
   private currentId = nanoid();
-  public container: ContainerInstance;
   public modules: Record<string, any> = {};
   private _middleware = new Toposort<Koa.Middleware>();
   public middlewareSourceMap: WeakMap<Function, string> = new WeakMap();
@@ -242,6 +246,9 @@ export class Tego extends EventEmitter implements AsyncEmitter {
     this.context.reqId = randomUUID();
     this.rawOptions = this.name === 'main' ? lodash.cloneDeep(options) : {};
 
+    // Initialize DI container
+    this.container = Container.of(this.name || 'main');
+
     // Initialize EventBus
     this.eventBus = new EventBus();
 
@@ -249,6 +256,9 @@ export class Tego extends EventEmitter implements AsyncEmitter {
 
     this._appSupervisor.addApp(this);
     this._noticeManager = new NoticeManager(this);
+
+    // Register core services in DI container
+    this.registerCoreServices();
 
     // TODO implements more robust event emitters
     this.setMaxListeners(100);
@@ -1102,6 +1112,63 @@ export class Tego extends EventEmitter implements AsyncEmitter {
     registerCli(this);
 
     this._version = new ApplicationVersion(this);
+
+    // Register initialized services in DI container
+    this.registerInitializedServices();
+  }
+
+  /**
+   * Register services that were initialized in init() method
+   * @internal
+   */
+  private registerInitializedServices() {
+    const { TOKENS } = require('./tokens');
+
+    // Register Logger
+    this.container.set(TOKENS.Logger, this._logger);
+
+    // Register Environment
+    this.container.set(TOKENS.Environment, this._env);
+
+    // Register PluginManager
+    this.container.set(TOKENS.PluginManager, this._pm);
+
+    // Register CLI
+    this.container.set(TOKENS.Command, this._cli);
+
+    // The following services will be moved to module-standard-core plugin
+    // For now, register them for backward compatibility
+
+    // Register DataSourceManager
+    this.container.set(TOKENS.DataSourceManager, this._dataSourceManager);
+
+    // Register CronJobManager
+    this.container.set(TOKENS.CronJobManager, this._cronJobManager);
+
+    // Register I18n
+    this.container.set(TOKENS.I18n, this._i18n);
+
+    // Register AuthManager
+    this.container.set(TOKENS.AuthManager, this._authManager);
+
+    // Register PubSubManager
+    this.container.set(TOKENS.PubSubManager, this.pubSubManager);
+
+    // Register SyncMessageManager
+    this.container.set(TOKENS.SyncMessageManager, this.syncMessageManager);
+
+    // Register NoticeManager
+    this.container.set(TOKENS.NoticeManager, this._noticeManager);
+
+    // Register AesEncryptor (if initialized)
+    if (this._aesEncryptor) {
+      this.container.set(TOKENS.AesEncryptor, this._aesEncryptor);
+    }
+
+    // Register CacheManager (if initialized)
+    if (this._cacheManager) {
+      this.container.set(TOKENS.CacheManager, this._cacheManager);
+    }
   }
 
   protected createMainDataSource(options: ApplicationOptions) {
@@ -1188,6 +1255,35 @@ export class Tego extends EventEmitter implements AsyncEmitter {
     }
 
     return this;
+  }
+
+  /**
+   * Register core services in the DI container
+   * @internal
+   */
+  private registerCoreServices() {
+    const { TOKENS } = require('./tokens');
+
+    // Register Tego itself
+    this.container.set(TOKENS.Tego, this);
+
+    // Register EventBus
+    this.container.set(TOKENS.EventBus, this.eventBus);
+
+    // Register Logger (will be initialized later in init())
+    // Note: Logger is registered after initialization in init() method
+
+    // Register Config
+    this.container.set(TOKENS.Config, this.options);
+
+    // Register Environment (will be set after init())
+    // Note: Environment is registered after initialization in init() method
+
+    // Register PluginManager (will be set after init())
+    // Note: PluginManager is registered after initialization in init() method
+
+    // Register CLI (will be set after init())
+    // Note: CLI is registered after initialization in init() method
   }
 
   /**
