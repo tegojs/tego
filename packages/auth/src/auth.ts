@@ -20,6 +20,7 @@ export const AuthErrorCode = {
   EXPIRED_SESSION: 'EXPIRED_SESSION' as const,
   NOT_EXIST_USER: 'NOT_EXIST_USER' as const,
   SKIP_TOKEN_RENEW: 'SKIP_TOKEN_RENEW' as const,
+  USER_STATUS_NOT_ALLOW_LOGIN: 'USER_STATUS_NOT_ALLOW_LOGIN' as const,
 };
 
 export type AuthErrorType = keyof typeof AuthErrorCode;
