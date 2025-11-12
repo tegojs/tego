@@ -1,9 +1,10 @@
+import type { Tego } from '@tego/core';
+
 import _ from 'lodash';
 
-import Application from '../application';
 import { PluginCommandError } from '../errors/plugin-command-error';
 
-export default (app: Application) => {
+export default (app: Tego) => {
   const pm = app.command('pm');
 
   pm.command('create')
@@ -73,8 +74,6 @@ export default (app: Application) => {
 
   pm.command('remove')
     .auth()
-    // .ipc()
-    // .preload()
     .arguments('<plugins...>')
     .option('--force')
     .option('--remove-dir')

@@ -1,10 +1,9 @@
 import fs from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import TachybaseGlobal from '@tachybase/globals';
+import type { Tego } from '@tego/core';
 
 import dayjs from 'dayjs';
-
-import Application from '../application';
 
 async function findRealPathFromPaths(paths: string[], subPath: string): Promise<string> {
   for (const base of paths) {
@@ -16,7 +15,7 @@ async function findRealPathFromPaths(paths: string[], subPath: string): Promise<
   throw new Error(`Cannot resolve real path for ${subPath}`);
 }
 
-export default (app: Application) => {
+export default (app: Tego) => {
   app
     .command('create-migration')
     .argument('<name>')

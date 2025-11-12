@@ -1,13 +1,16 @@
-import Application from '../application';
+import type { Tego } from '@tego/core';
 
-export default (app: Application) => {
+import { getDatabaseOrThrow } from './utils';
+
+export default (app: Tego) => {
   app
     .command('db:clean')
     .auth()
     .option('-y, --yes')
     .action(async (opts) => {
       console.log('Clearing database');
-      await app.db.clean({
+      const db = getDatabaseOrThrow(app);
+      await db.clean({
         drop: opts.yes,
       });
     });

@@ -8,6 +8,9 @@
 // Logger
 export { registerAdvancedLogger } from './logger';
 
+// Commands
+export { registerCommands } from '../commands';
+
 // ACL
 export { registerACL } from './acl';
 

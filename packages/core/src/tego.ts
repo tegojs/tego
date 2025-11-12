@@ -7,7 +7,6 @@ import lodash from 'lodash';
 
 import packageJson from '../package.json';
 import { AppCommand } from './app-command';
-import { registerCli } from './commands';
 import { Environment } from './environment';
 import { EventBus } from './event-bus';
 import { ApplicationVersion } from './helpers/application-version';
@@ -143,9 +142,6 @@ export class Tego extends EventEmitter {
 
     // Register core services in DI container
     this.registerCoreServices();
-
-    // Register CLI commands
-    registerCli(this);
 
     // Set max listeners
     this.setMaxListeners(100);

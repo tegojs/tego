@@ -1,6 +1,13 @@
 import { Plugin } from '@tego/core';
 
-import { registerACL, registerAdvancedLogger, registerCache, registerCron, registerPubSub } from './services';
+import {
+  registerACL,
+  registerAdvancedLogger,
+  registerCache,
+  registerCommands,
+  registerCron,
+  registerPubSub,
+} from './services';
 
 /**
  * Standard Core Plugin
@@ -20,6 +27,7 @@ export class StandardCorePlugin extends Plugin {
     await registerCache(this.tego, this.options.cacheManager ?? this.tego.options.cacheManager);
     registerCron(this.tego);
     registerPubSub(this.tego, this.options.pubSubManager ?? this.tego.options.pubSubManager);
+    registerCommands(this.tego);
 
     this.tego.logger.info('StandardCorePlugin: beforeLoad');
   }

@@ -1,8 +1,7 @@
 import REPL from 'node:repl';
+import type { Tego } from '@tego/core';
 
-import Application from '../application';
-
-export default (app: Application) => {
+export default (app: Tego) => {
   app
     .command('console')
     .preload()

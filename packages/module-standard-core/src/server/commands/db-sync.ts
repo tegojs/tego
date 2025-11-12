@@ -1,6 +1,8 @@
-import Application from '../application';
+import type { Tego } from '@tego/core';
 
-export default (app: Application) => {
+import { getDatabaseOrThrow } from './utils';
+
+export default (app: Tego) => {
   app
     .command('db:sync')
     .auth()
@@ -9,14 +11,14 @@ export default (app: Application) => {
       const [opts] = cliArgs;
       console.log('db sync...');
 
-      const Collection = app.db.getCollection('collections');
+      const db = getDatabaseOrThrow(app);
+      const Collection = db.getCollection('collections');
       if (Collection) {
-        // @ts-ignore
         await Collection.repository.load();
       }
 
       const force = false;
-      await app.db.sync({
+      await db.sync({
         force,
         alter: {
           drop: force,

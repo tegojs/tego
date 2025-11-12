@@ -1,6 +1,6 @@
-import Application from '../application';
+import type { Tego } from '@tego/core';
 
-export default (app: Application) => {
+export default (app: Tego) => {
   app
     .command('restart')
     .ipc()

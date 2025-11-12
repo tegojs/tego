@@ -2,11 +2,11 @@ import fs from 'node:fs';
 import { resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { fsExists } from '@tachybase/utils';
+import type { Tego } from '@tego/core';
 
-import Application from '../application';
 import { ApplicationNotInstall } from '../errors/application-not-install';
 
-export default (app: Application) => {
+export default (app: Tego) => {
   app
     .command('start')
     .auth()
@@ -17,6 +17,7 @@ export default (app: Application) => {
       app.logger.debug('start options', options);
       const file = resolve(process.env.TEGO_RUNTIME_HOME, 'storage/app-upgrading');
       const upgrading = await fsExists(file);
+
       if (upgrading) {
         await app.upgrade();
         await fs.promises.rm(file);
