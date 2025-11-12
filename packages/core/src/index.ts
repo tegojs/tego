@@ -1,6 +1,10 @@
-export * from './application';
-export { Tego, Application } from './application';
-export { Tego as default } from './application';
+// Export new minimal Tego
+export * from './tego';
+export { Tego, Application } from './tego';
+export { Tego as default } from './tego';
+
+// Keep old application.ts for reference but mark as deprecated
+// export * from './application'; // REMOVED - use Tego instead
 export * as middlewares from './middlewares';
 export * from './migration';
 export * from './plugin';

@@ -9,11 +9,11 @@ import { fsExists, importModule } from '@tachybase/utils';
 import { globSync } from 'glob';
 import type { ParseKeys, TOptions } from 'i18next';
 
-import { Application, Tego } from './application';
 import { resolveRequest } from './helper';
 import { getExposeChangelogUrl, getExposeReadmeUrl, InstallOptions } from './plugin-manager';
 import { checkAndGetCompatible } from './plugin-manager/utils';
 import { PubSubManagerPublishOptions } from './pub-sub-manager';
+import { Application, Tego } from './tego';
 
 export type { ParseKeys, TOptions } from 'i18next';
 export interface PluginInterface {
