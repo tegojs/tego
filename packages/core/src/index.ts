@@ -1,5 +1,6 @@
 export * from './application';
-export { Application as default } from './application';
+export { Tego, Application } from './application';
+export { Tego as default } from './application';
 export * as middlewares from './middlewares';
 export * from './migration';
 export * from './plugin';

@@ -88,7 +88,7 @@ export type PluginConfiguration = PluginType | [PluginType, any];
 
 declare module '@tachybase/resourcer' {
   interface ResourcerContext {
-    app?: Application;
+    app?: Tego;
   }
 }
 
@@ -101,7 +101,7 @@ export interface AppLoggerOptions {
   system: SystemLoggerOptions;
 }
 
-export interface ApplicationOptions {
+export interface TegoOptions {
   database?: IDatabaseOptions | Database;
   cacheManager?: CacheManagerOptions;
   resourcer?: ResourcerOptions;
@@ -122,6 +122,11 @@ export interface ApplicationOptions {
   tmpl?: any;
 }
 
+/**
+ * @deprecated Use TegoOptions instead
+ */
+export type ApplicationOptions = TegoOptions;
+
 declare module 'koa' {
   interface DefaultState {
     currentUser?: any;
@@ -130,7 +135,7 @@ declare module 'koa' {
 
 declare module 'koa' {
   interface ExtendableContext {
-    tego: Application;
+    tego: Tego;
     db: Database;
     cache: Cache;
     resourcer: Resourcer;
@@ -166,7 +171,7 @@ export type MaintainingCommandStatus = {
   error?: Error;
 };
 
-export class Application extends EventEmitter implements AsyncEmitter {
+export class Tego extends EventEmitter implements AsyncEmitter {
   /**
    * @internal
    */
@@ -179,7 +184,7 @@ export class Application extends EventEmitter implements AsyncEmitter {
   /**
    * @internal
    */
-  public rawOptions: ApplicationOptions;
+  public rawOptions: TegoOptions;
   /**
    * @internal
    */
@@ -226,7 +231,7 @@ export class Application extends EventEmitter implements AsyncEmitter {
     connection: new Set(),
   };
 
-  constructor(public options: ApplicationOptions) {
+  constructor(public options: TegoOptions) {
     super();
     this.context.reqId = randomUUID();
     this.rawOptions = this.name === 'main' ? lodash.cloneDeep(options) : {};
@@ -1176,6 +1181,11 @@ export class Application extends EventEmitter implements AsyncEmitter {
   }
 }
 
-applyMixins(Application, [AsyncEmitter]);
+applyMixins(Tego, [AsyncEmitter]);
+
+/**
+ * @deprecated Use Tego instead
+ */
+export const Application = Tego;
 
 export default Application;
