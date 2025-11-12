@@ -7,9 +7,12 @@ export class CannotInjectValueError extends Error {
   public name = 'CannotInjectValueError';
 
   get message(): string {
+    // target is always a class constructor (Constructable), so we can safely access .name
+    const targetName = this.target.name || 'Unknown';
     return (
-      `Cannot inject value into "${this.target.constructor.name}.${this.propertyName}". ` +
-      `Please make sure you setup reflect-metadata properly and you don't use interfaces without service tokens as injection value.`
+      `Cannot inject value into "${targetName}.${this.propertyName}". ` +
+      `Please make sure you provide a type function (() => MyType), string identifier, or Token as the @Inject() parameter. ` +
+      `Interfaces and types cannot be used directly as they don't exist at runtime.`
     );
   }
 

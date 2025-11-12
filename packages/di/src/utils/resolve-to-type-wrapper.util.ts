@@ -7,16 +7,13 @@ import { ServiceIdentifier } from '../types/service-identifier.type';
  * Helper function used in inject decorators to resolve the received identifier to
  * an eager type when possible or to a lazy type when cyclic dependencies are possibly involved.
  *
- * @param typeOrIdentifier a service identifier or a function returning a type acting as service identifier or nothing
- * @param target the class definition of the target of the decorator
- * @param propertyName the name of the property in case of a PropertyDecorator
- * @param index the index of the parameter in the constructor in case of ParameterDecorator
+ * In Stage 3 decorators, type information is explicitly provided via the typeOrIdentifier parameter,
+ * so we don't need reflect-metadata or target/property information.
+ *
+ * @param typeOrIdentifier a service identifier or a function returning a type acting as service identifier
  */
 export function resolveToTypeWrapper(
   typeOrIdentifier: ((type?: never) => Constructable<unknown>) | ServiceIdentifier<unknown> | undefined,
-  target: object,
-  propertyName: string | symbol,
-  index?: number,
 ): { eagerType: ServiceIdentifier | null; lazyType: (type?: never) => ServiceIdentifier } {
   /**
    * ? We want to error out as soon as possible when looking up services to inject, however

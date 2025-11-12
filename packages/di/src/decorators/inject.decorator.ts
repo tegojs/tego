@@ -7,35 +7,45 @@ import { ServiceIdentifier } from '../types/service-identifier.type';
 import { resolveToTypeWrapper } from '../utils/resolve-to-type-wrapper.util';
 
 /**
- * Injects a service into a class property or constructor parameter.
+ * Injects a service into a class property.
+ *
+ * @example
+ * // Inject by type function (for circular dependencies)
+ * @Inject(() => MyService)
+ * private myService!: MyService;
+ *
+ * // Inject by string identifier
+ * @Inject('myService')
+ * private myService!: MyService;
+ *
+ * // Inject by token
+ * @Inject(MY_TOKEN)
+ * private myService!: MyService;
  */
-export function Inject(): Function;
-export function Inject(typeFn: (type?: never) => Constructable<unknown>): Function;
-export function Inject(serviceName?: string): Function;
-export function Inject(token: Token<unknown>): Function;
-export function Inject(typeOrIdentifier?: ((type?: never) => Constructable<unknown>) | ServiceIdentifier<unknown>) {
+export function Inject(
+  typeOrIdentifier?: ((type?: never) => Constructable<unknown>) | ServiceIdentifier<unknown>,
+): Function {
   return function (_: any, context: ClassFieldDecoratorContext) {
     if (!context.metadata.injects) {
       context.metadata.injects = [];
     }
     (context.metadata.injects as any[]).push((target: Constructable<unknown>) => {
-      const propertyName = context.name;
-      const typeWrapper = resolveToTypeWrapper(typeOrIdentifier, target, propertyName);
+      const typeWrapper = resolveToTypeWrapper(typeOrIdentifier);
 
       /** If no type was inferred, or the general Object type was inferred we throw an error. */
       if (typeWrapper === undefined || typeWrapper.eagerType === undefined || typeWrapper.eagerType === Object) {
-        throw new CannotInjectValueError(target as Constructable<unknown>, propertyName as string);
+        throw new CannotInjectValueError(target as Constructable<unknown>, context.name as string);
       }
 
       ContainerInstance.default.registerHandler({
         object: target as Constructable<unknown>,
-        propertyName: propertyName as string,
+        propertyName: context.name as string,
         value: (containerInstance) => {
           const evaluatedLazyType = typeWrapper.lazyType();
 
           /** If no type was inferred lazily, or the general Object type was inferred we throw an error. */
           if (evaluatedLazyType === undefined || evaluatedLazyType === Object) {
-            throw new CannotInjectValueError(target as Constructable<unknown>, propertyName as string);
+            throw new CannotInjectValueError(target as Constructable<unknown>, context.name as string);
           }
 
           return containerInstance.get<unknown>(evaluatedLazyType);
