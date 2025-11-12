@@ -8,3 +8,5 @@ export * from './gateway';
 export * from './app-supervisor';
 export * from './notice';
 export { AesEncryptor } from './aes-encryptor';
+export * from './logger';
+export * from './tokens';
