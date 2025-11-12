@@ -75,7 +75,6 @@ export class HandlerManager {
   wrapper(channel, callback, options) {
     const { debounce = 0, callbackCaller } = options;
     return async (wrappedMessage) => {
-      // 内存消息队列不再使用JSON.parse
       let json;
       if (this.adapterType !== 'MemoryPubSubAdapter') {
         json = JSON.parse(wrappedMessage);
@@ -93,31 +92,31 @@ export class HandlerManager {
     if (!this.handlers.has(channel)) {
       this.handlers.set(channel, new Map());
     }
-    const headlerMap = this.handlers.get(channel);
-    const headler = this.wrapper(channel, callback, options);
-    headlerMap.set(callback, headler);
-    return headler;
+    const handlerMap = this.handlers.get(channel);
+    const handler = this.wrapper(channel, callback, options);
+    handlerMap.set(callback, handler);
+    return handler;
   }
 
   get(channel: string, callback) {
-    const headlerMap = this.handlers.get(channel);
-    if (!headlerMap) {
+    const handlerMap = this.handlers.get(channel);
+    if (!handlerMap) {
       return;
     }
-    return headlerMap.get(callback);
+    return handlerMap.get(callback);
   }
 
   delete(channel: string, callback) {
     if (!callback) {
       return;
     }
-    const headlerMap = this.handlers.get(channel);
-    if (!headlerMap) {
+    const handlerMap = this.handlers.get(channel);
+    if (!handlerMap) {
       return;
     }
-    const headler = headlerMap.get(callback);
-    headlerMap.delete(callback);
-    return headler;
+    const handler = handlerMap.get(callback);
+    handlerMap.delete(callback);
+    return handler;
   }
 
   reset() {
@@ -126,9 +125,9 @@ export class HandlerManager {
   }
 
   async each(callback) {
-    for (const [channel, headlerMap] of this.handlers) {
-      for (const headler of headlerMap.values()) {
-        await callback(channel, headler);
+    for (const [channel, handlerMap] of this.handlers) {
+      for (const handler of handlerMap.values()) {
+        await callback(channel, handler);
       }
     }
   }

@@ -1,6 +1,6 @@
 import { uid } from '@tachybase/utils';
+import { TOKENS, type Tego } from '@tego/core';
 
-import Application from '../application';
 import { HandlerManager } from './handler-manager';
 import { MemoryPubSubAdapter } from './memory-pub-sub-adapter';
 import {
@@ -11,15 +11,19 @@ import {
   type PubSubManagerSubscribeOptions,
 } from './types';
 
-export const createPubSubManager = (app: Application, options: PubSubManagerOptions) => {
+export const createPubSubManager = (tego: Tego, options: PubSubManagerOptions = {}) => {
   const pubSubManager = new PubSubManager(options);
   pubSubManager.setAdapter(MemoryPubSubAdapter.create());
-  app.on('afterStart', async () => {
+
+  tego.on('tego:afterStart', async () => {
     await pubSubManager.connect();
   });
-  app.on('afterStop', async () => {
+  tego.on('tego:afterStop', async () => {
     await pubSubManager.close();
   });
+
+  tego.container.set(TOKENS.PubSubManager, pubSubManager);
+
   return pubSubManager;
 };
 
@@ -54,9 +58,8 @@ export class PubSubManager {
       return;
     }
     await this.adapter.connect();
-    // 如果没连接前添加的订阅，连接后需要把订阅添加上
-    await this.handlerManager.each(async (channel, headler) => {
-      await this.adapter.subscribe(`${this.channelPrefix}${channel}`, headler);
+    await this.handlerManager.each(async (channel, handler) => {
+      await this.adapter.subscribe(`${this.channelPrefix}${channel}`, handler);
     });
   }
 
@@ -68,10 +71,8 @@ export class PubSubManager {
   }
 
   async subscribe(channel: string, callback: PubSubCallback, options: PubSubManagerSubscribeOptions = {}) {
-    // 先退订，防止重复订阅 TODO: 这里用bind(this),导致无法取消订阅
     await this.unsubscribe(channel, callback);
     const handler = this.handlerManager.set(channel, callback, options);
-    // 连接之后才能订阅
 
     if (await this.isConnected()) {
       await this.adapter.subscribe(`${this.channelPrefix}${channel}`, handler);
@@ -96,7 +97,7 @@ export class PubSubManager {
     const messageRow = {
       publisherId: this.publisherId,
       ...options,
-      message: message,
+      message,
     };
 
     const wrappedMessage =

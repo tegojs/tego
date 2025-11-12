@@ -1,4 +1,4 @@
-import Application from '../application';
+import { TOKENS, type Tego } from '@tego/core';
 
 export interface CronJobParameters {
   cronTime: string;
@@ -26,51 +26,51 @@ export class CronJob {
 
 export class CronJobManager {
   private _jobs: Set<CronJob> = new Set();
-
   private _started = false;
 
-  constructor(private app: Application) {
-    app.on('beforeStop', async () => {
+  constructor(private tego: Tego) {
+    tego.on('tego:beforeStop', async () => {
       this.stop();
     });
 
-    app.on('afterStart', async () => {
+    tego.on('tego:afterStart', async () => {
       this.start();
     });
 
-    app.on('beforeReload', async () => {
+    tego.on('tego:beforeReload', async () => {
       this.stop();
     });
+
+    tego.container.set(TOKENS.CronJobManager, this);
   }
 
-  public get started() {
+  get started() {
     return this._started;
   }
 
-  public get jobs() {
+  get jobs() {
     return this._jobs;
   }
 
-  public addJob(options: CronJobParameters) {
+  addJob(options: CronJobParameters) {
     const cronJob = new CronJob(options);
     this._jobs.add(cronJob);
-
     return cronJob;
   }
 
-  public removeJob(job: CronJob) {
+  removeJob(job: CronJob) {
     job.stop();
     this._jobs.delete(job);
   }
 
-  public start() {
+  start() {
     this._jobs.forEach((job) => {
       job.start();
     });
     this._started = true;
   }
 
-  public stop() {
+  stop() {
     this._jobs.forEach((job) => {
       job.stop();
     });

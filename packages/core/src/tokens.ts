@@ -95,6 +95,11 @@ export const TOKENS = {
   CacheManager: Token<any>('CacheManager'),
 
   /**
+   * Default cache instance
+   */
+  Cache: Token<any>('Cache'),
+
+  /**
    * Cron job manager (scheduled tasks)
    */
   CronJobManager: Token<any>('CronJobManager'),

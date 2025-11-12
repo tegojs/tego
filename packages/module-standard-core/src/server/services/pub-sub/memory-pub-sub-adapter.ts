@@ -53,13 +53,11 @@ export class MemoryPubSubAdapter implements IPubSubAdapter {
   }
 
   async publish(channel, message) {
-    // console.log(this.connected, { channel, message });
     if (!this.connected) {
       return;
     }
     await this.emitter.emitAsync(channel, message);
     await this.emitter.emitAsync('__publish__', channel, message);
-    // 用于处理延迟问题
     if (this.options.debounce) {
       await sleep(Number(this.options.debounce));
     }

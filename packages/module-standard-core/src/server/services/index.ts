@@ -27,7 +27,7 @@ export * from './locale-service';
 export * from './cronjob-service';
 
 // Messaging
-export * from './pubsub-service';
+export * from './pub-sub';
 export * from './sync-message-service';
 export * from './notice-service';
 

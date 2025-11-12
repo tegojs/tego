@@ -9,7 +9,6 @@ export interface PubSubManagerPublishOptions {
 
 export interface PubSubManagerSubscribeOptions {
   debounce?: number;
-  // 回调的真实调用者
   callbackCaller?: any;
 }
 
