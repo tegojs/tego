@@ -50,6 +50,7 @@ import { registerCli } from './commands';
 import { CronJobManager } from './cron/cron-job-manager';
 import { Environment } from './environment';
 import { ApplicationNotInstall } from './errors/application-not-install';
+import { EventBus } from './event-bus';
 import { Gateway } from './gateway';
 import {
   createAppProxy,
@@ -180,7 +181,12 @@ export class Tego extends EventEmitter implements AsyncEmitter {
    * @internal
    */
   ready = false;
-  declare emitAsync: (event: string | symbol, ...args: any[]) => Promise<boolean>;
+
+  /**
+   * Event bus for application-wide events
+   */
+  public eventBus: EventBus;
+
   /**
    * @internal
    */
@@ -235,6 +241,10 @@ export class Tego extends EventEmitter implements AsyncEmitter {
     super();
     this.context.reqId = randomUUID();
     this.rawOptions = this.name === 'main' ? lodash.cloneDeep(options) : {};
+
+    // Initialize EventBus
+    this.eventBus = new EventBus();
+
     this.init();
 
     this._appSupervisor.addApp(this);
@@ -1179,9 +1189,65 @@ export class Tego extends EventEmitter implements AsyncEmitter {
 
     return this;
   }
+
+  /**
+   * Emit an event asynchronously using the EventBus
+   * @deprecated This method is provided for backward compatibility. Use eventBus.emitAsync instead.
+   */
+  async emitAsync(event: string | symbol, ...args: any[]): Promise<boolean> {
+    await this.eventBus.emitAsync(event.toString(), ...args);
+    return true;
+  }
+
+  /**
+   * Subscribe to an event
+   * Delegates to EventBus for new-style events (tego:*, plugin:*)
+   * Falls back to EventEmitter for legacy events
+   */
+  on(event: string | symbol, listener: (...args: any[]) => void): this {
+    const eventStr = event.toString();
+    if (eventStr.startsWith('tego:') || eventStr.startsWith('plugin:')) {
+      this.eventBus.on(eventStr, listener);
+    } else {
+      super.on(event, listener);
+    }
+    return this;
+  }
+
+  /**
+   * Subscribe to an event (one-time)
+   * Delegates to EventBus for new-style events (tego:*, plugin:*)
+   * Falls back to EventEmitter for legacy events
+   */
+  once(event: string | symbol, listener: (...args: any[]) => void): this {
+    const eventStr = event.toString();
+    if (eventStr.startsWith('tego:') || eventStr.startsWith('plugin:')) {
+      this.eventBus.once(eventStr, listener);
+    } else {
+      super.once(event, listener);
+    }
+    return this;
+  }
+
+  /**
+   * Unsubscribe from an event
+   * Delegates to EventBus for new-style events (tego:*, plugin:*)
+   * Falls back to EventEmitter for legacy events
+   */
+  off(event: string | symbol, listener: (...args: any[]) => void): this {
+    const eventStr = event.toString();
+    if (eventStr.startsWith('tego:') || eventStr.startsWith('plugin:')) {
+      this.eventBus.off(eventStr, listener);
+    } else {
+      super.off(event, listener);
+    }
+    return this;
+  }
 }
 
-applyMixins(Tego, [AsyncEmitter]);
+// Note: AsyncEmitter mixin is no longer applied. The Tego class now uses EventBus
+// directly and implements the AsyncEmitter interface for backward compatibility.
+// The on/once/off/emitAsync methods delegate to EventBus for new-style events.
 
 /**
  * @deprecated Use Tego instead
