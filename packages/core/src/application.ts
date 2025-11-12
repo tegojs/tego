@@ -547,7 +547,7 @@ export class Tego extends EventEmitter implements AsyncEmitter {
     this.setMaintainingMessage('emit beforeLoad');
 
     if (options?.hooks !== false) {
-      await this.emitAsync('beforeLoad', this, options);
+      await this.emitAsync('tego:beforeLoad', this, options);
     }
 
     await this.pm.load(options);
@@ -558,7 +558,7 @@ export class Tego extends EventEmitter implements AsyncEmitter {
 
     this.setMaintainingMessage('emit afterLoad');
     if (options?.hooks !== false) {
-      await this.emitAsync('afterLoad', this, options);
+      await this.emitAsync('tego:afterLoad', this, options);
     }
     this._loaded = true;
   }
@@ -568,7 +568,7 @@ export class Tego extends EventEmitter implements AsyncEmitter {
 
     this._loaded = false;
 
-    await this.emitAsync('beforeReload', this, options);
+    await this.emitAsync('tego:beforeReload', this, options);
 
     await this.load({
       ...options,
@@ -577,7 +577,7 @@ export class Tego extends EventEmitter implements AsyncEmitter {
 
     this.logger.debug('emit afterReload', { method: 'reload' });
     this.setMaintainingMessage('emit afterReload');
-    await this.emitAsync('afterReload', this, options);
+    await this.emitAsync('tego:afterReload', this, options);
     this.logger.debug(`finish reload`, { method: 'reload' });
   }
 
@@ -807,10 +807,10 @@ export class Tego extends EventEmitter implements AsyncEmitter {
     }
 
     this.setMaintainingMessage('emit beforeStart');
-    await this.emitAsync('beforeStart', this, options);
+    await this.emitAsync('tego:beforeStart', this, options);
 
     this.setMaintainingMessage('emit afterStart');
-    await this.emitAsync('afterStart', this, options);
+    await this.emitAsync('tego:afterStart', this, options);
     this.setMaintainingMessage('app started success!');
     await this.emitStartedEvent(options);
 
@@ -821,7 +821,7 @@ export class Tego extends EventEmitter implements AsyncEmitter {
    * @internal
    */
   async emitStartedEvent(options: StartOptions = {}) {
-    await this.emitAsync('__started', this, {
+    await this.emitAsync('tego:started', this, {
       maintainingStatus: lodash.cloneDeep(this._maintainingCommandStatus),
       options,
     });
@@ -850,10 +850,10 @@ export class Tego extends EventEmitter implements AsyncEmitter {
     this.logger.info('restarting...');
 
     this._started = false;
-    await this.emitAsync('beforeStop');
+    await this.emitAsync('tego:beforeStop');
     await this.reload(options);
     await this.start(options);
-    this.emit('__restarted', this, options);
+    this.emit('tego:restarted', this, options);
   }
 
   async stop(options: any = {}) {
@@ -874,7 +874,7 @@ export class Tego extends EventEmitter implements AsyncEmitter {
       return;
     }
 
-    await this.emitAsync('beforeStop', this, options);
+    await this.emitAsync('tego:beforeStop', this, options);
 
     try {
       // close database connection
@@ -891,7 +891,7 @@ export class Tego extends EventEmitter implements AsyncEmitter {
       await this.cacheManager.close();
     }
 
-    await this.emitAsync('afterStop', this, options);
+    await this.emitAsync('tego:afterStop', this, options);
 
     this.stopped = true;
     log.info(`app has stopped`, { method: 'stop' });
@@ -901,11 +901,11 @@ export class Tego extends EventEmitter implements AsyncEmitter {
   async destroy(options: any = {}) {
     this.logger.debug('start destroy app', { method: 'destory' });
     this.setMaintainingMessage('destroying app...');
-    await this.emitAsync('beforeDestroy', this, options);
+    await this.emitAsync('tego:beforeDestroy', this, options);
     await this.stop(options);
 
     this.logger.debug('emit afterDestroy', { method: 'destory' });
-    await this.emitAsync('afterDestroy', this, options);
+    await this.emitAsync('tego:afterDestroy', this, options);
 
     this.logger.debug('finish destroy app', { method: 'destory' });
   }
@@ -931,14 +931,14 @@ export class Tego extends EventEmitter implements AsyncEmitter {
 
     this.logger.debug('emit beforeInstall', { method: 'install' });
     this.setMaintainingMessage('call beforeInstall hook...');
-    await this.emitAsync('beforeInstall', this, options);
+    await this.emitAsync('tego:beforeInstall', this, options);
 
     await this.pm.install();
     await this.version.update();
 
     this.logger.debug('emit afterInstall', { method: 'install' });
     this.setMaintainingMessage('call afterInstall hook...');
-    await this.emitAsync('afterInstall', this, options);
+    await this.emitAsync('tego:afterInstall', this, options);
 
     if (this._maintainingStatusBeforeCommand?.error) {
       return;
@@ -977,7 +977,7 @@ export class Tego extends EventEmitter implements AsyncEmitter {
     await migrator3.afterLoad.up();
     await this.pm.repository.updateVersions();
     await this.version.update();
-    await this.emitAsync('afterUpgrade', this, options);
+    await this.emitAsync('tego:afterUpgrade', this, options);
     await this.restart();
   }
 

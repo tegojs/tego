@@ -464,12 +464,14 @@ export class PluginManager {
         continue;
       }
 
-      await this.app.emitAsync('beforeLoadPlugin', plugin, options);
+      await this.app.emitAsync('plugin:beforeLoad', plugin, options);
+      await this.app.emitAsync(`plugin:${name}:beforeLoad`, plugin, options);
       this.app.logger.debug(`load plugin [${name}] `, { submodule: 'plugin-manager', method: 'load', name });
       await plugin.loadCollections();
       await plugin.load();
       plugin.state.loaded = true;
-      await this.app.emitAsync('afterLoadPlugin', plugin, options);
+      await this.app.emitAsync('plugin:afterLoad', plugin, options);
+      await this.app.emitAsync(`plugin:${name}:afterLoad`, plugin, options);
       // load features
       for (const feature of plugin.featureInstances) {
         await feature.load();
@@ -502,7 +504,8 @@ export class PluginManager {
 
       plugin.state.installing = true;
       this.app.setMaintainingMessage(`before install plugin [${name}], ${current}/${total}`);
-      await this.app.emitAsync('beforeInstallPlugin', plugin, options);
+      await this.app.emitAsync('plugin:beforeInstall', plugin, options);
+      await this.app.emitAsync(`plugin:${name}:beforeInstall`, plugin, options);
       this.app.logger.debug(`install plugin [${name}]...`);
       await plugin.install(options);
       toBeUpdated.push(name);
@@ -510,7 +513,8 @@ export class PluginManager {
       plugin.state.installed = true;
       plugin.installed = true;
       this.app.setMaintainingMessage(`after install plugin [${name}], ${current}/${total}`);
-      await this.app.emitAsync('afterInstallPlugin', plugin, options);
+      await this.app.emitAsync('plugin:afterInstall', plugin, options);
+      await this.app.emitAsync(`plugin:${name}:afterInstall`, plugin, options);
       // install features
       for (const feature of plugin.featureInstances) {
         await feature.install(options);
@@ -539,7 +543,8 @@ export class PluginManager {
       if (plugin.enabled) {
         continue;
       }
-      await this.app.emitAsync('beforeEnablePlugin', pluginName);
+      await this.app.emitAsync('plugin:beforeEnable', plugin);
+      await this.app.emitAsync(`plugin:${pluginName}:beforeEnable`, plugin);
       await plugin.beforeEnable();
       plugin.enabled = true;
       toBeUpdated.push(pluginName);
@@ -581,7 +586,8 @@ export class PluginManager {
         const plugin = this.get(pluginName);
         this.app.logger.debug(`emit afterEnablePlugin event...`);
         await plugin.afterEnable();
-        await this.app.emitAsync('afterEnablePlugin', pluginName);
+        await this.app.emitAsync('plugin:afterEnable', plugin);
+        await this.app.emitAsync(`plugin:${pluginName}:afterEnable`, plugin);
         this.app.logger.debug(`afterEnablePlugin event emitted`);
       }
       await this.app.tryReloadOrRestart();
@@ -615,7 +621,8 @@ export class PluginManager {
       if (!plugin.enabled) {
         continue;
       }
-      await this.app.emitAsync('beforeDisablePlugin', pluginName);
+      await this.app.emitAsync('plugin:beforeDisable', plugin);
+      await this.app.emitAsync(`plugin:${pluginName}:beforeDisable`, plugin);
       await plugin.beforeDisable();
       plugin.enabled = false;
       toBeUpdated.push(pluginName);
@@ -637,7 +644,8 @@ export class PluginManager {
         const plugin = this.get(pluginName);
         this.app.logger.debug(`emit afterDisablePlugin event...`);
         await plugin.afterDisable();
-        await this.app.emitAsync('afterDisablePlugin', pluginName);
+        await this.app.emitAsync('plugin:afterDisable', plugin);
+        await this.app.emitAsync(`plugin:${pluginName}:afterDisable`, plugin);
         this.app.logger.debug(`afterDisablePlugin event emitted`);
       }
     } catch (error) {
@@ -738,11 +746,13 @@ export class PluginManager {
     const name = plugin.getName();
     await plugin.beforeLoad();
 
-    await this.app.emitAsync('beforeLoadPlugin', plugin, {});
+    await this.app.emitAsync('plugin:beforeLoad', plugin, {});
+    await this.app.emitAsync(`plugin:${name}:beforeLoad`, plugin, {});
     this.app.logger.debug(`loading plugin...`, { submodule: 'plugin-manager', method: 'loadOne', name });
     await plugin.load();
     plugin.state.loaded = true;
-    await this.app.emitAsync('afterLoadPlugin', plugin, {});
+    await this.app.emitAsync('plugin:afterLoad', plugin, {});
+    await this.app.emitAsync(`plugin:${name}:afterLoad`, plugin, {});
     this.app.logger.debug(`after load plugin...`, { submodule: 'plugin-manager', method: 'loadOne', name });
 
     this.app.setMaintainingMessage(`loaded plugin ${plugin.name}`);

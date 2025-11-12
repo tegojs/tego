@@ -1,5 +1,6 @@
 import { Token } from '@tego/di';
 
+import type { IEventBus } from './event-bus';
 import type { Logger } from './logger';
 
 /**
@@ -22,7 +23,7 @@ export const TOKENS = {
   /**
    * Event bus for application-wide events
    */
-  EventBus: Token<any>('EventBus'),
+  EventBus: Token<IEventBus>('EventBus'),
 
   /**
    * Logger service (can be overridden by plugins)
