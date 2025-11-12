@@ -1,6 +1,6 @@
 import { Plugin } from '@tego/core';
 
-import { registerAdvancedLogger } from './services';
+import { registerACL, registerAdvancedLogger, registerCache, registerCron, registerPubSub } from './services';
 
 /**
  * Standard Core Plugin
@@ -16,6 +16,11 @@ export class StandardCorePlugin extends Plugin {
 
   async beforeLoad() {
     registerAdvancedLogger(this.tego);
+    registerACL(this.tego);
+    await registerCache(this.tego, this.options.cacheManager ?? this.tego.options.cacheManager);
+    registerCron(this.tego);
+    registerPubSub(this.tego, this.options.pubSubManager ?? this.tego.options.pubSubManager);
+
     this.tego.logger.info('StandardCorePlugin: beforeLoad');
   }
 
@@ -36,16 +41,7 @@ export class StandardCorePlugin extends Plugin {
     const { TOKENS } = require('@tego/core');
     const { container } = this.tego;
 
-    const requiredServices = [
-      'Logger',
-      'DataSourceManager',
-      'CronJobManager',
-      'I18n',
-      'AuthManager',
-      'PubSubManager',
-      'SyncMessageManager',
-      'NoticeManager',
-    ];
+    const requiredServices = ['Logger', 'ACL', 'CacheManager', 'CronJobManager', 'PubSubManager'];
 
     for (const serviceName of requiredServices) {
       if (TOKENS[serviceName] && container.has(TOKENS[serviceName])) {

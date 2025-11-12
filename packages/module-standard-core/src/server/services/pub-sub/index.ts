@@ -12,17 +12,8 @@ import {
 } from './types';
 
 export const createPubSubManager = (tego: Tego, options: PubSubManagerOptions = {}) => {
-  const pubSubManager = new PubSubManager(options);
+  const pubSubManager = new PubSubManager(tego, options);
   pubSubManager.setAdapter(MemoryPubSubAdapter.create());
-
-  tego.on('tego:afterStart', async () => {
-    await pubSubManager.connect();
-  });
-  tego.on('tego:afterStop', async () => {
-    await pubSubManager.close();
-  });
-
-  tego.container.set(TOKENS.PubSubManager, pubSubManager);
 
   return pubSubManager;
 };
@@ -32,9 +23,21 @@ export class PubSubManager {
   public adapter: IPubSubAdapter;
   protected handlerManager: HandlerManager;
 
-  constructor(protected options: PubSubManagerOptions = {}) {
+  constructor(
+    private tego: Tego,
+    protected options: PubSubManagerOptions = {},
+  ) {
     this.publisherId = uid();
     this.handlerManager = new HandlerManager(this.publisherId);
+
+    tego.on('tego:afterStart', async () => {
+      await this.connect();
+    });
+    tego.on('tego:afterStop', async () => {
+      await this.close();
+    });
+
+    tego.container.set({ id: TOKENS.PubSubManager, value: this });
   }
 
   get channelPrefix() {
@@ -106,3 +109,7 @@ export class PubSubManager {
     return this.adapter.publish(`${this.channelPrefix}${channel}`, wrappedMessage);
   }
 }
+
+export const registerPubSub = (tego: Tego, options: PubSubManagerOptions = {}) => {
+  return new PubSubManager(tego, options);
+};

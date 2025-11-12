@@ -41,7 +41,7 @@ export class CronJobManager {
       this.stop();
     });
 
-    tego.container.set(TOKENS.CronJobManager, this);
+    tego.container.set({ id: TOKENS.CronJobManager, value: this });
   }
 
   get started() {
@@ -77,3 +77,7 @@ export class CronJobManager {
     this._started = false;
   }
 }
+
+export const registerCron = (tego: Tego) => {
+  return new CronJobManager(tego);
+};

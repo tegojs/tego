@@ -1,4 +1,5 @@
 import { ACL } from '@tachybase/acl';
+import { TOKENS, type Tego } from '@tego/core';
 
 import { availableActions } from './available-action';
 
@@ -23,5 +24,11 @@ export function createACL() {
 
   acl.registerConfigResources(configureResources);
 
+  return acl;
+}
+
+export function registerACL(tego: Tego) {
+  const acl = createACL();
+  tego.container.set({ id: TOKENS.ACL, value: acl });
   return acl;
 }

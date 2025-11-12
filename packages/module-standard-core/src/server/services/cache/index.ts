@@ -5,8 +5,12 @@ export const createCacheManager = async (tego: Tego, options: CacheManagerOption
   const cacheManager = new CacheManager(options);
   const defaultCache = await cacheManager.createCache({ name: tego.name });
 
-  tego.container.set(TOKENS.CacheManager, cacheManager);
-  tego.container.set(TOKENS.Cache, defaultCache);
+  tego.container.set({ id: TOKENS.CacheManager, value: cacheManager });
+  tego.container.set({ id: TOKENS.Cache, value: defaultCache });
 
   return cacheManager;
+};
+
+export const registerCache = async (tego: Tego, options: CacheManagerOptions = {}) => {
+  return createCacheManager(tego, options);
 };
