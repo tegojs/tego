@@ -1,5 +1,6 @@
-import Application from '../application';
-import { Gateway } from '../gateway';
+import { TOKENS, type Tego } from '@tego/core';
+
+import { Gateway } from '../gateway/gateway';
 import { WSServer } from '../gateway/ws-server';
 
 export enum NoticeLevel {
@@ -18,11 +19,10 @@ export enum NoticeType {
 }
 
 export class NoticeManager {
-  private ws: WSServer;
-  constructor(private app: Application) {
-    const gateway = Gateway.getInstance();
-    this.ws = gateway['wsServer'];
-  }
+  constructor(
+    private tego: Tego,
+    private ws: WSServer,
+  ) {}
 
   #emit(msg: {
     type: NoticeType;
@@ -33,7 +33,7 @@ export class NoticeManager {
     eventType?: string;
     event?: unknown;
   }) {
-    this.ws?.sendToConnectionsByTag('app', this.app.name, {
+    this.ws?.sendToConnectionsByTag('app', this.tego.name, {
       type: 'notice',
       payload: msg,
     });
@@ -63,3 +63,10 @@ export class NoticeManager {
     this.#emit({ type: NoticeType.MODAL, title, content, level, duration });
   }
 }
+
+export const registerNoticeManager = (tego: Tego, gateway: Gateway) => {
+  const ws = gateway.getWebSocketServer();
+  const noticeManager = new NoticeManager(tego, ws);
+  tego.container.set({ id: TOKENS.NoticeManager, value: noticeManager });
+  return noticeManager;
+};

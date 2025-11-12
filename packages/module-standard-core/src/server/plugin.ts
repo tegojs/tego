@@ -3,9 +3,12 @@ import { Plugin } from '@tego/core';
 import {
   registerACL,
   registerAdvancedLogger,
+  registerAesEncryptor,
+  registerAppSupervisor,
   registerCache,
   registerCommands,
   registerCron,
+  registerGateway,
   registerPubSub,
 } from './services';
 
@@ -23,11 +26,19 @@ export class StandardCorePlugin extends Plugin {
 
   async beforeLoad() {
     registerAdvancedLogger(this.tego);
+    registerAppSupervisor(this.tego);
     registerACL(this.tego);
     await registerCache(this.tego, this.options.cacheManager ?? this.tego.options.cacheManager);
     registerCron(this.tego);
     registerPubSub(this.tego, this.options.pubSubManager ?? this.tego.options.pubSubManager);
+    await registerAesEncryptor(this.tego);
     registerCommands(this.tego);
+    registerGateway(this.tego, {
+      host: this.options.gateway?.host,
+      port: this.options.gateway?.port,
+      wsPath: this.options.gateway?.wsPath,
+      ipcSocketPath: this.options.gateway?.ipcSocketPath,
+    });
 
     this.tego.logger.info('StandardCorePlugin: beforeLoad');
   }
@@ -49,7 +60,15 @@ export class StandardCorePlugin extends Plugin {
     const { TOKENS } = require('@tego/core');
     const { container } = this.tego;
 
-    const requiredServices = ['Logger', 'ACL', 'CacheManager', 'CronJobManager', 'PubSubManager'];
+    const requiredServices = [
+      'Logger',
+      'ACL',
+      'CacheManager',
+      'CronJobManager',
+      'PubSubManager',
+      'Gateway',
+      'AppSupervisor',
+    ];
 
     for (const serviceName of requiredServices) {
       if (TOKENS[serviceName] && container.has(TOKENS[serviceName])) {

@@ -16,22 +16,18 @@ export class IPCSocketServer {
   }
 
   static buildServer(socketPath: string) {
-    // try to unlink the socket from a previous run
     if (fs.existsSync(socketPath)) {
       fs.unlinkSync(socketPath);
     }
 
     const dir = path.dirname(socketPath);
-
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
 
     const socketServer = net.createServer((c) => {
-      console.log('client connected');
-
       c.on('end', () => {
-        console.log('client disconnected');
+        // noop
       });
 
       c.on('data', (data) => {
@@ -51,6 +47,7 @@ export class IPCSocketServer {
               writeJSON(c, {
                 reqId,
                 type: result === false ? 'not_found' : 'success',
+                payload: result,
               });
             })
             .catch((err) => {
@@ -67,54 +64,39 @@ export class IPCSocketServer {
       });
     });
 
-    socketServer.listen(xpipe.eq(socketPath), () => {
-      console.log(`Gateway IPC Server running at ${socketPath}`);
-    });
+    socketServer.listen(xpipe.eq(socketPath));
 
     return new IPCSocketServer(socketServer);
   }
 
   static async handleClientMessage({ reqId, type, payload }) {
-    if (type === 'appReady') {
-      const status = await new Promise<string>((resolve, reject) => {
-        let status: string;
-        const max = 300;
-        let count = 0;
-        const timer = setInterval(async () => {
-          status = AppSupervisor.getInstance().getAppStatus('main');
-          if (status === 'running') {
-            clearInterval(timer);
-            resolve(status);
-          }
-          if (count++ > max) {
-            reject('error');
-          }
-        }, 500);
-      });
-      console.log('status', status);
-      return status;
+    const supervisor = AppSupervisor.getInstance();
+    const app = supervisor.getApp('main');
+
+    if (!app) {
+      return false;
     }
-    // console.log(`cli received message ${type}`);
+
+    if (type === 'appReady') {
+      return supervisor.getAppStatus('main');
+    }
 
     if (type === 'passCliArgv') {
       const argv = payload.argv;
-
-      const mainApp = await AppSupervisor.getInstance().getApp('main');
-      if (!mainApp.cli.hasCommand(argv[2])) {
-        // console.log('passCliArgv', argv[2]);
-        await mainApp.pm.loadCommands();
+      if (!app.cli.hasCommand(argv[2])) {
+        await app.pm.loadCommands();
       }
-      const cli = mainApp.cli;
+      const cli = app.cli;
       if (
         !cli.parseHandleByIPCServer(argv, {
           from: 'node',
         })
       ) {
-        mainApp.logger.debug('Not handle by ipc server');
+        app.logger.debug('Not handled by ipc server');
         return false;
       }
 
-      return mainApp.runAsCLI(argv, {
+      return app.runAsCLI(argv, {
         reqId,
         from: 'node',
         throwError: true,

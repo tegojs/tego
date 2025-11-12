@@ -5,45 +5,38 @@
  * but are now provided by the module-standard-core plugin.
  */
 
-// Logger
-export { registerAdvancedLogger } from './logger';
+import { registerCommands } from '../commands';
+import { registerACL } from './acl';
+import { registerAesEncryptor } from './aes-encryptor';
+import { registerAppSupervisor } from './app-supervisor';
+import { registerCache } from './cache';
+import { registerCron } from './cron';
+import { registerGateway } from './gateway/gateway';
+import { registerAdvancedLogger } from './logger';
+import { registerMiddlewares } from './middlewares';
+import { registerNoticeManager } from './notice';
+import { registerPubSub } from './pub-sub';
+import { registerSyncMessageManager } from './sync-message-manager';
 
-// Commands
-export { registerCommands } from '../commands';
+export {
+  registerAdvancedLogger,
+  registerCommands,
+  registerACL,
+  registerCache,
+  registerCron,
+  registerPubSub,
+  registerAppSupervisor,
+  registerGateway,
+  registerMiddlewares,
+  registerAesEncryptor,
+  registerNoticeManager,
+  registerSyncMessageManager,
+};
 
-// ACL
-export { registerACL } from './acl';
-
-// Cache
-export { registerCache } from './cache';
-
-// Cron
-export { registerCron } from './cron';
-
-// PubSub
-export { registerPubSub } from './pub-sub';
-
-// Database and Data Source
 export * from './database-service';
 export * from './datasource-service';
-
-// Resource Management
 export * from './resourcer-service';
-
-// Authentication and Authorization
 export * from './auth-service';
-
-// Internationalization
 export * from './i18n-service';
 export * from './locale-service';
-
-// Messaging
-export * from './sync-message-service';
-export * from './notice-service';
-
-// Security
-export * from './aes-encryptor-service';
-
-// Web Server (Koa)
-export * from './koa-service';
-export * from './middleware-service';
+export * from './app-supervisor';

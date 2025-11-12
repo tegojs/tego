@@ -50,14 +50,29 @@ export const TOKENS = {
   // ============================================================================
 
   /**
-   * Koa web server instance
-   */
-  KoaServer: Token<any>('KoaServer'),
-
-  /**
    * HTTP/WebSocket Gateway
    */
   Gateway: Token<any>('Gateway'),
+
+  /**
+   * Application supervisor (manages Tego lifecycle)
+   */
+  AppSupervisor: Token<any>('AppSupervisor'),
+
+  /**
+   * WebSocket server
+   */
+  WSServer: Token<any>('WSServer'),
+
+  /**
+   * IPC socket server
+   */
+  IPCSocketServer: Token<any>('IPCSocketServer'),
+
+  /**
+   * Koa application instance
+   */
+  KoaApp: Token<any>('KoaApp'),
 
   /**
    * Database instance (main data source)

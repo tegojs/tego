@@ -1,68 +1,57 @@
-import { Transactionable } from '@tachybase/database';
+import { TOKENS, type Tego } from '@tego/core';
 
-import Application from './application';
-import { PubSubCallback, PubSubManager, PubSubManagerPublishOptions } from './pub-sub-manager';
+import { PubSubCallback, PubSubManager, PubSubManagerPublishOptions } from './pub-sub';
 
 export class SyncMessageManager {
   protected versionManager: SyncMessageVersionManager;
-  // protected pubSubManager: PubSubManager;
 
   constructor(
-    protected app: Application,
-    protected options: any = {},
+    private tego: Tego,
+    private options: any = {},
   ) {
     this.versionManager = new SyncMessageVersionManager();
-    app.on('beforeLoadPlugin', async (plugin) => {
-      if (!plugin.name) {
+
+    tego.on('plugin:afterLoad', async (plugin) => {
+      if (!plugin.name || typeof plugin.handleSyncMessage !== 'function') {
         return;
       }
       await this.subscribe(plugin.name, plugin.handleSyncMessage, plugin);
     });
 
-    app.on('beforeStop', async () => {
-      const promises = [];
-      for (const [P, plugin] of app.pm.getPlugins()) {
-        if (!plugin.name) {
-          continue;
-        }
-        promises.push(this.unsubscribe(plugin.name, plugin.handleSyncMessage));
-      }
+    tego.on('tego:beforeStop', async () => {
+      const plugins = Array.from(tego.pm.getPlugins()).map(([, plugin]) => plugin);
+      const promises = plugins
+        .filter((plugin) => plugin?.name && typeof plugin.handleSyncMessage === 'function')
+        .map((plugin) => this.unsubscribe(plugin.name, plugin.handleSyncMessage));
       await Promise.all(promises);
     });
   }
 
-  get debounce() {
-    // 内存级adapter,debounce可以为0
-    let defaultDebounce;
-    // TODO: 应该在初始化的地方get,set
-    if (this.app.pubSubManager.adapter.constructor.name === 'MemoryPubSubAdapter') {
-      defaultDebounce = 0;
-    } else {
-      defaultDebounce = 1_000;
-    }
-    return this.options.debounce || defaultDebounce;
+  private get pubSubManager(): PubSubManager {
+    return this.tego.container.get(TOKENS.PubSubManager);
   }
 
-  async publish(channel: string, message, options?: PubSubManagerPublishOptions & Transactionable) {
+  get debounce() {
+    const adapterName = this.pubSubManager.adapter?.constructor?.name;
+    const defaultDebounce = adapterName === 'MemoryPubSubAdapter' ? 0 : 1000;
+    return this.options.debounce ?? defaultDebounce;
+  }
+
+  async publish(channel: string, message: any, options?: PubSubManagerPublishOptions & { transaction?: any }) {
     const { transaction, ...others } = options || {};
     if (transaction) {
       return await new Promise((resolve, reject) => {
         const timer = setTimeout(() => {
-          reject(
-            new Error(
-              `Publish message to ${channel} timeout, channel: ${channel}, message: ${JSON.stringify(message)}`,
-            ),
-          );
+          reject(new Error(`Publish message timeout on channel ${channel}`));
         }, 50000);
 
         transaction.afterCommit(async () => {
           try {
-            const r = await this.app.pubSubManager.publish(`${this.app.name}.sync.${channel}`, message, {
+            const result = await this.pubSubManager.publish(`${this.tego.name}.sync.${channel}`, message, {
               skipSelf: true,
               ...others,
             });
-
-            resolve(r);
+            resolve(result);
           } catch (error) {
             reject(error);
           } finally {
@@ -70,30 +59,36 @@ export class SyncMessageManager {
           }
         });
       });
-    } else {
-      return await this.app.pubSubManager.publish(`${this.app.name}.sync.${channel}`, message, {
-        skipSelf: true,
-        ...options,
-      });
     }
+
+    return this.pubSubManager.publish(`${this.tego.name}.sync.${channel}`, message, {
+      skipSelf: true,
+      ...others,
+    });
   }
 
   async subscribe(channel: string, callback: PubSubCallback, callbackCaller: any) {
-    return await this.app.pubSubManager.subscribe(`${this.app.name}.sync.${channel}`, callback, {
+    return this.pubSubManager.subscribe(`${this.tego.name}.sync.${channel}`, callback, {
       debounce: this.debounce,
       callbackCaller,
     });
   }
 
   async unsubscribe(channel: string, callback: PubSubCallback) {
-    return this.app.pubSubManager.unsubscribe(`${this.app.name}.sync.${channel}`, callback);
+    return this.pubSubManager.unsubscribe(`${this.tego.name}.sync.${channel}`, callback);
   }
 
   async sync() {
-    // TODO
+    // TODO: implementation hook
   }
 }
 
 export class SyncMessageVersionManager {
   // TODO
 }
+
+export const registerSyncMessageManager = (tego: Tego, options: any = {}) => {
+  const manager = new SyncMessageManager(tego, options);
+  tego.container.set({ id: TOKENS.SyncMessageManager, value: manager });
+  return manager;
+};
