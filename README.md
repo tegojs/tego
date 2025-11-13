@@ -27,7 +27,7 @@ Tego is a pluggable Node.js framework for building customizable development plat
    <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/tegojs/tego">
    <img alt="Static Badge" src="https://img.shields.io/badge/build-passing-brightgreen">
    <a href="./README.md"><img alt="Static Badge" src="https://img.shields.io/badge/English Version-red"></a>
-   <a href="./README.ZH-CN.md"><img alt="Static Badge" src="https://img.shields.io/badge/中文版本-blue"></a>
+   <a href="./README.zh-CN.md"><img alt="Static Badge" src="https://img.shields.io/badge/中文版本-blue"></a>
    <a href="https://gitee.com/tachybase/tachybase"><img alt="Static Badge" src="https://img.shields.io/badge/gitee-green"></a>
    <a href="https://github.com/tegojs/tego"><img alt="Static Badge" src="https://img.shields.io/badge/Github-lightblack"></a>
 </p>
