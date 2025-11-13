@@ -10,6 +10,12 @@ export class ApplicationVersion {
 
   constructor(app: Application) {
     this.app = app;
+    if (!app.db) {
+      // 如果 db 还未初始化，延迟初始化 collection
+      // collection 将在第一次使用时初始化
+      this.collection = null;
+      return;
+    }
     app.db.collection({
       origin: '@tego/core',
       name: 'applicationVersion',
@@ -22,6 +28,21 @@ export class ApplicationVersion {
   }
 
   async get() {
+    if (!this.collection) {
+      // 延迟初始化 collection
+      if (!this.app.db) {
+        return null;
+      }
+      this.app.db.collection({
+        origin: '@tego/core',
+        name: 'applicationVersion',
+        dataType: 'meta',
+        timestamps: false,
+        dumpRules: 'required',
+        fields: [{ name: 'value', type: 'string' }],
+      });
+      this.collection = this.app.db.getCollection('applicationVersion');
+    }
     const model = await this.collection.model.findOne();
     if (!model) {
       return null;
@@ -30,6 +51,21 @@ export class ApplicationVersion {
   }
 
   async update(version?: string) {
+    if (!this.collection) {
+      // 延迟初始化 collection
+      if (!this.app.db) {
+        return;
+      }
+      this.app.db.collection({
+        origin: '@tego/core',
+        name: 'applicationVersion',
+        dataType: 'meta',
+        timestamps: false,
+        dumpRules: 'required',
+        fields: [{ name: 'value', type: 'string' }],
+      });
+      this.collection = this.app.db.getCollection('applicationVersion');
+    }
     await this.collection.model.destroy({
       truncate: true,
     });
@@ -40,6 +76,21 @@ export class ApplicationVersion {
   }
 
   async satisfies(range: string) {
+    if (!this.collection) {
+      // 延迟初始化 collection
+      if (!this.app.db) {
+        return true;
+      }
+      this.app.db.collection({
+        origin: '@tego/core',
+        name: 'applicationVersion',
+        dataType: 'meta',
+        timestamps: false,
+        dumpRules: 'required',
+        fields: [{ name: 'value', type: 'string' }],
+      });
+      this.collection = this.app.db.getCollection('applicationVersion');
+    }
     const model: any = await this.collection.model.findOne();
     const version = model?.value as any;
     if (!version) {

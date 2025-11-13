@@ -122,7 +122,7 @@ export class BaseAuth extends Auth {
       }
     }
 
-    const { userId, roleName, iat, temp, jti, exp, signInTime } = payload ?? {};
+    const { userId, userStatus, roleName, iat, temp, jti, exp, signInTime } = payload ?? {};
 
     const user = userId
       ? await this.ctx.tego.cache.wrap(this.getCacheKey(userId), () =>
@@ -140,6 +140,16 @@ export class BaseAuth extends Auth {
         message: this.ctx.t('User not found. Please sign in again to continue.', { ns: localeNamespace }),
         code: AuthErrorCode.NOT_EXIST_USER,
       });
+    }
+
+    if (userStatus) {
+      const statusCheckResult: UserStatusCheckResult = await this.checkUserStatus(user.id);
+      if (!statusCheckResult.allowed) {
+        this.ctx.throw(401, {
+          message: this.ctx.t(statusCheckResult.statusInfo.loginErrorMessage, { ns: localeNamespace }),
+          code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
+        });
+      }
     }
 
     if (roleName) {
@@ -256,10 +266,11 @@ export class BaseAuth extends Auth {
         });
 
         const expiresIn = Math.floor(tokenPolicy.tokenExpirationTime / 1000);
-        const newToken = this.jwt.sign(
-          { userId: user.id, roleName, temp, signInTime, iat: Math.floor(renewedResult.issuedTime / 1000) },
-          { jwtid: renewedResult.jti, expiresIn },
-        );
+        // const newToken = this.jwt.sign(
+        //   { userId: user.id, roleName, temp, signInTime, iat: Math.floor(renewedResult.issuedTime / 1000) },
+        //   { jwtid: renewedResult.jti, expiresIn },
+        // );
+        const newToken = await this.signNewToken(user.id);
         this.ctx.res.setHeader('x-new-token', newToken);
       } catch (err) {
         this.ctx.logger.error('token renew failed', {
@@ -327,6 +338,13 @@ export class BaseAuth extends Auth {
       this.ctx.throw(401, {
         message: this.ctx.t('User not found. Please sign in again to continue.', { ns: localeNamespace }),
         code: AuthErrorCode.NOT_EXIST_USER,
+      });
+    }
+    const statusCheckResult: UserStatusCheckResult = await this.checkUserStatus(user.id);
+    if (!statusCheckResult.allowed) {
+      this.ctx.throw(401, {
+        message: this.ctx.t(statusCheckResult.statusInfo.loginErrorMessage, { ns: localeNamespace }),
+        code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
       });
     }
     const token = await this.signNewToken(user.id);
