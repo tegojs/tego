@@ -20,11 +20,9 @@
       "Read(*.ts)",
       "Read(*.tsx)",
       "Read(*.md)",
-      "Read(*.config.ts)",
-      "Read(*.config.js)",
-      "Read(*.config.mjs)",
       "Read(.cursor/**/*)",
       "Read(.github/**/*)",
+      "Read(.git/COMMIT_EDITMSG)",
       "Write(packages/**/*.ts)",
       "Write(packages/**/*.tsx)",
       "Write(packages/**/*.js)",
@@ -32,11 +30,9 @@
       "Write(packages/**/package.json)",
       "Write(package.json)",
       "Write(tsconfig*.json)",
-      "Write(*.config.ts)",
-      "Write(*.config.js)",
-      "Write(*.config.mjs)",
       "Write(.cursor/**/*)",
-      "Write(.github/**/*)"
+      "Write(.github/**/*)",
+      "Write(.git/COMMIT_EDITMSG)"
     ],
     "deny": [
       "Shell(rm)",
@@ -52,14 +48,12 @@
       "Read(*.secret)",
       "Read(storage/**/*)",
       "Read(node_modules/**/*)",
-      "Read(.git/**/*)",
       "Write(.env*)",
       "Write(*.key)",
       "Write(*.pem)",
       "Write(*.secret)",
       "Write(storage/**/*)",
       "Write(node_modules/**/*)",
-      "Write(.git/**/*)",
       "Write(pnpm-lock.yaml)"
     ]
   }
