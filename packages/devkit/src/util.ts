@@ -76,6 +76,12 @@ export async function isPortReachable(port: string, options: Partial<IPortReacha
   }
 }
 
+/**
+ * Checks that the specified port (or `APP_PORT` from the environment) is not already in use and exits the process with code 1 if it is.
+ *
+ * @param opts - Options object.
+ * @param opts.port - Port to check; if omitted, `APP_PORT` from the environment is used.
+ */
 export async function postCheck(opts: { port?: string }) {
   const port = opts.port || process.env.APP_PORT || '';
   const result = await isPortReachable(port);
@@ -85,6 +91,39 @@ export async function postCheck(opts: { port?: string }) {
   }
 }
 
+/**
+ * Attempts to run the TSX CLI with the given arguments and, if the `tsx` executable is not found, falls back to invoking the TSX CLI module via `node`.
+ *
+ * If the `tsx` command is missing (ENOENT), the function resolves the TSX CLI entry and runs it with `node`; any other execution errors are propagated.
+ *
+ * @param argv - Arguments to pass to the TSX CLI
+ * @param options - Execution options forwarded to the underlying runner
+ */
+async function runWithTsx(argv: string[], options?: Options<any>) {
+  try {
+    // 先尝试使用 tsx 命令（保持原有实现）
+    await run('tsx', argv, options);
+  } catch (error: any) {
+    // 如果 tsx 命令未找到（ENOENT），使用 node 直接调用 tsx CLI 作为后备方案
+    // 这样可以确保在所有平台上都能正常工作
+    if (error.code === 'ENOENT') {
+      // 使用 node 直接调用 tsx 的 CLI 入口点，这样可以正确处理所有 tsx 特定的标志
+      const tsxCliPath = require.resolve('tsx/dist/cli.mjs');
+      await run('node', [tsxCliPath, ...argv], options);
+    } else {
+      // 其他错误（如 TypeScript 编译错误、运行时错误等）应该直接抛出，不进行回退
+      throw error;
+    }
+  }
+}
+
+/**
+ * Trigger the application's server install command using the configured server tsconfig.
+ *
+ * This reads SERVER_TSCONFIG_PATH and APP_SERVER_ROOT from environment and invokes the install entrypoint of the server.
+ *
+ * @throws Error when `SERVER_TSCONFIG_PATH` is not set in the environment.
+ */
 export async function runInstall() {
   const { APP_SERVER_ROOT, SERVER_TSCONFIG_PATH } = process.env;
 
@@ -101,9 +140,16 @@ export async function runInstall() {
     'install',
     '-s',
   ];
-  await run('tsx', argv);
+  await runWithTsx(argv);
 }
 
+/**
+ * Invoke a server subcommand via the server's index module with tsconfig paths registration.
+ *
+ * @param command - The command name to forward to the server (e.g., "start", "install").
+ * @param args - Additional command-line arguments to pass to the server command
+ * @throws If `SERVER_TSCONFIG_PATH` is not set in the environment
+ */
 export async function runAppCommand(command: string, args: string[] = []) {
   const { APP_SERVER_ROOT, SERVER_TSCONFIG_PATH } = process.env;
 
@@ -120,9 +166,14 @@ export async function runAppCommand(command: string, args: string[] = []) {
     command,
     ...args,
   ];
-  await run('tsx', argv);
+  await runWithTsx(argv);
 }
 
+/**
+ * Logs a standardized "TypeScript compiling..." notice to the console.
+ *
+ * Prints a green "WAIT: " prefix followed by "TypeScript compiling..." to indicate that TypeScript is currently building.
+ */
 export function promptForTs() {
   console.log(chalk.green('WAIT: ') + 'TypeScript compiling...');
 }
