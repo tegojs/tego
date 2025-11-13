@@ -41,20 +41,6 @@ cache/
 v8-compile-cache-**
 .DS_Store
 
-# 环境变量和敏感文件
-.env
-.env.*
-.env.local
-.env.local.*
-.env.test
-.env.e2e
-.npmrc
-
-# IDE 配置
-.idea/
-.vscode/
-.husky/
-
 # 存储和上传文件
 storage/*
 uploads/
@@ -67,14 +53,17 @@ docs-repo-temp/
 plugins/*
 
 # Git 相关
-.git/
-.gitignore
+# 注意：COMMIT_EDITMSG 未被忽略，以支持 AI 补全功能
+.git/objects/**
+.git/refs/**
+.git/config
+.git/HEAD
+.git/index
+.git/hooks/**
+.git/logs/**
+.git/info/**
 
 # 其他
 .local
 docs-repo-temp/
-
-# 临时文件
-*.temp.*
-test.temp.*
 
