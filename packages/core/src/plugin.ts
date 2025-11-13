@@ -1,6 +1,5 @@
 import fs from 'node:fs';
 import { basename, resolve } from 'node:path';
-import { isMainThread } from 'node:worker_threads';
 import { Model, Transactionable } from '@tachybase/database';
 import { Container } from '@tachybase/di';
 import TachybaseGlobal from '@tachybase/globals';
@@ -11,6 +10,7 @@ import { globSync } from 'glob';
 import type { ParseKeys, TOptions } from 'i18next';
 
 import { Application } from './application';
+import { resolveRequest } from './helper';
 import { getExposeChangelogUrl, getExposeReadmeUrl, InstallOptions } from './plugin-manager';
 import { checkAndGetCompatible } from './plugin-manager/utils';
 import { PubSubManagerPublishOptions } from './pub-sub-manager';
@@ -171,35 +171,12 @@ export abstract class Plugin implements PluginInterface {
   /**
    * @internal
    */
-  protected async getSourceDir() {
-    if (this._sourceDir) {
-      return this._sourceDir;
-    }
-    if (await this.isDev()) {
-      return (this._sourceDir = 'src');
-    }
-    if (basename(__dirname) === 'src') {
-      return (this._sourceDir = 'src');
-    }
-    if (!isMainThread) {
-      return 'dist';
-    }
-    return (this._sourceDir = this.isPreset ? 'lib' : 'dist');
-  }
-
-  /**
-   * @internal
-   */
   async loadCommands() {
-    const pluginPaths = TachybaseGlobal.getInstance().get<string[]>('PLUGIN_PATHS');
-    for (const basePath of pluginPaths) {
-      await this.loadCommandFromPath(basePath);
+    if (!this.options.packageName) {
+      return;
     }
-  }
-
-  async loadCommandFromPath(basePath: string) {
     const extensions = ['js', 'ts'];
-    const directory = resolve(basePath, this.options.packageName, await this.getSourceDir(), 'server/commands');
+    const directory = resolve(resolveRequest(this.options.packageName), '../../server/commands');
     const patten = `${directory}/*.{${extensions.join(',')}}`;
     const files = globSync(patten, {
       ignore: ['**/*.d.ts'],
@@ -219,28 +196,10 @@ export abstract class Plugin implements PluginInterface {
    * @internal
    */
   async loadMigrations() {
-    const result = { beforeLoad: [], afterSync: [], afterLoad: [] };
-    const pluginPaths = TachybaseGlobal.getInstance().get<string[]>('PLUGIN_PATHS');
-    for (const basePath of pluginPaths) {
-      const { beforeLoad, afterSync, afterLoad } = await this.loadMigrationsFromPath(basePath);
-      result.beforeLoad.push(...beforeLoad);
-      result.afterSync.push(...afterSync);
-      result.afterLoad.push(...afterLoad);
-    }
-    return result;
-  }
-
-  async loadMigrationsFromPath(basePath: string) {
-    this.app.logger.debug(`load plugin migrations [${this.name}]`);
     if (!this.options.packageName) {
       return { beforeLoad: [], afterSync: [], afterLoad: [] };
     }
-    const directory = resolve(
-      basePath,
-      this.options.packageName,
-      await this.getSourceDir(),
-      'server/migrations',
-    ).replace(/\\/g, '/');
+    const directory = resolve(resolveRequest(this.options.packageName), '../../server/migrations').replace(/\\/g, '/');
     return await this.app.loadMigrations({
       directory,
       namespace: this.options.packageName,
@@ -254,16 +213,10 @@ export abstract class Plugin implements PluginInterface {
    * @internal
    */
   async loadCollections() {
-    const pluginPaths = TachybaseGlobal.getInstance().get<string[]>('PLUGIN_PATHS');
-    for (const basePath of pluginPaths) {
-      await this.loadCollectionsFromPath(basePath);
-    }
-  }
-  async loadCollectionsFromPath(basePath: string) {
     if (!this.options.packageName) {
       return;
     }
-    const directory = resolve(basePath, this.options.packageName, await this.getSourceDir(), 'server/collections');
+    const directory = resolve(resolveRequest(this.options.packageName), '../../server/collections');
     if (await fsExists(directory)) {
       await this.db.import({
         directory,
@@ -281,34 +234,6 @@ export abstract class Plugin implements PluginInterface {
 
   t(text: ParseKeys | ParseKeys[], options: TOptions = {}) {
     return this.app.i18n.t(text, { ns: this.options['packageName'], ...(options as any) }) as string;
-  }
-
-  /**
-   * @internal
-   * TODO 换一种判断，这类替换 NODE_MODULES_PATH 有点奇怪
-   */
-  protected async isDev() {
-    if (!this.options.packageName) {
-      return false;
-    }
-
-    const pluginPaths = [
-      ...TachybaseGlobal.getInstance().get<string[]>('PLUGIN_PATHS'),
-      resolve(process.cwd(), 'node_modules'),
-    ];
-    let path;
-    for (const basePath of pluginPaths) {
-      if (await fsExists(resolve(basePath, this.options.packageName))) {
-        path = resolve(basePath, this.options.packageName);
-        break;
-      }
-    }
-
-    const file = await fs.promises.realpath(path);
-    if (file.startsWith(resolve(process.cwd(), 'packages'))) {
-      return !!process.env.IS_DEV_CMD;
-    }
-    return false;
   }
 
   /**

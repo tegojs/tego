@@ -1,10 +1,11 @@
-> ⚠️ **注意：本仓库正在进行重构，不建议当前使用。**
+[English](./README.md) | 简体中文 
+> ⚠️ **Caution: 本仓库正在进行核心重构开发，使用 git 版本会遇到各种不可预期的事情，有问题可以在 github 上提交 issue。**
 >
-> 如果你希望继续使用旧版本的插件体系和前端集成方式，请移步：
->
-> 🔗 [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
->
-> 在重构完成之前，`tego-standard` 仓库将保留旧的使用方式与插件集合。
+> ✅ 生产环境请使用：
+> - 官方前端和插件集合 [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
+> - 官方发布的 docker 镜像 [tegojs/tego-all](https://hub.docker.com/r/tegojs/tego-all)
+> - 官方发布的 npm 包 [tego](https://www.npmjs.com/package/tego)
+
 <h1 align="center" style="border-bottom: none">
     <div>
         <a style="color:#36f" href="https://www.tachybase.com">

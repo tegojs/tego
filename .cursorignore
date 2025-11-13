@@ -1,0 +1,69 @@
+# Cursor AI 索引忽略文件
+# 这些文件和目录不会被 Cursor AI 索引，以提高性能和减少噪音
+
+# 依赖目录
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# 构建产物
+dist/
+lib/
+es/
+esm/
+**/dist/
+**/lib/
+**/es/
+**/esm/
+**/.dumi/tmp
+**/.dumi/tmp-production
+**/.dumi/tmp-test
+**/.turbo
+**/.swc
+**/.umi
+**/.umi-production
+docs-dist/
+ncc-cache/
+
+# 测试和覆盖率
+coverage/
+**/coverage/
+playwright/
+**/playwright/
+*.test.ts.snap
+*.spec.ts.snap
+
+# 日志和临时文件
+*.log
+*.sqlite
+*.tbdump
+cache/
+v8-compile-cache-**
+.DS_Store
+
+# 存储和上传文件
+storage/*
+uploads/
+docker/**/storage
+
+# 文档构建产物
+docs-repo-temp/
+
+# 插件临时文件
+plugins/*
+
+# Git 相关
+# 注意：COMMIT_EDITMSG 未被忽略，以支持 AI 补全功能
+.git/objects/**
+.git/refs/**
+.git/config
+.git/HEAD
+.git/index
+.git/hooks/**
+.git/logs/**
+.git/info/**
+
+# 其他
+.local
+docs-repo-temp/
+

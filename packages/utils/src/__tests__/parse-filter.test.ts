@@ -1,3 +1,5 @@
+import '../dayjs';
+
 import { getDateVars, getDayRange, parseFilter, utc2unit, Utc2unitOptions } from '../parse-filter';
 
 describe('utc to unit', () => {

@@ -1,10 +1,11 @@
-> ⚠️ **Caution: This repository is under active refactoring and is not recommended for current use.**
+English|[ 简体中文 ](./README.zh-CN.md) 
+> ⚠️ **Caution: This repository is currently undergoing a core refactor.Using the Git version may lead to various unexpected issues.If you encounter problems, feel free to submit an issue on GitHub.**
 >
-> If you are looking for the previous version of Tego with the original plugin setup and frontend integration, please refer to:
->
-> 🔗 [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
->
-> That repository maintains the older usage pattern and plugin collection during the ongoing restructuring of this core package.
+> ✅ For stable production usage, please use:
+> - Official frontend and plugin collection: [tegojs/tego-standard](https://github.com/tegojs/tego-standard)
+> - Official Docker image: [tegojs/tego-all](https://hub.docker.com/r/tegojs/tego-all)
+> - Official npm package [tego](https://www.npmjs.com/package/tego)
+
 
 <h1 align="center" style="border-bottom: none">
     <div>
@@ -26,7 +27,7 @@ Tego is a pluggable Node.js framework for building customizable development plat
    <img alt="GitHub Issues or Pull Requests" src="https://img.shields.io/github/issues/tegojs/tego">
    <img alt="Static Badge" src="https://img.shields.io/badge/build-passing-brightgreen">
    <a href="./README.md"><img alt="Static Badge" src="https://img.shields.io/badge/English Version-red"></a>
-   <a href="./README.ZH-CN.md"><img alt="Static Badge" src="https://img.shields.io/badge/中文版本-blue"></a>
+   <a href="./README.zh-CN.md"><img alt="Static Badge" src="https://img.shields.io/badge/中文版本-blue"></a>
    <a href="https://gitee.com/tachybase/tachybase"><img alt="Static Badge" src="https://img.shields.io/badge/gitee-green"></a>
    <a href="https://github.com/tegojs/tego"><img alt="Static Badge" src="https://img.shields.io/badge/Github-lightblack"></a>
 </p>

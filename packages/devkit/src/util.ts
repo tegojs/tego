@@ -1,29 +1,21 @@
-import { createHash } from 'node:crypto';
 import {
   cpSync as _cpSync,
   existsSync as _existsSync,
   writeFileSync as _writeFileSync,
-  createWriteStream,
-  existsSync,
   readFileSync,
   rmSync,
-  symlinkSync,
-  unlinkSync,
   writeFileSync,
 } from 'node:fs';
-import { mkdir, readFile, stat, unlink, writeFile } from 'node:fs/promises';
+import { readFile, stat, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { Socket } from 'node:net';
 import os from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
-import { pipeline } from 'node:stream/promises';
 
 import chalk from 'chalk';
 import { config } from 'dotenv';
 import { execa, Options } from 'execa';
 import fastGlob from 'fast-glob';
-import packageJson from 'package-json';
-import * as tar from 'tar';
 
 import { DEFAULT_DEV_HOST } from './constants';
 
@@ -38,83 +30,7 @@ export async function fsExists(path: string) {
   }
 }
 
-export function isPackageValid(pkg: string) {
-  try {
-    require.resolve(pkg);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
-
-export async function downloadTar(packageName: string, target: string) {
-  const info = await packageJson(packageName, { fullMetadata: true });
-  const url = info.dist.tarball;
-  const tarballFile = join(target, '..', `${createHash('md5').update(packageName).digest('hex')}-tarball.gz`);
-  await mkdir(dirname(tarballFile), { recursive: true });
-  const writer = createWriteStream(tarballFile);
-  const response = await fetch(url);
-  if (!response.ok || !response.body) {
-    throw new Error(`Failed to fetch tarball: ${response.statusText}`);
-  }
-
-  // 使用 pipeline 将 response.body 写入文件
-  await pipeline(response.body, writer);
-
-  await mkdir(target, { recursive: true });
-  await tar.x({
-    file: tarballFile,
-    gzip: true,
-    cwd: target,
-    strip: 1,
-    k: true,
-  });
-
-  await unlink(tarballFile);
-}
-
-export function hasCorePackages() {
-  const coreDir = resolve(process.cwd(), 'apps/build');
-  return existsSync(coreDir);
-}
-
-export function hasTsNode() {
-  return isPackageValid('tsx');
-}
-
-export function isDev() {
-  if (process.env.APP_ENV === 'production') {
-    return false;
-  }
-  return hasTsNode();
-}
-
-export const isProd = () => {
-  const { APP_SERVER_ROOT } = process.env;
-  const file = `${APP_SERVER_ROOT}/lib/index.js`;
-  if (!existsSync(resolve(process.cwd(), file))) {
-    console.log('For production environment, please build the code first.');
-    console.log();
-    console.log(chalk.yellow('$ pnpm build'));
-    console.log();
-    process.exit(1);
-  }
-  return true;
-};
-
-export function nodeCheck() {
-  if (!hasTsNode()) {
-    console.log('Please install all dependencies');
-    console.log(chalk.yellow('$ pnpm install'));
-    process.exit(1);
-  }
-}
-
 export function run(command: string, args?: string[], options?: Options<any>) {
-  if (command === 'tsx') {
-    command = 'node';
-    args = ['./node_modules/tsx/dist/cli.mjs'].concat(args || []);
-  }
   return execa(command, args, {
     shell: true,
     stdio: 'inherit',
@@ -160,6 +76,12 @@ export async function isPortReachable(port: string, options: Partial<IPortReacha
   }
 }
 
+/**
+ * Checks that the specified port (or `APP_PORT` from the environment) is not already in use and exits the process with code 1 if it is.
+ *
+ * @param opts - Options object.
+ * @param opts.port - Port to check; if omitted, `APP_PORT` from the environment is used.
+ */
 export async function postCheck(opts: { port?: string }) {
   const port = opts.port || process.env.APP_PORT || '';
   const result = await isPortReachable(port);
@@ -169,6 +91,39 @@ export async function postCheck(opts: { port?: string }) {
   }
 }
 
+/**
+ * Attempts to run the TSX CLI with the given arguments and, if the `tsx` executable is not found, falls back to invoking the TSX CLI module via `node`.
+ *
+ * If the `tsx` command is missing (ENOENT), the function resolves the TSX CLI entry and runs it with `node`; any other execution errors are propagated.
+ *
+ * @param argv - Arguments to pass to the TSX CLI
+ * @param options - Execution options forwarded to the underlying runner
+ */
+async function runWithTsx(argv: string[], options?: Options<any>) {
+  try {
+    // 先尝试使用 tsx 命令（保持原有实现）
+    await run('tsx', argv, options);
+  } catch (error: any) {
+    // 如果 tsx 命令未找到（ENOENT），使用 node 直接调用 tsx CLI 作为后备方案
+    // 这样可以确保在所有平台上都能正常工作
+    if (error.code === 'ENOENT') {
+      // 使用 node 直接调用 tsx 的 CLI 入口点，这样可以正确处理所有 tsx 特定的标志
+      const tsxCliPath = require.resolve('tsx/dist/cli.mjs');
+      await run('node', [tsxCliPath, ...argv], options);
+    } else {
+      // 其他错误（如 TypeScript 编译错误、运行时错误等）应该直接抛出，不进行回退
+      throw error;
+    }
+  }
+}
+
+/**
+ * Trigger the application's server install command using the configured server tsconfig.
+ *
+ * This reads SERVER_TSCONFIG_PATH and APP_SERVER_ROOT from environment and invokes the install entrypoint of the server.
+ *
+ * @throws Error when `SERVER_TSCONFIG_PATH` is not set in the environment.
+ */
 export async function runInstall() {
   const { APP_SERVER_ROOT, SERVER_TSCONFIG_PATH } = process.env;
 
@@ -176,24 +131,25 @@ export async function runInstall() {
     throw new Error('SERVER_TSCONFIG_PATH is empty.');
   }
 
-  if (isDev()) {
-    const argv = [
-      '--tsconfig',
-      SERVER_TSCONFIG_PATH,
-      '-r',
-      'tsconfig-paths/register',
-      `${APP_SERVER_ROOT}/src/index.ts`,
-      'install',
-      '-s',
-    ];
-    await run('tsx', argv);
-  } else if (isProd()) {
-    const file = `${APP_SERVER_ROOT}/lib/index.js`;
-    const argv = [file, 'install', '-s'];
-    await run('node', argv);
-  }
+  const argv = [
+    '--tsconfig',
+    SERVER_TSCONFIG_PATH,
+    '-r',
+    'tsconfig-paths/register',
+    `${APP_SERVER_ROOT}/src/index.ts`,
+    'install',
+    '-s',
+  ];
+  await runWithTsx(argv);
 }
 
+/**
+ * Invoke a server subcommand via the server's index module with tsconfig paths registration.
+ *
+ * @param command - The command name to forward to the server (e.g., "start", "install").
+ * @param args - Additional command-line arguments to pass to the server command
+ * @throws If `SERVER_TSCONFIG_PATH` is not set in the environment
+ */
 export async function runAppCommand(command: string, args: string[] = []) {
   const { APP_SERVER_ROOT, SERVER_TSCONFIG_PATH } = process.env;
 
@@ -201,23 +157,23 @@ export async function runAppCommand(command: string, args: string[] = []) {
     throw new Error('SERVER_TSCONFIG_PATH is not set');
   }
 
-  if (isDev()) {
-    const argv = [
-      '--tsconfig',
-      SERVER_TSCONFIG_PATH,
-      '-r',
-      'tsconfig-paths/register',
-      `${APP_SERVER_ROOT}/src/index.ts`,
-      command,
-      ...args,
-    ];
-    await run('tsx', argv);
-  } else if (isProd()) {
-    const argv = [`${APP_SERVER_ROOT}/lib/index.js`, command, ...args];
-    await run('node', argv);
-  }
+  const argv = [
+    '--tsconfig',
+    SERVER_TSCONFIG_PATH,
+    '-r',
+    'tsconfig-paths/register',
+    `${APP_SERVER_ROOT}/src/index.ts`,
+    command,
+    ...args,
+  ];
+  await runWithTsx(argv);
 }
 
+/**
+ * Logs a standardized "TypeScript compiling..." notice to the console.
+ *
+ * Prints a green "WAIT: " prefix followed by "TypeScript compiling..." to indicate that TypeScript is currently building.
+ */
 export function promptForTs() {
   console.log(chalk.green('WAIT: ') + 'TypeScript compiling...');
 }
@@ -236,17 +192,6 @@ export function generateAppDir() {
 }
 
 export async function genTsConfigPaths() {
-  try {
-    unlinkSync(resolve(process.cwd(), 'node_modules/.bin/tsx'));
-    symlinkSync(
-      resolve(process.cwd(), 'node_modules/tsx/dist/cli.mjs'),
-      resolve(process.cwd(), 'node_modules/.bin/tsx'),
-      'file',
-    );
-  } catch (error) {
-    //
-  }
-
   const cwd = process.cwd();
   const cwdLength = cwd.length;
   const paths: Record<string, string[]> = {};
@@ -297,18 +242,6 @@ export function generatePlaywrightPath(clean = false) {
   }
 }
 
-function parseEnv(name: string) {
-  if (name === 'DB_UNDERSCORED') {
-    if (process.env.DB_UNDERSCORED === 'true') {
-      return 'true';
-    }
-    if (process.env.DB_UNDERSCORED) {
-      return 'true';
-    }
-    return 'false';
-  }
-}
-
 export function initEnv() {
   const env = {
     APP_ENV: 'development',
@@ -316,9 +249,7 @@ export function initEnv() {
     APP_PORT: 3000,
     API_BASE_PATH: '/api/',
     DB_DIALECT: 'sqlite',
-    DB_STORAGE: 'storage/db/tachybase.sqlite',
     DB_TIMEZONE: '+00:00',
-    DB_UNDERSCORED: parseEnv('DB_UNDERSCORED'),
     DEFAULT_STORAGE_TYPE: 'local',
     LOCAL_STORAGE_DEST: 'storage/uploads',
     PLUGIN_STORAGE_PATH: 'storage/plugins',
@@ -328,14 +259,12 @@ export function initEnv() {
     PLUGIN_PACKAGE_PREFIX: '@tachybase/plugin-,@tachybase/module-',
     SERVER_TSCONFIG_PATH: './tsconfig.server.json',
     PLAYWRIGHT_AUTH_FILE: 'storage/playwright/.auth/admin.json',
-    CACHE_DEFAULT_STORE: 'memory',
-    CACHE_MEMORY_MAX: 2000,
     PLUGIN_STATICS_PATH: '/static/plugins/',
-    LOGGER_BASE_PATH: 'storage/logs',
     APP_SERVER_BASE_URL: '',
     APP_PUBLIC_PATH: '/',
     TEGO_HOME: join(os.homedir(), '.tego'),
     TEGO_RUNTIME_NAME: 'current',
+    IS_DEV_CMD: '1',
   };
 
   if (

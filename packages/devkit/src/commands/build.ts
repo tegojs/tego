@@ -1,7 +1,6 @@
 import { type Command } from 'commander';
 
 import { TachybaseBuilder } from '../builder';
-import { nodeCheck } from '../util';
 
 export default (cli: Command) => {
   cli
@@ -15,8 +14,6 @@ export default (cli: Command) => {
     .option('--only-tar', 'only tar the package')
     .option('--development', 'development mode')
     .action(async (pkgs, options) => {
-      nodeCheck();
-
       const tachybaseBuilder = new TachybaseBuilder({
         dts: options.dts,
         sourcemap: options.sourcemap,

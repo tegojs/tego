@@ -1,25 +1,26 @@
 packages:
-  - 'packages/**'
-allowedDeprecatedVersions:
-  cache-manager-redis-yet: "4.2.0"
+  - packages/**
 
-overrides:
-  "@ant-design/cssinjs": "1.24.0"
-  "@types/node": "20.17.10"
-  "@types/react": "18.3.23"
-  "@types/react-dom": "18.3.7"
-  "antd": "5.22.5"
-  "dayjs": "1.11.13"
-  "react": "18.3.1"
-  "react-dom": "18.3.1"
-  "react-router": "6.28.1"
-  "react-router-dom": "6.28.1"
-  "string-width": "4.2.3"
-  "strip-ansi": "6.0.1"
-  "wrap-ansi": "7.0.0"
+allowedDeprecatedVersions:
+  cache-manager-redis-yet: 4.2.0
 
 neverBuiltDependencies:
-- canvas
+  - canvas
 
-# force isolated to keep sync with partners
 nodeLinker: isolated
+
+overrides:
+  '@ant-design/cssinjs': 1.24.0
+  '@types/node': 20.17.10
+  '@types/react': 18.3.23
+  '@types/react-dom': 18.3.7
+  antd: 5.22.5
+  dayjs: 1.11.13
+  react: 18.3.1
+  react-dom: 18.3.1
+  react-router: 6.28.1
+  react-router-dom: 6.28.1
+  string-width: 4.2.3
+  strip-ansi: 6.0.1
+  wrap-ansi: 7.0.0
+  prebuild-install: 7.1.3

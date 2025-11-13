@@ -1,4 +1,5 @@
 import { parseDatabaseOptionsFromEnv } from '@tachybase/database';
+import TachybaseGlobal from '@tachybase/globals';
 import { getLoggerLevel, getLoggerTransport } from '@tachybase/logger';
 
 export async function getConfig() {
@@ -11,16 +12,16 @@ export async function getConfig() {
     },
     plugins: ['tachybase'],
     cacheManager: {
-      defaultStore: process.env.CACHE_DEFAULT_STORE || 'memory',
+      defaultStore: TachybaseGlobal.settings.cache.defaultStore ?? 'memory',
       stores: {
         memory: {
           store: 'memory',
-          max: parseInt(process.env.CACHE_MEMORY_MAX) || 2000,
+          max: TachybaseGlobal.settings.cache.memoryMax ?? 2000,
         },
-        ...(process.env.CACHE_REDIS_URL
+        ...(TachybaseGlobal.settings.cache.redisUrl
           ? {
               redis: {
-                url: process.env.CACHE_REDIS_URL,
+                url: TachybaseGlobal.settings.cache.redisUrl,
               },
             }
           : {}),

@@ -2,6 +2,8 @@ import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import { resolve } from 'node:path';
 import { createHistogram, RecordableHistogram } from 'node:perf_hooks';
+import TachybaseGlobal from '@tachybase/globals';
+import { defineResolver } from '@tachybase/loader';
 import { requestLogger } from '@tachybase/logger';
 import { Resourcer } from '@tachybase/resourcer';
 import { uid } from '@tachybase/utils';
@@ -36,7 +38,8 @@ export function createResourcer(options: ApplicationOptions) {
 export function registerMiddlewares(app: Application, options: ApplicationOptions) {
   app.use(
     async (ctx, next) => {
-      app.context.reqId = randomUUID();
+      ctx.reqId = randomUUID();
+      ctx.tego = app;
       await next();
     },
     { tag: 'UUID' },
@@ -141,7 +144,7 @@ export const enablePerfHooks = (app: Application) => {
     actions: {
       view: async (ctx, next) => {
         const result = {};
-        const histograms = ctx.app.perfHistograms as Map<string, RecordableHistogram>;
+        const histograms = ctx.tego.perfHistograms as Map<string, RecordableHistogram>;
         const sortedHistograms = [...histograms.entries()].sort(([i, a], [j, b]) => b.mean - a.mean);
         sortedHistograms.forEach(([name, histogram]) => {
           result[name] = histogram;
@@ -150,7 +153,7 @@ export const enablePerfHooks = (app: Application) => {
         await next();
       },
       reset: async (ctx, next) => {
-        const histograms = ctx.app.perfHistograms as Map<string, RecordableHistogram>;
+        const histograms = ctx.tego.perfHistograms as Map<string, RecordableHistogram>;
         histograms.forEach((histogram: RecordableHistogram) => histogram.reset());
         await next();
       },
@@ -159,3 +162,8 @@ export const enablePerfHooks = (app: Application) => {
 
   app.acl.allow('perf', '*', 'public');
 };
+
+const globals = TachybaseGlobal.getInstance();
+const lookingPaths = globals.get('WORKER_PATHS');
+const whitelists = new Set<string>(globals.get('WORKER_MODULES'));
+export const resolveRequest = defineResolver(whitelists, require.resolve, lookingPaths);

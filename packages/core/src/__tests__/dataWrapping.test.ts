@@ -1,3 +1,5 @@
+import TachybaseGlobal from '@tachybase/globals';
+
 import supertest from 'supertest';
 
 import { Application } from '../application';
@@ -9,12 +11,12 @@ describe('application', () => {
   beforeEach(() => {
     app = new Application({
       database: {
-        username: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_DATABASE,
-        host: process.env.DB_HOST,
-        port: process.env.DB_PORT as any,
-        dialect: process.env.DB_DIALECT as any,
+        username: TachybaseGlobal.settings.database.user,
+        password: TachybaseGlobal.settings.database.password,
+        database: TachybaseGlobal.settings.database.database,
+        host: TachybaseGlobal.settings.database.host,
+        port: TachybaseGlobal.settings.database.port,
+        dialect: TachybaseGlobal.settings.database.dialect,
         dialectOptions: {
           charset: 'utf8mb4',
           collate: 'utf8mb4_unicode_ci',

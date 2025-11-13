@@ -1,4 +1,5 @@
 import EventEmitter from 'node:events';
+import { Context } from '@tachybase/actions';
 import { Action } from '@tachybase/resourcer';
 import { assign, getCurrentStacks, parseFilter, Toposort, ToposortOptions } from '@tachybase/utils';
 
@@ -328,7 +329,7 @@ export class ACL extends EventEmitter {
   /**
    * @internal
    */
-  async parseJsonTemplate(json: any, ctx: any) {
+  async parseJsonTemplate(json: any, ctx: Context) {
     if (json.filter) {
       ctx.logger?.info?.('parseJsonTemplate.raw', JSON.parse(JSON.stringify(json.filter)));
       const timezone = ctx?.get?.('x-timezone');
@@ -358,7 +359,7 @@ export class ACL extends EventEmitter {
       const { resourceName: rawResourceName, actionName } = ctx.action;
 
       let resourceName = rawResourceName;
-      if (rawResourceName.includes('.')) {
+      if (rawResourceName?.includes('.')) {
         resourceName = rawResourceName.split('.').pop();
       }
 
@@ -393,7 +394,7 @@ export class ACL extends EventEmitter {
     const { resourceName: rawResourceName, actionName } = ctx.action;
 
     let resourceName = rawResourceName;
-    if (rawResourceName.includes('.')) {
+    if (rawResourceName?.includes('.')) {
       resourceName = rawResourceName.split('.').pop();
     }
 
@@ -445,29 +446,28 @@ export class ACL extends EventEmitter {
     const acl = this;
 
     this.middlewares.add(
-      async (ctx, next) => {
+      async (ctx: Context, next) => {
         const resourcerAction: Action = ctx.action;
         const { resourceName, actionName } = ctx.permission;
 
         const permission = ctx.permission;
 
-        ctx.log?.info && ctx.log.info('ctx permission', permission);
+        ctx.logger?.info('ctx permission', permission);
 
         if ((!permission.can || typeof permission.can !== 'object') && !permission.skip) {
           ctx.throw(403, 'No permissions');
-          return;
         }
 
         const params = permission.can?.params || acl.fixedParamsManager.getParams(resourceName, actionName);
 
-        ctx.log?.info && ctx.log.info('acl params', params);
+        ctx.logger?.info('acl params', params);
 
         if (params && resourcerAction.mergeParams) {
           const filteredParams = acl.filterParams(ctx, resourceName, params);
           const parsedParams = await acl.parseJsonTemplate(filteredParams, ctx);
 
           ctx.permission.parsedParams = parsedParams;
-          ctx.log?.info && ctx.log.info('acl parsedParams', parsedParams);
+          ctx.logger?.info('acl parsedParams', parsedParams);
           ctx.permission.rawParams = lodash.cloneDeep(resourcerAction.params);
           resourcerAction.mergeParams(parsedParams, {
             appends: (x, y) => {
@@ -497,7 +497,7 @@ export class ACL extends EventEmitter {
   }
 }
 
-function getUser(ctx) {
+function getUser(ctx: Context) {
   return async ({ fields }) => {
     const userFields = fields.filter((f) => f && ctx.db.getFieldByPath('users.' + f));
     ctx.logger?.info('filter-parse: ', { userFields });

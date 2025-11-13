@@ -1,12 +1,9 @@
 import fs from 'node:fs';
+import TachybaseGlobal from '@tachybase/globals';
 
 import semver from 'semver';
 
 import { Database, IDatabaseOptions } from './database';
-
-function getEnvValue(key, defaultValue?) {
-  return process.env[key] || defaultValue;
-}
 
 function isFilePath(value) {
   return fs.promises
@@ -21,11 +18,13 @@ function isFilePath(value) {
     });
 }
 
-function getValueOrFileContent(envVarName) {
-  const value = getEnvValue(envVarName);
-
+function getValueOrFileContent(value?: string | boolean) {
   if (!value) {
     return Promise.resolve(null);
+  }
+
+  if (typeof value === 'boolean') {
+    return Promise.resolve(value);
   }
 
   return isFilePath(value)
@@ -36,18 +35,18 @@ function getValueOrFileContent(envVarName) {
       return value;
     })
     .catch((error) => {
-      console.error(`Failed to read file content for environment variable ${envVarName}.`);
+      console.error(`Failed to read file content for value.`);
       throw error;
     });
 }
 
 function extractSSLOptionsFromEnv() {
   return Promise.all([
-    getValueOrFileContent('DB_DIALECT_OPTIONS_SSL_MODE'),
-    getValueOrFileContent('DB_DIALECT_OPTIONS_SSL_CA'),
-    getValueOrFileContent('DB_DIALECT_OPTIONS_SSL_KEY'),
-    getValueOrFileContent('DB_DIALECT_OPTIONS_SSL_CERT'),
-    getValueOrFileContent('DB_DIALECT_OPTIONS_SSL_REJECT_UNAUTHORIZED'),
+    getValueOrFileContent(TachybaseGlobal.settings.database.ssl?.mode),
+    getValueOrFileContent(TachybaseGlobal.settings.database.ssl?.ca),
+    getValueOrFileContent(TachybaseGlobal.settings.database.ssl?.key),
+    getValueOrFileContent(TachybaseGlobal.settings.database.ssl?.cert),
+    getValueOrFileContent(TachybaseGlobal.settings.database.ssl?.rejectUnauthorized),
   ]).then(([mode, ca, key, cert, rejectUnauthorized]) => {
     const sslOptions = {};
 
@@ -63,18 +62,18 @@ function extractSSLOptionsFromEnv() {
 
 export async function parseDatabaseOptionsFromEnv(): Promise<IDatabaseOptions> {
   const databaseOptions: IDatabaseOptions = {
-    logging: process.env.DB_LOGGING === 'on' ? customLogger : false,
-    dialect: process.env.DB_DIALECT as any,
-    storage: process.env.DB_STORAGE,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE,
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT as any,
-    timezone: process.env.DB_TIMEZONE,
-    tablePrefix: process.env.DB_TABLE_PREFIX,
-    schema: process.env.DB_SCHEMA,
-    underscored: process.env.DB_UNDERSCORED === 'true',
+    logging: TachybaseGlobal.settings.database.logging ? customLogger : false,
+    dialect: TachybaseGlobal.settings.database.dialect,
+    storage: TachybaseGlobal.settings.database.storage,
+    username: TachybaseGlobal.settings.database.user,
+    password: TachybaseGlobal.settings.database.password,
+    database: TachybaseGlobal.settings.database.database,
+    host: TachybaseGlobal.settings.database.host,
+    port: TachybaseGlobal.settings.database.port,
+    timezone: TachybaseGlobal.settings.database.timezone,
+    tablePrefix: TachybaseGlobal.settings.database.tablePrefix,
+    schema: TachybaseGlobal.settings.database.schema,
+    underscored: TachybaseGlobal.settings.database.underscored,
   };
 
   const sslOptions = await extractSSLOptionsFromEnv();
