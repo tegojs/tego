@@ -3,8 +3,12 @@ name: Release Stable Version
 on:
   workflow_dispatch:
     inputs:
+      version:
+        description: 'Custom version number (e.g., 1.2.3). Leave empty to use bump type.'
+        required: false
+        type: string
       bump:
-        description: 'Version bump type'
+        description: 'Version bump type (used when version is not specified)'
         required: true
         default: 'patch'
         type: choice
@@ -36,16 +40,24 @@ jobs:
       - name: Do major version release
         id: do_version
         run: |
-          bump="${{ github.event.inputs.bump }}"
-          if [ "$bump" = "major" ]; then
-            pnpm -r exec -- npm version major
-            version=$(npm version major --no-git-tag-version)
-          elif [ "$bump" = "minor" ]; then
-            pnpm -r exec -- npm version minor
-            version=$(npm version minor --no-git-tag-version)
+          custom_version="${{ github.event.inputs.version }}"
+          if [ -n "$custom_version" ]; then
+            # Use custom version if provided
+            pnpm -r exec -- npm version "$custom_version" --no-git-tag-version
+            version="v$custom_version"
           else
-            pnpm -r exec -- npm version patch
-            version=$(npm version patch --no-git-tag-version)
+            # Use bump type if no custom version provided
+            bump="${{ github.event.inputs.bump }}"
+            if [ "$bump" = "major" ]; then
+              pnpm -r exec -- npm version major
+              version=$(npm version major --no-git-tag-version)
+            elif [ "$bump" = "minor" ]; then
+              pnpm -r exec -- npm version minor
+              version=$(npm version minor --no-git-tag-version)
+            else
+              pnpm -r exec -- npm version patch
+              version=$(npm version patch --no-git-tag-version)
+            fi
           fi
           echo "version=$version" >> $GITHUB_OUTPUT
 

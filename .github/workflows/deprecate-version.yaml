@@ -1,0 +1,151 @@
+name: Deprecate Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      package_name:
+        description: 'Package name (leave empty to deprecate all packages, e.g., @tego/core)'
+        required: false
+        type: string
+      version:
+        description: 'Version to deprecate (e.g., 1.3.52)'
+        required: true
+        type: string
+      message:
+        description: 'Deprecation message (e.g., "This version is deprecated")'
+        required: true
+        type: string
+        default: 'This version is deprecated'
+      confirm:
+        description: 'Type "CONFIRM" to proceed with deprecation'
+        required: true
+        type: string
+
+jobs:
+  deprecate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.0
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Verify confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "CONFIRM" ]; then
+            echo "Error: You must type 'CONFIRM' to proceed with deprecation"
+            exit 1
+          fi
+
+      - name: Deprecate package version
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+
+          package_name="${{ github.event.inputs.package_name }}"
+          version="${{ github.event.inputs.version }}"
+          message="${{ github.event.inputs.message }}"
+
+          if [ -z "$package_name" ]; then
+            echo "Deprecating version $version from all packages in workspace..."
+            # Get all package names from workspace using Node.js
+            VERSION="$version" MESSAGE="$message" node << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          const { spawnSync } = require('child_process');
+
+          function findPackages(dir) {
+            const packages = new Set();
+            const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+            for (const entry of entries) {
+              const fullPath = path.join(dir, entry.name);
+              if (entry.isDirectory()) {
+                const pkgJsonPath = path.join(fullPath, 'package.json');
+                if (fs.existsSync(pkgJsonPath)) {
+                  try {
+                    const pkgJson = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+                    if (pkgJson.name && !pkgJson.private) {
+                      packages.add(pkgJson.name);
+                    }
+                  } catch (e) {
+                    // Skip invalid package.json files
+                  }
+                }
+              }
+            }
+            return Array.from(packages);
+          }
+
+          const packages = findPackages('packages');
+          const version = process.env.VERSION;
+          const message = process.env.MESSAGE;
+
+          console.log(`Found ${packages.length} packages to deprecate`);
+          let successCount = 0;
+          let failCount = 0;
+
+          for (const pkg of packages) {
+            console.log(`Attempting to deprecate ${pkg}@${version}`);
+            try {
+              // Use spawnSync to properly pass arguments
+              const result = spawnSync('npm', ['deprecate', `${pkg}@${version}`, message], {
+                encoding: 'utf8',
+                stdio: ['pipe', 'pipe', 'pipe']
+              });
+
+              if (result.stdout && result.stdout.trim()) {
+                console.log(result.stdout.trim());
+              }
+
+              if (result.status !== 0) {
+                // Command failed
+                const stderr = result.stderr ? result.stderr.trim() : '';
+                const stdout = result.stdout ? result.stdout.trim() : '';
+                console.log(`✗ Failed to deprecate ${pkg}@${version}`);
+                if (stdout) console.log(`  Output: ${stdout}`);
+                if (stderr) console.log(`  Error: ${stderr}`);
+                failCount++;
+              } else {
+                console.log(`✓ Successfully deprecated ${pkg}@${version}`);
+                successCount++;
+              }
+            } catch (error) {
+              const errorMsg = error.message || String(error);
+              console.log(`✗ Failed to deprecate ${pkg}@${version}`);
+              console.log(`  Error: ${errorMsg}`);
+              failCount++;
+            }
+          }
+
+          console.log(`\nSummary: ${successCount} succeeded, ${failCount} failed`);
+          EOF
+          else
+            echo "Deprecating $package_name@$version"
+            if npm deprecate "$package_name@$version" "$message"; then
+              echo "✓ Successfully deprecated $package_name@$version"
+            else
+              echo "✗ Failed to deprecate $package_name@$version"
+              exit 1
+            fi
+          fi
+
+      - name: Summary
+        run: |
+          echo "## Deprecation Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Package: ${{ github.event.inputs.package_name || 'All packages from release-stable-version.yaml' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Version: ${{ github.event.inputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Message: ${{ github.event.inputs.message }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Status: Completed" >> $GITHUB_STEP_SUMMARY
