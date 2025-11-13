@@ -94,20 +94,47 @@ jobs:
           const message = process.env.MESSAGE;
 
           console.log(`Found ${packages.length} packages to deprecate`);
+          let successCount = 0;
+          let failCount = 0;
+
           for (const pkg of packages) {
             console.log(`Attempting to deprecate ${pkg}@${version}`);
             try {
               // Use execSync with array format to safely pass arguments
-              execSync('npm', ['deprecate', `${pkg}@${version}`, message], { stdio: 'inherit' });
+              // Capture output to show actual messages
+              const result = execSync('npm', ['deprecate', `${pkg}@${version}`, message], {
+                encoding: 'utf8',
+                stdio: ['pipe', 'pipe', 'pipe']
+              });
+              if (result && result.trim()) {
+                console.log(result.trim());
+              }
               console.log(`✓ Successfully deprecated ${pkg}@${version}`);
+              successCount++;
             } catch (error) {
-              console.log(`✗ Failed to deprecate ${pkg}@${version} (may not exist or already deprecated)`);
+              // execSync throws on non-zero exit, error object contains stdout and stderr
+              const stderr = error.stderr ? error.stderr.toString().trim() : '';
+              const stdout = error.stdout ? error.stdout.toString().trim() : '';
+              const errorMsg = error.message || '';
+
+              console.log(`✗ Failed to deprecate ${pkg}@${version}`);
+              if (stdout) console.log(`  Output: ${stdout}`);
+              if (stderr) console.log(`  Error: ${stderr}`);
+              if (!stderr && !stdout && errorMsg) console.log(`  Error: ${errorMsg}`);
+              failCount++;
             }
           }
+
+          console.log(`\nSummary: ${successCount} succeeded, ${failCount} failed`);
           EOF
           else
             echo "Deprecating $package_name@$version"
-            npm deprecate "$package_name@$version" "$message"
+            if npm deprecate "$package_name@$version" "$message"; then
+              echo "✓ Successfully deprecated $package_name@$version"
+            else
+              echo "✗ Failed to deprecate $package_name@$version"
+              exit 1
+            fi
           fi
 
       - name: Summary
