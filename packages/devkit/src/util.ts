@@ -86,7 +86,7 @@ export async function postCheck(opts: { port?: string }) {
 }
 
 /**
- * 兼容性函数：先尝试使用 tsx 命令，如果失败则回退到 node --import tsx
+ * 兼容性函数：先尝试使用 tsx 命令，如果失败则回退到通过 node 直接调用 tsx CLI
  * 这样可以确保在所有平台上都能正常工作
  */
 async function runWithTsx(argv: string[], options?: Options<any>) {
@@ -94,13 +94,14 @@ async function runWithTsx(argv: string[], options?: Options<any>) {
     // 先尝试使用 tsx 命令（保持原有实现）
     await run('tsx', argv, options);
   } catch (error: any) {
-    // 如果 tsx 命令失败（可能在某些平台上不可用），使用 node --import tsx 作为后备方案
+    // 如果 tsx 命令未找到（ENOENT），使用 node 直接调用 tsx CLI 作为后备方案
     // 这样可以确保在所有平台上都能正常工作
-    if (error.code === 'ENOENT' || error.message?.includes('tsx') || error.exitCode) {
-      // 使用 node --import tsx 来运行，保留所有参数
-      // tsx 作为导入钩子会处理这些参数
-      await run('node', ['--import', 'tsx', ...argv], options);
+    if (error.code === 'ENOENT') {
+      // 使用 node 直接调用 tsx 的 CLI 入口点，这样可以正确处理所有 tsx 特定的标志
+      const tsxCliPath = require.resolve('tsx/dist/cli.mjs');
+      await run('node', [tsxCliPath, ...argv], options);
     } else {
+      // 其他错误（如 TypeScript 编译错误、运行时错误等）应该直接抛出，不进行回退
       throw error;
     }
   }
