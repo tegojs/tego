@@ -224,7 +224,7 @@ export async function runInstall() {
     'install',
     '-s',
   ];
-  await run('tsx', argv);
+  await runWithTsx(argv);
 }
 
 /**
@@ -250,7 +250,7 @@ export async function runAppCommand(command: string, args: string[] = []) {
     command,
     ...args,
   ];
-  await run('tsx', argv);
+  await runWithTsx(argv);
 }
 
 /**
