@@ -43,17 +43,20 @@ interface UserStatusCache {
 export class BaseAuth extends Auth {
   protected userCollection: Collection;
   protected userStatusCollection: Collection;
+  protected userStatusHistoryCollection: Collection;
 
   constructor(
     config: AuthConfig & {
       userCollection?: Collection;
       userStatusCollection?: Collection;
+      userStatusHistoryCollection?: Collection;
     },
   ) {
-    const { userCollection, userStatusCollection } = config;
+    const { userCollection, userStatusCollection, userStatusHistoryCollection } = config;
     super(config);
     this.userCollection = userCollection || this.ctx.db.getCollection('users');
     this.userStatusCollection = userStatusCollection || this.ctx.db.getCollection('userStatuses');
+    this.userStatusHistoryCollection = userStatusHistoryCollection || this.ctx.db.getCollection('userStatusHistories');
   }
 
   get userRepository() {
@@ -62,6 +65,10 @@ export class BaseAuth extends Auth {
 
   get userStatusRepository() {
     return this.userStatusCollection.repository;
+  }
+
+  get userStatusHistoryRepository() {
+    return this.userStatusHistoryCollection.repository;
   }
 
   get jwt(): JwtService {
@@ -641,7 +648,7 @@ export class BaseAuth extends Auth {
     try {
       // 查询是否已存在相同的记录（最近5秒内）
       const fiveSecondsAgo = new Date(Date.now() - 5000);
-      const existing = await this.userStatusRepository.findOne({
+      const existing = await this.userStatusHistoryRepository.findOne({
         filter: {
           userId,
           fromStatus,
@@ -663,7 +670,7 @@ export class BaseAuth extends Auth {
       }
 
       // 插入历史记录
-      await this.userStatusRepository.create({
+      await this.userStatusHistoryRepository.create({
         values: {
           userId,
           fromStatus,
