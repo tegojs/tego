@@ -16,11 +16,11 @@
     "lodash": "4.17.21"
   },
   "devDependencies": {
-    "@types/koa": "^2.15.0",
+    "@types/koa": "^3.0.1",
     "@types/koa-bodyparser": "^4.3.12",
     "@types/lodash": "^4.17.20",
     "@types/supertest": "^6.0.3",
-    "koa": "^2.16.2",
+    "koa": "^3.0.3",
     "koa-bodyparser": "4.4.1",
     "supertest": "^7.1.4"
   }
