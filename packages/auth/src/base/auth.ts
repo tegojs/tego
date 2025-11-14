@@ -46,14 +46,14 @@ export class BaseAuth extends Auth {
 
   constructor(
     config: AuthConfig & {
-      userCollection: Collection;
-      userStatusCollection: Collection;
+      userCollection?: Collection;
+      userStatusCollection?: Collection;
     },
   ) {
     const { userCollection, userStatusCollection } = config;
     super(config);
-    this.userCollection = userCollection;
-    this.userStatusCollection = userStatusCollection;
+    this.userCollection = userCollection || this.ctx.db.getCollection('users');
+    this.userStatusCollection = userStatusCollection || this.ctx.db.getCollection('userStatuses');
   }
 
   get userRepository() {
@@ -91,6 +91,7 @@ export class BaseAuth extends Auth {
   async checkToken(): Promise<{
     tokenStatus: 'valid' | 'expired' | 'invalid';
     user: Awaited<ReturnType<Auth['check']>>;
+    userStatus: string;
     jti?: string;
     temp: any;
     roleName?: any;
@@ -122,7 +123,7 @@ export class BaseAuth extends Auth {
       }
     }
 
-    const { userId, userStatus, roleName, iat, temp, jti, exp, signInTime } = payload ?? {};
+    const { userId, userStatus = 'active', roleName, iat, temp, jti, exp, signInTime } = payload ?? {};
 
     const user = userId
       ? await this.ctx.tego.cache.wrap(this.getCacheKey(userId), () =>
@@ -142,14 +143,21 @@ export class BaseAuth extends Auth {
       });
     }
 
-    if (userStatus) {
-      const statusCheckResult: UserStatusCheckResult = await this.checkUserStatus(user.id);
-      if (!statusCheckResult.allowed) {
-        this.ctx.throw(401, {
-          message: this.ctx.t(statusCheckResult.statusInfo.loginErrorMessage, { ns: localeNamespace }),
-          code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
-        });
-      }
+    const statusCheckResult: UserStatusCheckResult = await this.checkUserStatus(user.id);
+    if (!statusCheckResult.allowed) {
+      this.ctx.throw(401, {
+        message: this.ctx.t(
+          statusCheckResult.statusInfo.loginErrorMessage ?? 'User status is invalid, please contact administrator',
+          { ns: localeNamespace },
+        ),
+        code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
+      });
+    }
+    if (statusCheckResult.status !== userStatus) {
+      this.ctx.throw(401, {
+        message: this.ctx.t('Your account status has changed. Please sign in again.', { ns: localeNamespace }),
+        code: AuthErrorCode.INVALID_TOKEN,
+      });
     }
 
     if (roleName) {
@@ -167,7 +175,7 @@ export class BaseAuth extends Auth {
     // api token check first
     if (!temp) {
       if (tokenStatus === 'valid') {
-        return { tokenStatus, user, temp };
+        return { tokenStatus, user, userStatus, temp };
       } else {
         this.ctx.throw(401, {
           message: this.ctx.t('Your session has expired. Please sign in again.', { ns: localeNamespace }),
@@ -225,14 +233,14 @@ export class BaseAuth extends Auth {
           code: AuthErrorCode.INVALID_TOKEN,
         });
       }
-      return { tokenStatus, user, jti, signInTime, temp };
+      return { tokenStatus, user, userStatus, jti, signInTime, temp };
     }
 
-    return { tokenStatus, user, jti, signInTime, temp };
+    return { tokenStatus, user, userStatus, jti, signInTime, temp };
   }
 
   async check(): ReturnType<Auth['check']> {
-    const { tokenStatus, user, jti, temp, signInTime, roleName } = await this.checkToken();
+    const { tokenStatus, user, userStatus, jti, temp, signInTime, roleName } = await this.checkToken();
 
     if (tokenStatus === 'expired') {
       const tokenPolicy = await this.tokenController.getConfig();
@@ -266,11 +274,10 @@ export class BaseAuth extends Auth {
         });
 
         const expiresIn = Math.floor(tokenPolicy.tokenExpirationTime / 1000);
-        // const newToken = this.jwt.sign(
-        //   { userId: user.id, roleName, temp, signInTime, iat: Math.floor(renewedResult.issuedTime / 1000) },
-        //   { jwtid: renewedResult.jti, expiresIn },
-        // );
-        const newToken = await this.signNewToken(user.id);
+        const newToken = this.jwt.sign(
+          { userId: user.id, userStatus, roleName, temp, signInTime, iat: Math.floor(renewedResult.issuedTime / 1000) },
+          { jwtid: renewedResult.jti, expiresIn },
+        );
         this.ctx.res.setHeader('x-new-token', newToken);
       } catch (err) {
         this.ctx.logger.error('token renew failed', {
@@ -296,7 +303,13 @@ export class BaseAuth extends Auth {
     return null;
   }
 
-  async signNewToken(userId: number) {
+  /**
+   * 签 token
+   * @param userId 用户 ID
+   * @param jti 传入则续期旧 token, 不传入则签发新 token
+   * @returns 新 token
+   */
+  async signNewToken(userId: number, jti?: string) {
     const user = await this.userRepository.findOne({
       filter: { id: userId },
       fields: ['id', 'status'],
@@ -440,7 +453,7 @@ export class BaseAuth extends Auth {
 
       // 步骤4: 查询状态定义
       const statusInfo = await this.userStatusRepository.findOne({
-        filter: { status: cached.status },
+        filter: { key: cached.status },
       });
 
       if (!statusInfo) {
