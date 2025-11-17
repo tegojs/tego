@@ -153,10 +153,7 @@ export class BaseAuth extends Auth {
     const statusCheckResult: UserStatusCheckResult = await this.checkUserStatus(user.id);
     if (!statusCheckResult.allowed) {
       this.ctx.throw(401, {
-        message: this.ctx.t(
-          statusCheckResult.statusInfo.loginErrorMessage ?? 'User status is invalid, please contact administrator',
-          { ns: localeNamespace },
-        ),
+        message: this.ctx.t(statusCheckResult.statusInfo.loginErrorMessage, { ns: localeNamespace }),
         code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
       });
     }
@@ -497,7 +494,9 @@ export class BaseAuth extends Auth {
       };
 
       const translatedTitle = translateMessage(statusInfo.title);
-      const translatedLoginErrorMessage = translateMessage(statusInfo.loginErrorMessage);
+      const translatedLoginErrorMessage =
+        translateMessage(statusInfo.loginErrorMessage) ||
+        this.ctx.t('User status does not allow login', { ns: localeNamespace });
 
       // 步骤6: 返回检查结果
       return {
@@ -509,9 +508,7 @@ export class BaseAuth extends Auth {
           allowLogin: statusInfo.allowLogin,
           loginErrorMessage: translatedLoginErrorMessage,
         },
-        errorMessage: !statusInfo.allowLogin
-          ? translatedLoginErrorMessage || this.ctx.t('User status does not allow login', { ns: localeNamespace })
-          : undefined,
+        errorMessage: !statusInfo.allowLogin ? translatedLoginErrorMessage : undefined,
       };
     } catch (error) {
       this.ctx.logger.error(`Error checking user status for userId=${userId}: ${error}`);
