@@ -40,6 +40,7 @@ export function registerMiddlewares(app: Application, options: ApplicationOption
     async (ctx, next) => {
       ctx.reqId = randomUUID();
       ctx.tego = app;
+      ctx.app = app as any;
       await next();
     },
     { tag: 'UUID' },
