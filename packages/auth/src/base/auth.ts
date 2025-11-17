@@ -47,16 +47,16 @@ export class BaseAuth extends Auth {
 
   constructor(
     config: AuthConfig & {
-      userCollection?: Collection;
-      userStatusCollection?: Collection;
-      userStatusHistoryCollection?: Collection;
+      userCollection: Collection;
+      userStatusCollection: Collection;
+      userStatusHistoryCollection: Collection;
     },
   ) {
     const { userCollection, userStatusCollection, userStatusHistoryCollection } = config;
     super(config);
-    this.userCollection = userCollection || this.ctx.db.getCollection('users');
-    this.userStatusCollection = userStatusCollection || this.ctx.db.getCollection('userStatuses');
-    this.userStatusHistoryCollection = userStatusHistoryCollection || this.ctx.db.getCollection('userStatusHistories');
+    this.userCollection = userCollection;
+    this.userStatusCollection = userStatusCollection;
+    this.userStatusHistoryCollection = userStatusHistoryCollection;
   }
 
   get userRepository() {
