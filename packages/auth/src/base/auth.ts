@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import { Auth, AuthConfig, AuthError, AuthErrorCode } from '../auth';
 import { JwtService } from './jwt-service';
 import { ITokenControlService } from './token-control-service';
-import { BaseUserStatusService, IUserStatusService, UserStatusCheckResult } from './user-status-service';
+import { IUserStatusService, UserStatusCheckResult } from './user-status-service';
 
 const localeNamespace = 'auth';
 
@@ -17,32 +17,19 @@ export class BaseAuth extends Auth {
   protected userCollection: Collection;
   protected userStatusCollection: Collection;
   protected userStatusHistoryCollection: Collection;
-  protected _userStatusService: IUserStatusService;
 
   constructor(
     config: AuthConfig & {
       userCollection: Collection;
-      userStatusCollection: Collection;
-      userStatusHistoryCollection: Collection;
     },
   ) {
-    const { userCollection, userStatusCollection, userStatusHistoryCollection } = config;
+    const { userCollection } = config;
     super(config);
     this.userCollection = userCollection;
-    this.userStatusCollection = userStatusCollection;
-    this.userStatusHistoryCollection = userStatusHistoryCollection;
   }
 
   get userRepository() {
     return this.userCollection.repository;
-  }
-
-  get userStatusRepository() {
-    return this.userStatusCollection.repository;
-  }
-
-  get userStatusHistoryRepository() {
-    return this.userStatusHistoryCollection.repository;
   }
 
   get jwt(): JwtService {
@@ -54,24 +41,15 @@ export class BaseAuth extends Auth {
   }
 
   get userStatusService(): IUserStatusService {
-    if (!this._userStatusService) {
-      // 动态创建服务实例，因为每个请求都有不同的 Context
-      this._userStatusService = new BaseUserStatusService(
-        this.ctx,
-        this.userCollection,
-        this.userStatusCollection,
-        this.userStatusHistoryCollection,
-      );
-    }
-    return this._userStatusService;
+    return this.ctx.tego.authManager.userStatusService;
   }
 
   set user(user: Model) {
-    this.userStatusService.setUser(user);
+    this.ctx.state.currentUser = user;
   }
 
   get user() {
-    return this.userStatusService.getUser();
+    return this.ctx.state.currentUser;
   }
 
   getCacheKey(userId: number) {
