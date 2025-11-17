@@ -308,12 +308,11 @@ export class BaseAuth extends Auth {
   }
 
   /**
-   * 签 token
+   * 签新 token
    * @param userId 用户 ID
-   * @param jti 传入则续期旧 token, 不传入则签发新 token
    * @returns 新 token
    */
-  async signNewToken(userId: number, jti?: string) {
+  async signNewToken(userId: number) {
     const user = await this.userRepository.findOne({
       filter: { id: userId },
       fields: ['id', 'status'],
