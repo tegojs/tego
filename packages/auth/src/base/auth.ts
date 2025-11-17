@@ -15,8 +15,6 @@ const localeNamespace = 'auth';
  */
 export class BaseAuth extends Auth {
   protected userCollection: Collection;
-  protected userStatusCollection: Collection;
-  protected userStatusHistoryCollection: Collection;
 
   constructor(
     config: AuthConfig & {
@@ -118,7 +116,7 @@ export class BaseAuth extends Auth {
     const statusCheckResult: UserStatusCheckResult = await this.userStatusService.checkUserStatus(user.id);
     if (!statusCheckResult.allowed) {
       this.ctx.throw(401, {
-        message: this.ctx.t(statusCheckResult.statusInfo.loginErrorMessage, { ns: localeNamespace }),
+        message: this.ctx.t(statusCheckResult.errorMessage, { ns: localeNamespace }),
         code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
       });
     }
@@ -324,7 +322,7 @@ export class BaseAuth extends Auth {
     const statusCheckResult: UserStatusCheckResult = await this.userStatusService.checkUserStatus(user.id);
     if (!statusCheckResult.allowed) {
       this.ctx.throw(401, {
-        message: this.ctx.t(statusCheckResult.statusInfo.loginErrorMessage, { ns: localeNamespace }),
+        message: this.ctx.t(statusCheckResult.errorMessage, { ns: localeNamespace }),
         code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
       });
     }

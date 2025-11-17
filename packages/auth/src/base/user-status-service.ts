@@ -7,15 +7,14 @@ import { Collection, Model } from '@tachybase/database';
 export interface UserStatusCheckResult {
   allowed: boolean; // 是否允许登录
   status: string; // 当前状态 key
-  statusInfo?: {
+  statusInfo: {
     // 状态详细信息
     title: string;
     color: string;
     allowLogin: boolean;
-    loginErrorMessage?: string;
   };
-  errorMessage?: string; // 不允许登录时的错误提示
-  isExpired?: boolean; // 状态是否已过期
+  errorMessage: string; // 不允许登录时的错误提示
+  isExpired: boolean; // 状态是否已过期
 }
 
 /**
