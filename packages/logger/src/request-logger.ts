@@ -29,13 +29,8 @@ export const requestLogger = (appName: string, options?: RequestLoggerOptions) =
   return async (ctx, next) => {
     const reqId = ctx.reqId;
     const path = /^\/api\/(.+):(.+)/.exec(ctx.path);
-    // 确保 ctx.tego 和 ctx.tego.log 存在
-    if (!ctx.tego?.log) {
-      throw new Error('Application logger is not initialized. Make sure app.init() has been called.');
-    }
     const contextLogger = ctx.tego.log.child({ reqId, module: path?.[1], submodule: path?.[2] });
     ctx.logger = contextLogger;
-    ctx.log = contextLogger; // 同时设置 ctx.log 供错误处理中间件使用
     const startTime = Date.now();
     const requestInfo = {
       method: ctx.method,

@@ -40,11 +40,6 @@ export function registerMiddlewares(app: Application, options: ApplicationOption
     async (ctx, next) => {
       ctx.reqId = randomUUID();
       ctx.tego = app;
-      ctx.app = app; // 同时设置 ctx.app 供插件使用
-      // 设置默认的 ctx.log，供错误处理中间件使用
-      if (app.log) {
-        ctx.log = app.log;
-      }
       await next();
     },
     { tag: 'UUID' },

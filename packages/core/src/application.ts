@@ -306,10 +306,6 @@ export class Application extends EventEmitter implements AsyncEmitter {
     return this._logger;
   }
 
-  get log() {
-    return this._logger;
-  }
-
   get resourcer() {
     return this.mainDataSource.resourceManager;
   }
