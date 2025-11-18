@@ -1,0 +1,349 @@
+{
+  "description": "Tego 核心框架 Cursor 技能激活规则",
+  "notes": {
+    "enforcement_types": {
+      "suggest": "技能建议出现但不阻止执行",
+      "block": "需要先使用技能才能继续（护栏）",
+      "warn": "显示警告但允许继续"
+    },
+    "priority_levels": {
+      "high": "重要 - 大多数匹配时触发",
+      "medium": "中等 - 明确匹配时触发",
+      "low": "可选 - 仅在显式匹配时触发"
+    },
+    "customization": {
+      "pathPatterns": "根据项目结构调整路径模式",
+      "keywords": "添加与项目相关的领域特定术语",
+      "intentPatterns": "使用正则表达式进行灵活的用户意图匹配"
+    }
+  },
+  "skills": {
+    "backend-guidelines": {
+      "type": "domain",
+      "priority": "high",
+      "description": "后端开发指南 - Node.js/TypeScript 模式",
+      "promptTriggers": {
+        "keywords": [
+          "backend",
+          "后端",
+          "API",
+          "route",
+          "路由",
+          "controller",
+          "控制器",
+          "service",
+          "服务",
+          "repository",
+          "仓库",
+          "Express",
+          "Prisma",
+          "数据库",
+          "database",
+          "endpoint",
+          "中间件",
+          "middleware",
+          "验证",
+          "validation",
+          "core",
+          "核心",
+          "server",
+          "服务端"
+        ],
+        "intentPatterns": [
+          "(create|add|implement|build|创建|添加|实现|构建).*?(route|endpoint|API|controller|service|repository|core|路由|端点|控制器|服务|核心)",
+          "(fix|handle|debug|修复|处理|调试).*?(error|exception|backend|core|错误|异常|后端|核心)",
+          "(how to|best practice|如何|最佳实践).*?(backend|route|controller|service|core|后端|路由|控制器|服务|核心)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "packages/core/src/**/*.ts",
+          "packages/server/src/**/*.ts",
+          "packages/*/src/**/*.ts",
+          "**/server/**/*.ts",
+          "**/api/**/*.ts"
+        ],
+        "pathExclusions": ["**/*.test.ts", "**/*.spec.ts", "**/*.d.ts"],
+        "contentPatterns": [
+          "router\\.",
+          "app\\.(get|post|put|delete|patch)",
+          "export.*Controller",
+          "export.*Service",
+          "prisma\\.",
+          "import.*Express",
+          "@tego/core",
+          "@tego/server"
+        ]
+      },
+      "ruleFile": ".cursor/rules/backend-guidelines.md"
+    },
+    "frontend-guidelines": {
+      "type": "domain",
+      "priority": "high",
+      "description": "前端开发指南 - React/TypeScript 模式",
+      "promptTriggers": {
+        "keywords": [
+          "component",
+          "组件",
+          "React",
+          "UI",
+          "frontend",
+          "前端",
+          "tsx",
+          "page",
+          "页面",
+          "modal",
+          "对话框",
+          "form",
+          "表单",
+          "styling",
+          "样式",
+          "client",
+          "客户端",
+          "schema",
+          "Schema",
+          "components",
+          "组件库"
+        ],
+        "intentPatterns": [
+          "(create|add|make|build|update|modify|edit|创建|添加|制作|构建|更新|修改|编辑).*?(component|UI|page|modal|dialog|form|schema|组件|页面|对话框|表单)",
+          "(how to|best practice|如何|最佳实践).*?(component|react|schema|组件)",
+          "(style|design|layout|样式|设计|布局).*?(component|UI|组件)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "packages/components/src/**/*.tsx",
+          "packages/schema/src/**/*.tsx",
+          "packages/client/src/**/*.tsx",
+          "**/components/**/*.tsx"
+        ],
+        "pathExclusions": ["**/*.test.tsx", "**/*.spec.tsx", "**/*.stories.tsx"],
+        "contentPatterns": [
+          "import.*React",
+          "export.*function.*Component",
+          "export.*const.*=.*\\(.*\\).*=>",
+          "from 'react'",
+          "useState|useEffect|useCallback",
+          "SchemaComponent",
+          "@tego/components",
+          "@tego/client"
+        ]
+      },
+      "ruleFile": ".cursor/rules/frontend-guidelines.md"
+    },
+    "database-patterns": {
+      "type": "domain",
+      "priority": "medium",
+      "description": "数据库模式和 Prisma 最佳实践",
+      "promptTriggers": {
+        "keywords": [
+          "database",
+          "数据库",
+          "Prisma",
+          "migration",
+          "迁移",
+          "schema",
+          "模式",
+          "model",
+          "模型",
+          "query",
+          "查询",
+          "repository",
+          "仓库"
+        ],
+        "intentPatterns": [
+          "(create|add|modify|update|创建|添加|修改|更新).*?(migration|schema|model|repository|迁移|模式|模型|仓库)",
+          "(how to|best practice|如何|最佳实践).*?(prisma|database|Prisma|数据库)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "packages/database/src/**/*.ts",
+          "**/prisma/**/*.ts",
+          "**/schema.prisma",
+          "**/database/**/*.ts"
+        ],
+        "contentPatterns": ["prisma\\.", "model\\s+\\w+", "@prisma/client", "@tachybase/database", "defineCollection"]
+      },
+      "ruleFile": ".cursor/rules/database-patterns.md"
+    },
+    "internationalization": {
+      "type": "domain",
+      "priority": "high",
+      "description": "国际化开发规则 - i18n/翻译文件",
+      "promptTriggers": {
+        "keywords": [
+          "i18n",
+          "国际化",
+          "internationalization",
+          "locale",
+          "翻译",
+          "translation",
+          "多语言",
+          "language",
+          "语言",
+          "en-US",
+          "zh-CN",
+          "ko_KR",
+          "ja-JP",
+          "pt-BR"
+        ],
+        "intentPatterns": [
+          "(create|add|modify|update|创建|添加|修改|更新).*?(translation|locale|i18n|翻译|国际化)",
+          "(how to|如何).*?(add|create|添加|创建).*?(translation|locale|翻译)",
+          "(sync|synchronize|同步).*?(translation|locale|翻译)",
+          "(missing|缺少|缺失).*?(translation|locale|翻译)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "packages/*/src/locale/**/*.{ts,json}",
+          "packages/*/src/**/locale/**/*.{ts,json}",
+          "**/locale/**/*.{ts,json}"
+        ],
+        "contentPatterns": [
+          "i18n\\.t\\(",
+          "useTranslation",
+          "app\\.i18n",
+          "ctx\\.i18n",
+          "changeLanguage",
+          "en-US|zh-CN|ko_KR|ja-JP|pt-BR"
+        ]
+      },
+      "ruleFile": ".cursor/rules/development.md"
+    },
+    "testing-patterns": {
+      "type": "domain",
+      "priority": "medium",
+      "description": "测试模式和最佳实践 - Vitest/Playwright",
+      "promptTriggers": {
+        "keywords": [
+          "test",
+          "测试",
+          "spec",
+          "vitest",
+          "playwright",
+          "e2e",
+          "unit test",
+          "单元测试",
+          "integration test",
+          "集成测试",
+          "mock",
+          "模拟",
+          "coverage",
+          "覆盖率"
+        ],
+        "intentPatterns": [
+          "(write|create|add|编写|创建|添加).*?(test|测试)",
+          "(how to|如何).*?(test|测试)",
+          "(run|运行).*?(test|测试)",
+          "(mock|模拟).*?(database|server|api)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": [
+          "**/*.test.ts",
+          "**/*.spec.ts",
+          "**/__tests__/**/*.ts",
+          "**/e2e/**/*.ts",
+          "**/__e2e__/**/*.ts"
+        ],
+        "contentPatterns": [
+          "describe\\(",
+          "it\\(",
+          "test\\(",
+          "expect\\(",
+          "mockDatabase",
+          "mockServer",
+          "@playwright/test"
+        ]
+      },
+      "ruleFile": ".cursor/rules/testing.md"
+    },
+    "performance-optimization": {
+      "type": "domain",
+      "priority": "low",
+      "description": "性能优化指南",
+      "promptTriggers": {
+        "keywords": [
+          "performance",
+          "性能",
+          "optimize",
+          "优化",
+          "slow",
+          "慢",
+          "bottleneck",
+          "瓶颈",
+          "cache",
+          "缓存",
+          "lazy",
+          "懒加载"
+        ],
+        "intentPatterns": [
+          "(optimize|improve|优化|改进).*?(performance|性能)",
+          "(why|为什么).*?(slow|慢)",
+          "(how to|如何).*?(improve|optimize|改进|优化).*?(performance|性能)",
+          "(fix|修复).*?(bottleneck|瓶颈)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": ["packages/*/src/**/*.{ts,tsx}"],
+        "contentPatterns": [
+          "useMemo|useCallback|React\\.memo",
+          "lazy\\(|Suspense",
+          "debounce|throttle",
+          "cache\\.(get|set)",
+          "performance\\.now"
+        ]
+      },
+      "ruleFile": ".cursor/rules/performance.md"
+    },
+    "security-guidelines": {
+      "type": "domain",
+      "priority": "high",
+      "description": "安全开发指南",
+      "promptTriggers": {
+        "keywords": [
+          "security",
+          "安全",
+          "auth",
+          "认证",
+          "permission",
+          "权限",
+          "authorization",
+          "授权",
+          "xss",
+          "csrf",
+          "sql injection",
+          "SQL注入",
+          "encrypt",
+          "加密",
+          "vulnerability",
+          "漏洞"
+        ],
+        "intentPatterns": [
+          "(implement|实现).*?(auth|security|认证|安全)",
+          "(how to|如何).*?(secure|安全)",
+          "(prevent|防止).*?(xss|csrf|sql injection|XSS|CSRF|SQL注入)",
+          "(validate|验证).*?(input|输入)",
+          "(encrypt|加密).*?(data|数据)"
+        ]
+      },
+      "fileTriggers": {
+        "pathPatterns": ["packages/auth/src/**/*.ts", "packages/acl/src/**/*.ts", "packages/*/src/**/*.{ts,tsx}"],
+        "contentPatterns": [
+          "ctx\\.getBearerToken",
+          "ctx\\.auth",
+          "ctx\\.acl",
+          "bcrypt\\.(hash|compare)",
+          "jwt\\.(sign|verify|decode)",
+          "validator\\.(escape|isEmail)",
+          "csrf"
+        ]
+      },
+      "ruleFile": ".cursor/rules/security.md"
+    }
+  },
+  "version": "1.0"
+}

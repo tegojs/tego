@@ -30,6 +30,12 @@ This project uses a modular rule file structure, with each file focusing on a sp
   AI 辅助开发的建议和指南
 - **Lint Check / Lint 检查** (`lint-check.md`) - Mandatory lint error checking rules after code modifications
   代码修改后必须的 lint 错误检查规则
+- **Testing / 测试** (`testing.md`) - Testing patterns and best practices for Vitest/Playwright
+  测试模式和最佳实践（Vitest/Playwright）
+- **Performance / 性能** (`performance.md`) - Performance optimization guidelines
+  性能优化指南
+- **Security / 安全** (`security.md`) - Security development guidelines
+  安全开发指南
 - **Quick Reference / 快速参考** (`quick-reference.md`) - Quick reference for common tasks and patterns
   常用任务和模式的快速参考
 
@@ -44,6 +50,9 @@ The following rule files will be automatically loaded and applied:
 @file development.md
 @file ai-assistant.md
 @file lint-check.md
+@file testing.md
+@file performance.md
+@file security.md
 @file quick-reference.md
 
 ## Usage Instructions / 使用说明
