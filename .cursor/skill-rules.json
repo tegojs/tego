@@ -1,90 +1,5 @@
 {
-  "agents": {
-    "code-review": {
-      "type": "agent",
-      "priority": "high",
-      "description": "代码架构审查 Agent",
-      "promptTriggers": {
-        "keywords": ["review", "审查", "code review", "代码审查", "architecture", "架构"],
-        "intentPatterns": [
-          "(review|审查).*?(code|代码)",
-          "(check|检查).*?(architecture|架构)",
-          "(code review|代码审查)"
-        ]
-      },
-      "ruleFile": ".cursor/agents/code-review.md"
-    },
-    "refactoring": {
-      "type": "agent",
-      "priority": "medium",
-      "description": "重构规划 Agent",
-      "promptTriggers": {
-        "keywords": ["refactor", "重构", "refactoring"],
-        "intentPatterns": ["(refactor|重构).*?(plan|规划)", "(how to|如何).*?(refactor|重构)"]
-      },
-      "ruleFile": ".cursor/agents/refactoring.md"
-    },
-    "documentation": {
-      "type": "agent",
-      "priority": "medium",
-      "description": "文档生成 Agent",
-      "promptTriggers": {
-        "keywords": ["documentation", "文档", "document", "docs", "readme"],
-        "intentPatterns": [
-          "(generate|生成).*?(documentation|文档)",
-          "(create|创建).*?(docs|documentation|文档)",
-          "(document|文档化).*?(code|代码)"
-        ]
-      },
-      "ruleFile": ".cursor/agents/documentation.md"
-    },
-    "debugging": {
-      "type": "agent",
-      "priority": "high",
-      "description": "错误调试 Agent",
-      "promptTriggers": {
-        "keywords": ["debug", "调试", "error", "错误", "bug", "issue", "问题"],
-        "intentPatterns": [
-          "(debug|调试).*?(error|错误)",
-          "(fix|修复).*?(bug|error|错误)",
-          "(why|为什么).*?(error|错误)"
-        ]
-      },
-      "ruleFile": ".cursor/agents/debugging.md"
-    },
-    "error-resolver": {
-      "type": "agent",
-      "priority": "high",
-      "description": "自动错误修复 Agent",
-      "promptTriggers": {
-        "keywords": ["fix error", "修复错误", "resolve error", "解决错误", "TypeScript error", "lint error"],
-        "intentPatterns": [
-          "(fix|修复).*?(error|错误)",
-          "(resolve|解决).*?(TypeScript|lint).*?(error|错误)",
-          "(auto.*?fix|自动修复)"
-        ]
-      },
-      "ruleFile": ".cursor/agents/error-resolver.md"
-    }
-  },
   "description": "Tego 核心框架 Cursor 技能激活规则",
-  "notes": {
-    "enforcement_types": {
-      "suggest": "技能建议出现但不阻止执行",
-      "block": "需要先使用技能才能继续（护栏）",
-      "warn": "显示警告但允许继续"
-    },
-    "priority_levels": {
-      "high": "重要 - 大多数匹配时触发",
-      "medium": "中等 - 明确匹配时触发",
-      "low": "可选 - 仅在显式匹配时触发"
-    },
-    "customization": {
-      "pathPatterns": "根据项目结构调整路径模式",
-      "keywords": "添加与项目相关的领域特定术语",
-      "intentPatterns": "使用正则表达式进行灵活的用户意图匹配"
-    }
-  },
   "notes": {
     "enforcement_types": {
       "suggest": "技能建议出现但不阻止执行",
@@ -428,6 +343,72 @@
         ]
       },
       "ruleFile": ".cursor/rules/security.md"
+    },
+    "code-review": {
+      "type": "agent",
+      "priority": "high",
+      "description": "代码架构审查 Agent",
+      "promptTriggers": {
+        "keywords": ["review", "审查", "code review", "代码审查", "architecture", "架构"],
+        "intentPatterns": [
+          "(review|审查).*?(code|代码)",
+          "(check|检查).*?(architecture|架构)",
+          "(code review|代码审查)"
+        ]
+      },
+      "ruleFile": ".cursor/agents/code-review.md"
+    },
+    "refactoring": {
+      "type": "agent",
+      "priority": "medium",
+      "description": "重构规划 Agent",
+      "promptTriggers": {
+        "keywords": ["refactor", "重构", "refactoring"],
+        "intentPatterns": ["(refactor|重构).*?(plan|规划)", "(how to|如何).*?(refactor|重构)"]
+      },
+      "ruleFile": ".cursor/agents/refactoring.md"
+    },
+    "documentation": {
+      "type": "agent",
+      "priority": "medium",
+      "description": "文档生成 Agent",
+      "promptTriggers": {
+        "keywords": ["documentation", "文档", "document", "docs", "readme"],
+        "intentPatterns": [
+          "(generate|生成).*?(documentation|文档)",
+          "(create|创建).*?(docs|documentation|文档)",
+          "(document|文档化).*?(code|代码)"
+        ]
+      },
+      "ruleFile": ".cursor/agents/documentation.md"
+    },
+    "debugging": {
+      "type": "agent",
+      "priority": "high",
+      "description": "错误调试 Agent",
+      "promptTriggers": {
+        "keywords": ["debug", "调试", "error", "错误", "bug", "issue", "问题"],
+        "intentPatterns": [
+          "(debug|调试).*?(error|错误)",
+          "(fix|修复).*?(bug|error|错误)",
+          "(why|为什么).*?(error|错误)"
+        ]
+      },
+      "ruleFile": ".cursor/agents/debugging.md"
+    },
+    "error-resolver": {
+      "type": "agent",
+      "priority": "high",
+      "description": "自动错误修复 Agent",
+      "promptTriggers": {
+        "keywords": ["fix error", "修复错误", "resolve error", "解决错误", "TypeScript error", "lint error"],
+        "intentPatterns": [
+          "(fix|修复).*?(error|错误)",
+          "(resolve|解决).*?(TypeScript|lint).*?(error|错误)",
+          "(auto.*?fix|自动修复)"
+        ]
+      },
+      "ruleFile": ".cursor/agents/error-resolver.md"
     }
   }
 }
