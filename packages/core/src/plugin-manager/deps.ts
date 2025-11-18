@@ -26,7 +26,7 @@ const deps: Record<string, string> = {
   '@ant-design/icons': '6.x',
   '@ant-design/cssinjs': '1.x',
   i18next: '23.x',
-  'react-i18next': '15.x',
+  'react-i18next': '16.x',
   '@dnd-kit/accessibility': '3.x',
   '@dnd-kit/core': '6.x',
   '@dnd-kit/modifiers': '7.x',
