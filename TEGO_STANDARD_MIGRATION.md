@@ -228,6 +228,82 @@ pnpm tgi       # 应该等同于 tego install
 pnpm tgu       # 应该等同于 tego upgrade
 ```
 
+## 新版本 dev 命令的配置目录选择
+
+### 问题说明
+
+新版本的 `tegod dev` 命令默认会执行 `prepare()` 函数，提示用户选择配置目录。这与旧版本的行为不同。
+
+### 解决方案
+
+有几种方法可以避免这个提示：
+
+#### 方案 1: 设置环境变量（推荐）
+
+在 `.env` 文件中设置 `TEGO_RUNTIME_HOME`：
+
+```env
+# .env
+TEGO_RUNTIME_HOME=.
+# 或者指定具体路径
+# TEGO_RUNTIME_HOME=D:\Dev\TegoJS\tego-standard
+```
+
+或者设置 `TEGO_RUNTIME_NAME`：
+
+```env
+# .env
+TEGO_RUNTIME_NAME=current
+```
+
+#### 方案 2: 使用 --no-prepare 选项
+
+在 `package.json` 中修改 dev 脚本：
+
+```json
+{
+  "scripts": {
+    "dev": "tegod dev --no-prepare"
+  }
+}
+```
+
+#### 方案 3: 确保当前目录有 storage 文件夹
+
+如果当前目录存在 `storage` 文件夹，系统会自动使用当前目录作为 `TEGO_RUNTIME_HOME`，不会提示选择。
+
+```bash
+# 确保当前目录有 storage 文件夹
+ls storage  # 应该能看到 storage 目录
+```
+
+#### 方案 4: 在 package.json 中设置环境变量
+
+```json
+{
+  "scripts": {
+    "dev": "TEGO_RUNTIME_HOME=. tegod dev",
+    "dev-local": "TEGO_RUNTIME_HOME=. APP_ENV_PATH=.env.local tegod dev"
+  }
+}
+```
+
+### 推荐配置
+
+对于 `tego-standard` 项目，推荐在 `.env` 文件中添加：
+
+```env
+# 使用当前目录作为运行时目录
+TEGO_RUNTIME_HOME=.
+
+# 或者如果使用默认的 .tego 目录
+# TEGO_RUNTIME_NAME=current
+```
+
+这样就不会每次启动都提示选择配置目录了。
+
+---
+
 ## 注意事项
 
 ### 1. 确保依赖已安装

@@ -235,7 +235,28 @@ foreach ($file in $files) {
 
 确保移除 `@tachybase/server` 依赖（如果存在）。
 
-### 步骤 6: 检查环境变量使用
+### 步骤 6: 配置 dev 命令避免选择提示
+
+新版本的 `tegod dev` 命令默认会提示选择配置目录。为了避免这个提示，需要在 `.env` 文件中设置：
+
+```env
+# .env
+TEGO_RUNTIME_HOME=.
+```
+
+或者修改 `package.json` 中的 dev 脚本：
+
+```json
+{
+  "scripts": {
+    "dev": "tegod dev --no-prepare"
+  }
+}
+```
+
+**推荐方案：** 在 `.env` 文件中设置 `TEGO_RUNTIME_HOME=.`，这样会使用当前目录作为配置目录，与旧版本行为一致。
+
+### 步骤 7: 检查环境变量使用
 
 搜索所有使用 `process.env` 的地方，评估是否需要迁移到 `app.environment`：
 
@@ -259,7 +280,7 @@ const vars = ctx.tego.environment.getVariables();
 const apiPath = vars.API_BASE_PATH;
 ```
 
-### 步骤 7: 验证类型定义
+### 步骤 8: 验证类型定义
 
 检查所有类型定义文件（`.d.ts`），确保更新了上下文类型：
 
