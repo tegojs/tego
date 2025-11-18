@@ -32,10 +32,16 @@ This project uses a modular rule file structure, with each file focusing on a sp
   代码修改后必须的 lint 错误检查规则
 - **Testing / 测试** (`testing.md`) - Testing patterns and best practices for Vitest/Playwright
   测试模式和最佳实践（Vitest/Playwright）
+  - Resources: `resources/testing/` - Unit tests, integration tests, E2E tests, mocking
+    资源：单元测试、集成测试、E2E 测试、模拟
 - **Performance / 性能** (`performance.md`) - Performance optimization guidelines
   性能优化指南
+  - Resources: `resources/performance/` - Database, frontend, API, monitoring
+    资源：数据库、前端、API、监控
 - **Security / 安全** (`security.md`) - Security development guidelines
   安全开发指南
+  - Resources: `resources/security/` - Authentication, authorization, input validation, vulnerabilities
+    资源：认证、授权、输入验证、漏洞
 - **Quick Reference / 快速参考** (`quick-reference.md`) - Quick reference for common tasks and patterns
   常用任务和模式的快速参考
 
