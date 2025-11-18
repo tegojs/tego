@@ -149,6 +149,30 @@ tego e2e
 - 代码中的 CLI 命令名可能仍为 `'tachybase'`（在 `createCLI()` 中），但实际执行的命令应该是 `tego`
 - `app-command.ts` 中仍然兼容 `tachybase` 参数，但建议使用 `tego`
 
+### `tego` vs `tegod` 说明
+
+**重要：** 有两个不同的命令工具：
+
+- **`tego`** - 运行时命令（Runtime Command）
+  - 用于运行和管理应用
+  - 主要命令：`tego start`, `tego init`, `tego sync`
+  - 包：`tego` (packages/tego)
+
+- **`tegod`** - 开发工具命令（Development Kit Command）
+  - 用于开发和构建项目
+  - 主要命令：`tegod build`, `tegod dev`, `tegod e2e`, `tegod install`, `tegod upgrade`
+  - 包：`@tego/devkit` (packages/devkit)
+
+**在应用仓库（如 tego-standard）中：**
+- 通常使用 `tego` 命令（如 `tego start`, `tego install`）
+- 某些开发命令可能需要使用 `tegod`（如 `tegod build`, `tegod dev`）
+
+**在开发仓库（如 tego 核心仓库）中：**
+- 开发相关命令使用 `tegod`（如 `tegod build`, `tegod dev`）
+- 运行时命令使用 `tego`（如 `tego start`）
+
+详细说明请参考 `TEGO_VS_TEGOD.md` 文档。
+
 ### 批量替换
 
 在 `package.json` 和脚本文件中：
