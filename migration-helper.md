@@ -6,25 +6,54 @@
 
 ## 快速迁移步骤
 
-### 步骤 1: 更新命令行工具 `tachybase` → `tego`
+### 自动化迁移（推荐）
+
+对于 `tego-standard` 仓库，可以使用提供的 PowerShell 脚本自动迁移：
+
+```powershell
+# 在 tego-standard 目录下执行
+cd D:\Dev\TegoJS\tego-standard
+.\migrate-tego-standard-commands.ps1
+```
+
+脚本会自动：
+- 备份当前的 `package.json`
+- 将所有 `tachybase` 命令替换为 `tego` 或 `tegod`
+- 更新所有别名脚本
+- 显示详细的更改日志
+
+### 手动迁移步骤
+
+### 步骤 1: 更新命令行工具 `tachybase` → `tego` / `tegod`
 
 这是最基础的更改，需要更新所有脚本命令。
 
 #### 更新 package.json 脚本
 
-在 `tego-standard/package.json` 中，将所有 `tachybase` 命令替换为 `tego`：
+在 `tego-standard/package.json` 中，需要根据命令类型选择使用 `tego` 或 `tegod`：
 
-**需要更新的脚本：**
-- `build`: `tachybase build` → `tego build`
-- `dev`: `tachybase dev` → `tego dev`
+**运行时命令 → `tego`：**
 - `start`: `tego start`（可能已经更新）
-- `clean`: `tachybase clean` → `tego clean`
 - `install`: `tachybase install` → `tego install`
 - `upgrade`: `tachybase upgrade` → `tego upgrade`
-- `pm`: `tachybase pm` → `tego pm`
-- `test`: `tachybase test` → `tego test`
-- `e2e`: `tachybase e2e` → `tego e2e`
-- `postinstall`: `tachybase postinstall` → `tego postinstall`
+
+**开发命令 → `tegod`：**
+- `build`: `tachybase build` → `tegod build`
+- `dev`: `tachybase dev` → `tegod dev`
+- `clean`: `tachybase clean` → `tegod clean`
+- `pm`: `tachybase pm` → `tegod pm`
+- `test`: `tachybase test` → `tegod test`
+- `test:client`: `tachybase test:client` → `tegod test:client`
+- `test:server`: `tachybase test:server` → `tegod test:server`
+- `e2e`: `tachybase e2e` → `tegod e2e`
+- `postinstall`: `tachybase postinstall` → `tegod postinstall`
+
+**别名脚本更新：**
+- `tb`: `tachybase` → `tegod`
+- `tbi`: `tachybase install` → `tego install`
+- `tbu`: `tachybase upgrade` → `tego upgrade`
+- `tc`: `tachybase test:client` → `tegod test:client`
+- `ts`: `tachybase test:server` → `tegod test:server`
 
 **PowerShell 脚本：**
 ```powershell
