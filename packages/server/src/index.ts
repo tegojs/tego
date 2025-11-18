@@ -93,10 +93,13 @@ export type {
   Authenticator,
   ITokenBlacklistService,
   ITokenControlService,
+  IUserStatusService,
   NumericTokenPolicyConfig,
   Storer,
   TokenInfo,
   TokenPolicyConfig,
+  UserStatusCheckResult,
+  UserStatusCache,
 } from '@tachybase/auth';
 export { Action, App, Container, Controller, Db, Inject, InjectLog, Service } from '@tachybase/di';
 export {

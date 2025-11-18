@@ -11,12 +11,17 @@ jobs:
       id-token: write
     outputs:
       version: ${{ steps.do_version.outputs.version }}
+      branch: ${{ steps.get_branch.outputs.branch }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          ref: main
+      - name: Get branch name
+        id: get_branch
+        run: |
+          branch=${GITHUB_REF#refs/heads/}
+          echo "branch=$branch" >> $GITHUB_OUTPUT
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
       - name: Setup Node.js
@@ -35,6 +40,7 @@ jobs:
         with:
           tagging_message: ${{ steps.do_version.outputs.version }}
           commit_message: "chore(version): release ${{ steps.do_version.outputs.version }}"
+          branch: ${{ steps.get_branch.outputs.branch }}
 
   publish:
     needs: release
@@ -46,7 +52,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.release.outputs.version }}
+          ref: ${{ needs.release.outputs.branch }}
       - uses: MOZGIII/install-ldid-action@v1
         with:
           tag: v2.1.5-procursus7
