@@ -52,7 +52,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.release.outputs.branch }}
+          ref: ${{ needs.release.outputs.version }}
       - uses: MOZGIII/install-ldid-action@v1
         with:
           tag: v2.1.5-procursus7
