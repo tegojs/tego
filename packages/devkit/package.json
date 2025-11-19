@@ -40,7 +40,7 @@
     "@vitejs/plugin-react": "^5.0.2",
     "chalk": "^5.5.0",
     "commander": "^12.1.0",
-    "dotenv": "16.6.1",
+    "dotenv": "17.2.3",
     "execa": "^8.0.1",
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.2",
