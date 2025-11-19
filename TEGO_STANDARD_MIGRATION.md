@@ -234,73 +234,85 @@ pnpm tgu       # 应该等同于 tego upgrade
 
 新版本的 `tegod dev` 命令默认会执行 `prepare()` 函数，提示用户选择配置目录。这与旧版本的行为不同。
 
-### 解决方案
+**关键问题：**
+- `.env` 中设置 `TEGO_RUNTIME_HOME=.` **没用**，因为 `prepare()` 函数**没有检查**这个变量
+- `prepare()` 函数直接去 `TEGO_HOME`（默认 `~/.tego`）下查找目录，不会使用已设置的 `TEGO_RUNTIME_HOME`
 
-有几种方法可以避免这个提示：
+### 正确的解决方案
 
-#### 方案 1: 设置环境变量（推荐）
-
-在 `.env` 文件中设置 `TEGO_RUNTIME_HOME`：
-
-```env
-# .env
-TEGO_RUNTIME_HOME=.
-# 或者指定具体路径
-# TEGO_RUNTIME_HOME=D:\Dev\TegoJS\tego-standard
-```
-
-或者设置 `TEGO_RUNTIME_NAME`：
-
-```env
-# .env
-TEGO_RUNTIME_NAME=current
-```
-
-#### 方案 2: 使用 --no-prepare 选项
+#### 方案 1: 使用 --no-prepare（推荐）
 
 在 `package.json` 中修改 dev 脚本：
 
 ```json
 {
   "scripts": {
-    "dev": "tegod dev --no-prepare"
+    "dev": "tegod dev --no-prepare",
+    "dev-local": "APP_ENV_PATH=.env.local tegod dev --no-prepare",
+    "dev-server": "tegod dev --no-prepare --server"
   }
 }
 ```
 
-#### 方案 3: 确保当前目录有 storage 文件夹
+**工作原理：**
+1. `initEnv()` 先执行，读取 `.env` 文件
+2. 如果当前目录有 `storage` 文件夹，`initEnv()` 会设置 `TEGO_RUNTIME_HOME = process.cwd()`
+3. `--no-prepare` 跳过 `prepare()` 函数，不会提示选择
+4. 系统使用当前目录作为运行时目录
+5. `createDevPluginsSymlink()` 会从 `process.cwd()/packages` 创建符号链接
+6. **结果：使用 `packages/` 里的包，不需要下载**
 
-如果当前目录存在 `storage` 文件夹，系统会自动使用当前目录作为 `TEGO_RUNTIME_HOME`，不会提示选择。
+#### 方案 2: 显式设置环境变量
 
-```bash
-# 确保当前目录有 storage 文件夹
-ls storage  # 应该能看到 storage 目录
-```
-
-#### 方案 4: 在 package.json 中设置环境变量
+在 `package.json` 中：
 
 ```json
 {
   "scripts": {
-    "dev": "TEGO_RUNTIME_HOME=. tegod dev",
-    "dev-local": "TEGO_RUNTIME_HOME=. APP_ENV_PATH=.env.local tegod dev"
+    "dev": "TEGO_RUNTIME_HOME=. tegod dev --no-prepare"
   }
 }
 ```
 
+**注意：** 必须同时使用 `--no-prepare`，否则 `prepare()` 函数仍然会提示选择。
+
+### 关于插件加载
+
+**重要：** 默认目录的选择会影响插件加载方式：
+
+- **如果 `TEGO_RUNTIME_HOME` 指向当前目录（使用 `--no-prepare`）：**
+  - ✅ 会使用 `tego-standard/packages/` 里的包
+  - ✅ 通过符号链接加载，不需要下载
+  - ✅ 与旧版本行为一致
+
+- **如果使用默认的 `~/.tego/current`（不使用 `--no-prepare`）：**
+  - ❌ 不会使用 `packages/` 里的包
+  - ❌ 需要从 npm 下载插件
+  - ❌ 与旧版本行为不一致
+
+**插件加载机制：**
+- `createDevPluginsSymlink()` 从 `process.cwd()/packages` 创建符号链接到 `TEGO_RUNTIME_HOME/plugins/dev`
+- 如果 `TEGO_RUNTIME_HOME` 指向当前目录，符号链接会正确指向 `packages/`
+- 如果 `TEGO_RUNTIME_HOME` 指向 `~/.tego/current`，符号链接仍然指向 `packages/`，但系统可能不会正确加载
+
 ### 推荐配置
 
-对于 `tego-standard` 项目，推荐在 `.env` 文件中添加：
+对于 `tego-standard` 项目，**必须**在 `package.json` 中使用 `--no-prepare`：
 
-```env
-# 使用当前目录作为运行时目录
-TEGO_RUNTIME_HOME=.
-
-# 或者如果使用默认的 .tego 目录
-# TEGO_RUNTIME_NAME=current
+```json
+{
+  "scripts": {
+    "dev": "tegod dev --no-prepare",
+    "dev-local": "APP_ENV_PATH=.env.local tegod dev --no-prepare",
+    "dev-server": "tegod dev --no-prepare --server"
+  }
+}
 ```
 
-这样就不会每次启动都提示选择配置目录了。
+**确保：**
+- ✅ 当前目录有 `storage` 文件夹（这样 `initEnv()` 会设置 `TEGO_RUNTIME_HOME = process.cwd()`）
+- ✅ 使用 `--no-prepare` 跳过 `prepare()` 函数
+- ✅ 这样会使用 `packages/` 里的包，不需要下载
 
 ---
 
