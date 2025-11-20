@@ -329,6 +329,97 @@ const settings = app.settings; // 如果可用
 
 **注意：** 环境变量现在通过 `convertEnvToSettings` 函数转换为 Settings 对象，配置结构发生了变化。
 
+### ⚠️ 重要：启动前环境变量访问
+
+**问题：** 如果代码在项目启动完成前（还没有 `ctx` 的情况下）需要访问环境变量，应该怎么办？
+
+**解决方案：**
+
+1. **在启动前（无 ctx 的情况下）：** 直接使用 `process.env`
+   ```typescript
+   // 在 Application 构造函数、init()、或插件 beforeLoad 阶段
+   const dbDialect = process.env.DB_DIALECT;
+   const appPort = process.env.APP_PORT;
+   ```
+
+2. **在启动后（有 ctx 的情况下）：** 使用 `ctx.tego.environment.getVariables()`
+   ```typescript
+   // 在中间件、Action 处理器、Hook 处理器中
+   async (ctx, next) => {
+     const vars = ctx.tego.environment.getVariables();
+     const apiBasePath = vars.API_BASE_PATH;
+     await next();
+   }
+   ```
+
+3. **在插件中（有 app 实例但可能无 ctx）：** 根据场景选择
+   ```typescript
+   // 如果 app 已初始化，但还没有 ctx
+   class MyPlugin {
+     async beforeLoad() {
+       // 此时还没有 ctx，使用 process.env
+       const storagePath = process.env.PLUGIN_STORAGE_PATH;
+     }
+     
+     async load() {
+       // 此时 app 已初始化，但可能还没有 ctx
+       // 如果 Environment 已填充，可以使用 app.environment
+       // 否则使用 process.env
+       const vars = this.app.environment?.getVariables() || process.env;
+     }
+   }
+   ```
+
+**核心原则：**
+- `Environment` 类只是一个容器，它存储环境变量，但初始化时是空的
+- `Environment.vars` 需要通过 `setVariable()` 方法填充，通常是在应用启动后
+- 在 Application 初始化过程中，很多地方直接使用 `process.env`（如 Database 构造函数、PluginManager 等）
+- **如果代码在启动前执行，或者不确定是否有 ctx，应该使用 `process.env`**
+
+### 为什么需要 Environment 类？
+
+虽然启动前仍需要使用 `process.env`，但 `Environment` 类提供了以下优势：
+
+1. **模板渲染支持** - 支持在配置模板中使用 `$env` 变量
+   ```typescript
+   // 可以在配置模板中使用环境变量
+   const config = {
+     apiUrl: "{{$env.API_BASE_URL}}/users",
+     port: "{{$env.APP_PORT}}"
+   };
+   const rendered = ctx.tego.environment.renderJsonTemplate(config);
+   ```
+
+2. **动态环境变量管理** - 可以在运行时动态修改环境变量，而不影响全局 `process.env`
+   ```typescript
+   // 为当前应用实例设置特定的环境变量
+   app.environment.setVariable('CUSTOM_VAR', 'value');
+   app.environment.removeVariable('OLD_VAR');
+   ```
+
+3. **作用域隔离** - 每个 Application 实例可以有独立的环境变量集合
+   ```typescript
+   // 主应用和子应用可以有不同的环境变量
+   const mainApp = new Application({ name: 'main' });
+   const subApp = new Application({ name: 'sub' });
+   mainApp.environment.setVariable('APP_NAME', 'main');
+   subApp.environment.setVariable('APP_NAME', 'sub');
+   ```
+
+4. **安全性考虑** - 区分普通变量和密钥（虽然当前实现中 `getVariables()` 和 `getVariablesAndSecrets()` 返回相同对象，但为未来扩展预留了接口）
+   ```typescript
+   // 未来可能支持区分普通变量和密钥
+   const vars = ctx.tego.environment.getVariables(); // 不包含密钥
+   const secrets = ctx.tego.environment.getVariablesAndSecrets(); // 包含密钥
+   ```
+
+5. **类型安全** - 通过对象访问而不是字符串键，可以提供更好的类型支持（未来可能实现）
+
+**总结：**
+- **启动前/初始化阶段**：使用 `process.env`（因为 Environment 还未填充）
+- **运行时/请求处理阶段**：使用 `ctx.tego.environment.getVariables()`（提供更好的封装和功能）
+- **配置模板渲染**：必须使用 `app.environment.renderJsonTemplate()`（支持 `$env` 变量）
+
 ### Settings 结构
 
 环境变量现在按类别组织：
