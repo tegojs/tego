@@ -9,12 +9,14 @@ import { access, mkdir, readFile, rm, unlink, writeFile } from 'node:fs/promises
 import os from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
-import TachybaseGlobal from '@tachybase/globals';
+import TachybaseGlobal, { Settings } from '@tachybase/globals';
 
 import { config } from 'dotenv';
+import { cloneDeep } from 'lodash';
 import npmRegistryFetch from 'npm-registry-fetch';
 import * as tar from 'tar';
 
+import defaultSettings from '../presets/settings';
 import { DEFAULT_WEB_PACKAGE_NAME, LAST_UPDATE_FILE_SUFFIX } from './constants';
 
 export function parseEnvironment() {
@@ -28,15 +30,6 @@ export function parseEnvironment() {
     config({
       path: resolve(process.cwd(), '.env'),
     });
-  }
-
-  // 如果存在 storage 的话，TEGO_RUNTIME_HOME 默认指向当前路径
-  if (
-    !process.env.TEGO_RUNTIME_HOME &&
-    !process.env.TEGO_RUNTIME_NAME &&
-    fs.existsSync(resolve(process.cwd(), 'storage'))
-  ) {
-    process.env.TEGO_RUNTIME_HOME = process.cwd();
   }
 
   for (const key in env) {
@@ -209,62 +202,138 @@ export class TegoIndexManager {
 }
 
 export function convertEnvToSettings(flatEnv: Record<string, string | undefined>) {
-  const settings: any = {
-    env: {},
-    logger: {},
-    database: {},
-    cache: {},
-    encryptionField: {},
-    presets: {},
-    worker: {},
-    export: {},
-    misc: {},
-  };
+  const settings: Settings = cloneDeep(defaultSettings);
 
-  // LOGGER_
-  for (const key in flatEnv) {
-    const value = flatEnv[key];
-    if (value === undefined) continue;
+  for (const [key, value] of Object.entries(flatEnv)) {
+    if (!value) continue;
 
-    if (key.startsWith('LOGGER_')) {
-      const subKey = key.replace('LOGGER_', '').toLowerCase();
-      if (subKey === 'transport') {
-        settings.logger.transport = value.split(',').map((x) => x.trim());
-      } else if (subKey === 'maxfiles') {
+    switch (key) {
+      /** ================= LOGGER ================= */
+      case 'LOGGER_TRANSPORT':
+        settings.logger.transport = value.split(',') as any;
+        break;
+      case 'LOGGER_BASE_PATH':
+        settings.logger.basePath = value;
+        break;
+      case 'LOGGER_LEVEL':
+        settings.logger.level = value as any;
+        break;
+      case 'LOGGER_MAX_FILES':
         settings.logger.maxFiles = value;
-      } else if (subKey === 'maxsize') {
+        break;
+      case 'LOGGER_MAX_SIZE':
         settings.logger.maxSize = value;
-      } else if (subKey === 'format') {
-        settings.logger.format = value;
-      } else {
-        settings.logger[subKey] = value;
-      }
-      continue;
-    }
+        break;
+      case 'LOGGER_FORMAT':
+        settings.logger.format = value as any;
+        break;
 
-    // DB_
-    if (key.startsWith('DB_')) {
-      const subKey = key.replace('DB_', '').toLowerCase();
-      if (subKey.startsWith('dialect_options_ssl_')) {
-        // e.g. DB_DIALECT_OPTIONS_SSL_CA
-        const sslKey = subKey.replace('dialect_options_ssl_', '');
+      /** ================= DATABASE ================= */
+      case 'DB_DIALECT':
+        settings.database.dialect = value as any;
+        break;
+      case 'DB_STORAGE':
+        settings.database.storage = value;
+        break;
+      case 'DB_HOST':
+        settings.database.host = value;
+        break;
+      case 'DB_PORT':
+        settings.database.port = +value;
+        break;
+      case 'DB_DATABASE':
+        settings.database.database = value;
+        break;
+      case 'DB_USER':
+        settings.database.user = value;
+        break;
+      case 'DB_PASSWORD':
+        settings.database.password = value;
+        break;
+      case 'DB_LOGGING':
+        settings.database.logging = value === 'on';
+        break;
+      case 'DB_TABLE_PREFIX':
+        settings.database.tablePrefix = value;
+        break;
+      case 'DB_UNDERSCORED':
+        settings.database.underscored = value === 'true';
+        break;
+
+      case 'DB_DIALECT_OPTIONS_SSL_CA':
         settings.database.ssl = settings.database.ssl || {};
-        settings.database.ssl[sslKey] = value;
-      } else {
-        settings.database[subKey] = value;
-      }
-      continue;
-    }
+        settings.database.ssl.ca = value;
+        break;
+      case 'DB_DIALECT_OPTIONS_SSL_KEY':
+        settings.database.ssl = settings.database.ssl || {};
+        settings.database.ssl.key = value;
+        break;
+      case 'DB_DIALECT_OPTIONS_SSL_CERT':
+        settings.database.ssl = settings.database.ssl || {};
+        settings.database.ssl.cert = value;
+        break;
+      case 'DB_DIALECT_OPTIONS_SSL_REJECT_UNAUTHORIZED':
+        settings.database.ssl = settings.database.ssl || {};
+        settings.database.ssl.rejectUnauthorized = value === 'true';
+        break;
 
-    // CACHE_
-    if (key.startsWith('CACHE_')) {
-      const subKey = key.replace('CACHE_', '').toLowerCase();
-      settings.cache[subKey] = value;
-      continue;
-    }
+      /** ================= CACHE ================= */
+      case 'CACHE_DEFAULT_STORE':
+        settings.cache.defaultStore = value as any;
+        break;
+      case 'CACHE_MEMORY_MAX':
+        settings.cache.memoryMax = +value;
+        break;
+      case 'CACHE_REDIS_URL':
+        settings.cache.redisUrl = value;
+        break;
 
-    // 其它 => 默认归到 settings.env
-    settings.env[key] = value;
+      /** ================= ENCRYPTION ================= */
+      case 'ENCRYPTION_FIELD_KEY':
+        settings.encryptionField.key = value;
+        break;
+
+      /** ================= PRESETS ================= */
+      case 'PRESETS_BULTIN_PLUGINS':
+        settings.presets.builtinPlugins = value.split(',');
+        break;
+      case 'PRESETS_EXTERNAL_PLUGINS':
+        settings.presets.externalPlugins = value.split(',').map((name) => {
+          if (name.startsWith('!')) {
+            return { name: name.slice(1), enabledByDefault: false };
+          }
+          if (name.startsWith('|')) {
+            return { name: name.slice(1), enabledByDefault: false };
+          }
+          return { name, enabledByDefault: true };
+        });
+        break;
+
+      /** ================= WORKER ================= */
+      case 'WORKER_COUNT':
+        settings.worker.count = +value;
+        break;
+      case 'WORKER_COUNT_MAX':
+        settings.worker.countMax = +value;
+        break;
+
+      /** ================= EXPORT ================= */
+      case 'EXPORT_LENGTH_MAX':
+        settings.export.lengthMax = +value;
+        break;
+      case 'EXPORT_WORKER_PAGESIZE':
+        settings.export.workerPageSize = +value;
+        break;
+
+      /** ================= MISC ================= */
+      case 'FORBID_SUB_APP_PLUGINS':
+        settings.misc.forbidSubAppPlugins = value.split(',');
+        break;
+
+      default:
+        // 不处理未知 key
+        break;
+    }
   }
 
   return settings;

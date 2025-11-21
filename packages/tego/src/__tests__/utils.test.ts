@@ -15,10 +15,8 @@ describe('convertEnvToSettings', () => {
     const result = convertEnvToSettings(input as any);
 
     expect(result.logger.transport).toEqual(['console', 'dailyRotateFile']);
-    expect(result.logger.max_files).toBeUndefined(); // 未提供
     expect(result.logger.maxFiles).toBe('7d');
     expect(result.database.storage).toBe('storage/db/tachybase.sqlite');
-    expect(result.cache.default_store).toBe('memory');
-    expect(result.env.INIT_APP_LANG).toBe('zh-CN');
+    expect(result.cache.defaultStore).toBe('memory');
   });
 });
