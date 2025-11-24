@@ -50,11 +50,32 @@ export class BelongsToField extends RelationField {
       foreignKey = lodash.camelCase(`${this.name}_${targetKey}`);
     }
 
-    const targetKeyAttribute = this.TargetModel.rawAttributes[targetKey];
-    const foreignKeyAttribute = this.collection.model.rawAttributes[foreignKey];
+    const targetKeyAttribute = this.TargetModel.rawAttributes?.[targetKey];
+    const foreignKeyAttribute = this.collection.model.rawAttributes?.[foreignKey];
+
+    this.context.database.logger?.error(
+      `[BelongsToField.checkAssociationKeys] Field: ${this.name}, Collection: ${this.collection.name}, Target: ${this.target}, targetKey: ${targetKey}, foreignKey: ${foreignKey}`,
+      {
+        submodule: 'BelongsToField',
+        method: 'checkAssociationKeys',
+        targetKey,
+        foreignKey,
+        targetKeyAttribute: targetKeyAttribute
+          ? { type: targetKeyAttribute.type?.constructor?.name, field: targetKeyAttribute.field }
+          : null,
+        foreignKeyAttribute: foreignKeyAttribute
+          ? { type: foreignKeyAttribute.type?.constructor?.name, field: foreignKeyAttribute.field }
+          : null,
+        targetModelAttributes: Object.keys(this.TargetModel.rawAttributes || {}),
+        collectionModelAttributes: Object.keys(this.collection.model.rawAttributes || {}),
+      },
+    );
 
     if (!foreignKeyAttribute || !targetKeyAttribute) {
       // skip check if foreign key not exists
+      this.context.database.logger?.warn(
+        `[BelongsToField.checkAssociationKeys] Skipping check - foreignKeyAttribute: ${!!foreignKeyAttribute}, targetKeyAttribute: ${!!targetKeyAttribute}`,
+      );
       return;
     }
 
@@ -72,9 +93,27 @@ export class BelongsToField extends RelationField {
     const { database, collection } = this.context;
     const Target = this.TargetModel;
 
+    database.logger?.error(
+      `[BelongsToField.bind] Field: ${this.name}, Collection: ${collection.name}, Target: ${this.target}, TargetModel: ${Target?.name || 'undefined'}`,
+      {
+        submodule: 'BelongsToField',
+        method: 'bind',
+        fieldName: this.name,
+        collectionName: collection.name,
+        target: this.target,
+        targetModelName: Target?.name,
+        targetModelPrimaryKey: Target?.primaryKeyAttribute,
+        targetModelAttributes: Target ? Object.keys(Target.rawAttributes || {}) : [],
+        options: this.options,
+      },
+    );
+
     // if target model not exists, add it to pending field,
     // it will bind later
     if (!Target) {
+      database.logger?.warn(
+        `[BelongsToField.bind] Target model not found, adding to pending: ${this.name} in ${collection.name} -> ${this.target}`,
+      );
       database.addPendingField(this);
       return false;
     }
@@ -85,12 +124,23 @@ export class BelongsToField extends RelationField {
       delete collection.model.associations[this.name];
     }
 
-    // define relation on sequelize model
-    const association = collection.model.belongsTo(Target, {
+    const belongsToOptions = {
       as: this.name,
       constraints: false,
       ...omit(this.options, ['name', 'type', 'target', 'onDelete']),
+    };
+
+    database.logger?.error(`[BelongsToField.bind] Calling belongsTo with options:`, {
+      submodule: 'BelongsToField',
+      method: 'bind',
+      fieldName: this.name,
+      collectionName: collection.name,
+      targetModelName: Target.name,
+      belongsToOptions,
     });
+
+    // define relation on sequelize model
+    const association = collection.model.belongsTo(Target, belongsToOptions);
 
     // inverse relation
     // this.TargetModel.hasMany(collection.model);

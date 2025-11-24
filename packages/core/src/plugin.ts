@@ -214,13 +214,39 @@ export abstract class Plugin implements PluginInterface {
    */
   async loadCollections() {
     if (!this.options.packageName) {
+      this.app.logger.debug(`[Plugin.loadCollections] packageName not set for plugin ${this.getName()}`, {
+        submodule: 'Plugin',
+        method: 'loadCollections',
+      });
       return;
     }
-    const directory = resolve(resolveRequest(this.options.packageName), '../../server/collections');
+    const resolvedPath = resolveRequest(this.options.packageName);
+    const directory = resolve(resolvedPath, '../../server/collections');
+
+    this.app.logger.debug(`[Plugin.loadCollections] Loading collections for ${this.getName()}`, {
+      submodule: 'Plugin',
+      method: 'loadCollections',
+      packageName: this.options.packageName,
+      resolvedPath,
+      collectionsDirectory: directory,
+      directoryExists: await fsExists(directory),
+    });
+
     if (await fsExists(directory)) {
       await this.db.import({
         directory,
         from: this.options.packageName,
+      });
+      this.app.logger.debug(`[Plugin.loadCollections] Successfully imported collections from ${directory}`, {
+        submodule: 'Plugin',
+        method: 'loadCollections',
+      });
+    } else {
+      this.app.logger.warn(`[Plugin.loadCollections] Collections directory not found: ${directory}`, {
+        submodule: 'Plugin',
+        method: 'loadCollections',
+        packageName: this.options.packageName,
+        resolvedPath,
       });
     }
   }
