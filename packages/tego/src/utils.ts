@@ -224,7 +224,7 @@ export function convertEnvToSettings(flatEnv: Record<string, string | undefined>
   // LOGGER_
   for (const key in flatEnv) {
     const value = flatEnv[key];
-    if (value === undefined) continue;
+    if (value === undefined || value === '') continue;
 
     if (key.startsWith('LOGGER_')) {
       const subKey = key.replace('LOGGER_', '').toLowerCase();
