@@ -221,7 +221,21 @@ export abstract class Plugin implements PluginInterface {
       return;
     }
     const resolvedPath = resolveRequest(this.options.packageName);
-    const directory = resolve(resolvedPath, '../../server/collections');
+
+    // 尝试多个可能的路径：src/server/collections 或 dist/server/collections 或 server/collections
+    const possiblePaths = [
+      resolve(resolvedPath, '../server/collections'), // src/index.ts -> src/server/collections
+      resolve(resolvedPath, '../../server/collections'), // dist/index.js -> dist/../server/collections
+      resolve(resolvedPath, '../../src/server/collections'), // dist/index.js -> dist/../src/server/collections
+    ];
+
+    let directory: string | null = null;
+    for (const path of possiblePaths) {
+      if (await fsExists(path)) {
+        directory = path;
+        break;
+      }
+    }
 
     this.app.logger.debug(`[Plugin.loadCollections] Loading collections for ${this.getName()}`, {
       submodule: 'Plugin',
@@ -229,10 +243,11 @@ export abstract class Plugin implements PluginInterface {
       packageName: this.options.packageName,
       resolvedPath,
       collectionsDirectory: directory,
-      directoryExists: await fsExists(directory),
+      directoryExists: !!directory,
+      triedPaths: possiblePaths,
     });
 
-    if (await fsExists(directory)) {
+    if (directory) {
       await this.db.import({
         directory,
         from: this.options.packageName,
@@ -242,12 +257,15 @@ export abstract class Plugin implements PluginInterface {
         method: 'loadCollections',
       });
     } else {
-      this.app.logger.warn(`[Plugin.loadCollections] Collections directory not found: ${directory}`, {
-        submodule: 'Plugin',
-        method: 'loadCollections',
-        packageName: this.options.packageName,
-        resolvedPath,
-      });
+      this.app.logger.warn(
+        `[Plugin.loadCollections] Collections directory not found. Tried paths: ${possiblePaths.join(', ')}`,
+        {
+          submodule: 'Plugin',
+          method: 'loadCollections',
+          packageName: this.options.packageName,
+          resolvedPath,
+        },
+      );
     }
   }
 
