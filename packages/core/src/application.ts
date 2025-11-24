@@ -791,7 +791,7 @@ export class Application extends EventEmitter implements AsyncEmitter {
 
     if (options.checkInstall && !(await this.isInstalled())) {
       throw new ApplicationNotInstall(
-        `Application ${this.name} is not installed, Please run 'pnpm tachybase install' command first`,
+        `Application ${this.name} is not installed, Please run 'pnpm tego install' command first`,
       );
     }
 
