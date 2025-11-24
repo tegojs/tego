@@ -214,10 +214,13 @@ export abstract class Plugin implements PluginInterface {
    */
   async loadCollections() {
     if (!this.options.packageName) {
-      this.app.logger.debug(`[Plugin.loadCollections] packageName not set for plugin ${this.getName()}`, {
-        submodule: 'Plugin',
-        method: 'loadCollections',
-      });
+      this.app.logger.warn(
+        `[Plugin.loadCollections] packageName not set for plugin ${this.getName()}, skipping loadCollections`,
+        {
+          submodule: 'Plugin',
+          method: 'loadCollections',
+        },
+      );
       return;
     }
     const resolvedPath = resolveRequest(this.options.packageName);

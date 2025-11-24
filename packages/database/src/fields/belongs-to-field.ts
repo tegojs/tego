@@ -54,6 +54,7 @@ export class BelongsToField extends RelationField {
     const foreignKeyAttribute = this.collection.model.rawAttributes?.[foreignKey];
 
     if (!foreignKeyAttribute || !targetKeyAttribute) {
+      // skip check if foreign key not exists
       return;
     }
 
@@ -84,14 +85,12 @@ export class BelongsToField extends RelationField {
       delete collection.model.associations[this.name];
     }
 
-    const belongsToOptions = {
+    // define relation on sequelize model
+    const association = collection.model.belongsTo(Target, {
       as: this.name,
       constraints: false,
       ...omit(this.options, ['name', 'type', 'target', 'onDelete']),
-    };
-
-    // define relation on sequelize model
-    const association = collection.model.belongsTo(Target, belongsToOptions);
+    });
 
     // inverse relation
     // this.TargetModel.hasMany(collection.model);
