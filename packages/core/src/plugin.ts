@@ -214,6 +214,10 @@ export abstract class Plugin implements PluginInterface {
    */
   async loadCollections() {
     if (!this.options.packageName) {
+      // Skip silently for 'tachybase' virtual plugin
+      if (this.getName() === 'tachybase') {
+        return;
+      }
       this.app.logger.warn(
         `[Plugin.loadCollections] packageName not set for plugin ${this.getName()}, skipping loadCollections`,
         {
