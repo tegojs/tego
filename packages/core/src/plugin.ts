@@ -261,7 +261,7 @@ export abstract class Plugin implements PluginInterface {
       });
     } else {
       this.app.logger.warn(
-        `[Plugin.loadCollections] Collections directory not found. Tried paths: ${possiblePaths.join(', ')}`,
+        `[Plugin.loadCollections] Collections directory for ${this.options.packageName} not found, skipping import. Notice this may a mistake.`,
         {
           submodule: 'Plugin',
           method: 'loadCollections',
