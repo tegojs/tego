@@ -200,6 +200,16 @@ export class Application extends EventEmitter implements AsyncEmitter {
   public pubSubManager: PubSubManager;
   public syncMessageManager: SyncMessageManager;
 
+  /**
+   * Worker thread manager, injected by module-worker-thread plugin
+   */
+  public worker?: any;
+
+  /**
+   * Message manager, injected by module-message plugin
+   */
+  public messageManager?: any;
+
   protected plugins = new Map<string, Plugin>();
   protected _appSupervisor: AppSupervisor = AppSupervisor.getInstance();
   protected _started: boolean;
