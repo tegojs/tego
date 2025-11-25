@@ -6,6 +6,6 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "dependencies": {
-    "@tachybase/utils": "^1.3.52"
+    "@tachybase/utils": "workspace:*"
   }
 }
