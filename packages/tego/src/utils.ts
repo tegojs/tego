@@ -251,7 +251,12 @@ export function convertEnvToSettings(flatEnv: Record<string, string | undefined>
         settings.database.ssl = settings.database.ssl || {};
         settings.database.ssl[sslKey] = value;
       } else {
-        settings.database[subKey] = value;
+        // Convert boolean-like strings to actual boolean
+        if (subKey === 'logging' || subKey === 'underscored') {
+          settings.database[subKey] = value === 'true';
+        } else {
+          settings.database[subKey] = value;
+        }
       }
       continue;
     }
