@@ -23,12 +23,18 @@ export default (app: Application) => {
       } else if (options.quickstart) {
         if (await app.isInstalled()) {
           await app.upgrade();
+          // upgrade() 内部已经调用了 restart()，不需要再次调用
         } else {
           await app.install();
+          // install 后需要启动应用
+          await app.load();
+          await app.start({
+            dbSync: options?.dbSync,
+            quickstart: options.quickstart,
+            cliArgs,
+            checkInstall: false,
+          });
         }
-
-        app['_started'] = true;
-        await app.restart();
         app.logger.info('app has been started');
         return;
       }
