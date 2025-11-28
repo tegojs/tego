@@ -1036,6 +1036,10 @@ export class Application extends EventEmitter implements AsyncEmitter {
       this.db.removeAllListeners();
     }
 
+    // Reset middleware to prevent duplicate registration on reinit/reload
+    this._middleware = new Toposort<Koa.Middleware>();
+    this._koa = new Koa();
+
     this.createMainDataSource(options);
 
     this._env = new Environment();
