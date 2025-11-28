@@ -50,8 +50,8 @@ export class BelongsToField extends RelationField {
       foreignKey = lodash.camelCase(`${this.name}_${targetKey}`);
     }
 
-    const targetKeyAttribute = this.TargetModel.rawAttributes[targetKey];
-    const foreignKeyAttribute = this.collection.model.rawAttributes[foreignKey];
+    const targetKeyAttribute = this.TargetModel.rawAttributes?.[targetKey];
+    const foreignKeyAttribute = this.collection.model.rawAttributes?.[foreignKey];
 
     if (!foreignKeyAttribute || !targetKeyAttribute) {
       // skip check if foreign key not exists

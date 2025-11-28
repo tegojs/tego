@@ -452,6 +452,30 @@ export class PluginManager {
 
     current = 0;
 
+    // 第二轮：所有插件的 loadCollections() - 确保所有 collections 都在 load() 之前被导入
+    for (const [P, plugin] of this.getPlugins()) {
+      if (plugin.state.loaded) {
+        continue;
+      }
+      const name = plugin.name || P.name;
+      current += 1;
+      this.app.setMaintainingMessage(`loading collections for plugin [${name}], ${current}/${total}`);
+
+      if (!plugin.enabled) {
+        continue;
+      }
+
+      this.app.logger.debug(`load collections for plugin [${name}]`, {
+        submodule: 'plugin-manager',
+        method: 'load',
+        name,
+      });
+      await plugin.loadCollections();
+    }
+
+    current = 0;
+
+    // 第三轮：所有插件的 load() - 此时所有 collections 都已导入，可以安全使用
     for (const [P, plugin] of this.getPlugins()) {
       if (plugin.state.loaded) {
         continue;
@@ -466,7 +490,6 @@ export class PluginManager {
 
       await this.app.emitAsync('beforeLoadPlugin', plugin, options);
       this.app.logger.debug(`load plugin [${name}] `, { submodule: 'plugin-manager', method: 'load', name });
-      await plugin.loadCollections();
       await plugin.load();
       plugin.state.loaded = true;
       await this.app.emitAsync('afterLoadPlugin', plugin, options);

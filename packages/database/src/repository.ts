@@ -237,6 +237,17 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
     this.model = collection.model;
   }
 
+  /**
+   * Check if database connection is closed before executing query
+   */
+  protected checkConnection() {
+    if (this.database.closed()) {
+      throw new Error(
+        `Database connection is closed. Cannot execute query on collection "${this.collection.name}". The application may be reloading or restarting.`,
+      );
+    }
+  }
+
   public static valuesToFilter(values: Values, filterKeys: Array<string>) {
     const filterAnd = [];
     const flattedValues = flatten(values);
@@ -285,6 +296,8 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
    * return count by filter
    */
   async count(countOptions?: CountOptions): Promise<number> {
+    this.checkConnection();
+
     let options = countOptions ? lodash.clone(countOptions) : {};
 
     const transaction = await this.getTransaction(options);
@@ -326,6 +339,8 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
   }
 
   async aggregate(options: AggregateOptions & { optionsTransformer?: (options: any) => any }): Promise<any> {
+    this.checkConnection();
+
     const { method, field } = options;
 
     const queryOptions = this.buildQueryOptions({
@@ -386,6 +401,8 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
     if (options?.targetCollection && options?.targetCollection !== this.collection.name) {
       return await this.database.getCollection(options.targetCollection).repository.find(options);
     }
+
+    this.checkConnection();
 
     const model = this.collection.model;
     const transaction = await this.getTransaction(options);
@@ -504,6 +521,8 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
    */
   @transaction()
   async create(options: CreateOptions) {
+    this.checkConnection();
+
     if (Array.isArray(options.values)) {
       return this.createMany({
         ...options,
@@ -580,6 +599,7 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
   @mustHaveFilter()
   @injectTargetCollection
   async update(options: UpdateOptions & { forceUpdate?: boolean }) {
+    this.checkConnection();
     if (Array.isArray(options.values)) {
       return this.updateMany({
         ...options,
@@ -685,6 +705,7 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
     };
   })
   async destroy(options?: TargetKey | TargetKey[] | DestroyOptions) {
+    this.checkConnection();
     const transaction = await this.getTransaction(options);
 
     const modelFilterKey = this.collection.filterTargetKey;

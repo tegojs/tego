@@ -200,6 +200,16 @@ export class Application extends EventEmitter implements AsyncEmitter {
   public pubSubManager: PubSubManager;
   public syncMessageManager: SyncMessageManager;
 
+  /**
+   * Worker thread manager, injected by module-worker-thread plugin
+   */
+  public worker?: any;
+
+  /**
+   * Message manager, injected by module-message plugin
+   */
+  public messageManager?: any;
+
   protected plugins = new Map<string, Plugin>();
   protected _appSupervisor: AppSupervisor = AppSupervisor.getInstance();
   protected _started: boolean;
@@ -791,7 +801,7 @@ export class Application extends EventEmitter implements AsyncEmitter {
 
     if (options.checkInstall && !(await this.isInstalled())) {
       throw new ApplicationNotInstall(
-        `Application ${this.name} is not installed, Please run 'pnpm tachybase install' command first`,
+        `Application ${this.name} is not installed, Please run 'pnpm tego install' command first`,
       );
     }
 
@@ -1025,6 +1035,10 @@ export class Application extends EventEmitter implements AsyncEmitter {
     if (this.db) {
       this.db.removeAllListeners();
     }
+
+    // Reset middleware to prevent duplicate registration on reinit/reload
+    this._middleware = new Toposort<Koa.Middleware>();
+    this._koa = new Koa();
 
     this.createMainDataSource(options);
 
