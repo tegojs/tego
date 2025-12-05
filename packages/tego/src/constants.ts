@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import TachybaseGlobal from '@tachybase/globals';
 
-import { parseEnvironment } from './utils';
+import _ from 'lodash';
+
+import { convertEnvToSettings, parseEnvironment } from './utils';
 
 // 解析环境变量
 parseEnvironment();
@@ -12,7 +14,11 @@ if (!fs.existsSync(`${process.env.TEGO_RUNTIME_HOME}/settings.js`)) {
   fs.mkdirSync(`${process.env.TEGO_RUNTIME_HOME}`, { recursive: true });
   fs.copyFileSync(path.join(__dirname, '../presets/settings.js'), `${process.env.TEGO_RUNTIME_HOME}/settings.js`);
 }
-TachybaseGlobal.settings = require(`${process.env.TEGO_RUNTIME_HOME}/settings.js`);
+const baseSettings = require(`${process.env.TEGO_RUNTIME_HOME}/settings.js`);
+
+// 用环境变量覆盖 settings.js 的配置 (环境变量优先)
+const envSettings = convertEnvToSettings(process.env as any);
+TachybaseGlobal.settings = _.merge({}, baseSettings, envSettings);
 
 for (const key in TachybaseGlobal.settings.env) {
   if (!process.env[key]) {

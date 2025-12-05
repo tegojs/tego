@@ -297,6 +297,17 @@ export async function buildPluginServer(cwd: string, userConfig: UserConfig, sou
   );
 
   await buildServerDeps(cwd, serverFiles, log);
+
+  // Copy .gitkeep files to preserve empty collections directories
+  const gitkeepFiles = fg.globSync('src/server/collections/.gitkeep', { cwd, absolute: true });
+  if (gitkeepFiles.length > 0) {
+    const collectionsDistDir = path.join(cwd, target_dir, 'server', 'collections');
+    await fs.ensureDir(collectionsDistDir);
+    for (const gitkeepFile of gitkeepFiles) {
+      const destFile = path.join(collectionsDistDir, '.gitkeep');
+      await fs.copyFile(gitkeepFile, destFile);
+    }
+  }
 }
 
 export async function buildPluginClient(cwd: string, userConfig: UserConfig, sourcemap: boolean, log: PkgLog) {

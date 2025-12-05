@@ -71,12 +71,12 @@ module.exports = {
     /**
      *
      */
-    // tablePrefix: ''
+    // tablePrefix: '',
 
     /**
      *
      */
-    // host: 'localhost'
+    // host: 'localhost',
 
     /**
      *
@@ -138,7 +138,7 @@ module.exports = {
     /**
      *
      */
-    // redisUrl: ''
+    // redisUrl: '',
   },
 
   encryptionField: {
@@ -265,12 +265,12 @@ module.exports = {
     /**
      * 错误尝试次数
      */
-    // errorRetry: 3
+    // errorRetry: 3,
 
     /**
      * MB
      */
-    // maxMemory: 4096
+    // maxMemory: 4096,
   },
 
   /**
@@ -284,7 +284,7 @@ module.exports = {
     /**
      *
      */
-    // workerPageSize: 1000
+    // workerPageSize: 1000,
   },
 
   misc: {
