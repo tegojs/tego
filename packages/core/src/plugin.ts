@@ -232,7 +232,7 @@ export abstract class Plugin implements PluginInterface {
     // 尝试多个可能的路径：src/server/collections 或 dist/server/collections 或 server/collections
     const possiblePaths = [
       resolve(resolvedPath, '../server/collections'), // src/index.ts -> src/server/collections
-      resolve(resolvedPath, '../../server/collections'), // dist/index.js -> dist/../server/collections
+      resolve(resolvedPath, '../../server/collections'), // dist/index.js -> <project-root>/server/collections
       resolve(resolvedPath, '../../src/server/collections'), // dist/index.js -> dist/../src/server/collections
     ];
 
