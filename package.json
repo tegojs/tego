@@ -13,6 +13,7 @@
     "lint": "oxlint",
     "pm": "tegod pm",
     "prepare": "husky",
+    "settings:update": "node scripts/update-settings.js",
     "start": "tego start",
     "tego": "tego",
     "tegod": "tegod",
