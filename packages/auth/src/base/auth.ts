@@ -282,7 +282,7 @@ export class BaseAuth extends Auth {
    * @param userId 用户 ID
    * @returns 新 token
    */
-  async signNewToken(userId: number) {
+  private async signNewToken(userId: number) {
     const user = await this.userRepository.findOne({
       filter: { id: userId },
       fields: ['id', 'status'],
