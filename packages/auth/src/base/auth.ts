@@ -15,19 +15,26 @@ const localeNamespace = 'auth';
  */
 export class BaseAuth extends Auth {
   protected userCollection: Collection;
+  protected userStatusCollection: Collection;
 
   constructor(
     config: AuthConfig & {
       userCollection: Collection;
+      userStatusCollection: Collection;
     },
   ) {
-    const { userCollection } = config;
+    const { userCollection, userStatusCollection } = config;
     super(config);
     this.userCollection = userCollection;
+    this.userStatusCollection = userStatusCollection;
   }
 
   get userRepository() {
     return this.userCollection.repository;
+  }
+
+  get userStatusRepository() {
+    return this.userStatusCollection.repository;
   }
 
   get jwt(): JwtService {
