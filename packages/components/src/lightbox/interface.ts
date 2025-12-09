@@ -36,6 +36,7 @@ export interface IReactImageLightboxProps {
   zoomOutLabel?: string;
   closeLabel?: string;
   imageCaption?: any;
+  otherProps?: any;
 }
 
 export interface IReactImageLightboxState {
