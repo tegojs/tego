@@ -71,12 +71,12 @@ module.exports = {
     /**
      *
      */
-    // tablePrefix: ''
+    // tablePrefix: '',
 
     /**
      *
      */
-    // host: 'localhost'
+    // host: 'localhost',
 
     /**
      *
@@ -138,7 +138,7 @@ module.exports = {
     /**
      *
      */
-    // redisUrl: ''
+    // redisUrl: '',
   },
 
   encryptionField: {
@@ -161,17 +161,17 @@ module.exports = {
       'collection',
       'cron',
       'data-source',
+      'env-secrets',
       'error-handler',
       'event-source',
       'file',
-      'workflow',
       'message',
       'pdf',
       'ui-schema',
       'user',
       'web',
       'worker-thread',
-      'env-secrets',
+      'workflow',
     ],
     /**
      * 可删除
@@ -184,28 +184,31 @@ module.exports = {
       { name: 'action-export', enabledByDefault: true },
       { name: 'action-import', enabledByDefault: true },
       { name: 'action-print', enabledByDefault: true },
+      { name: 'auth-main-app', enabledByDefault: true },
+      { name: 'auth-pages', enabledByDefault: true },
       { name: 'block-calendar', enabledByDefault: true },
       { name: 'block-charts', enabledByDefault: true },
       { name: 'block-gantt', enabledByDefault: true },
       { name: 'block-kanban', enabledByDefault: true },
       { name: 'block-presentation', enabledByDefault: true },
+      { name: 'field-bank-card-number', enabledByDefault: true },
       { name: 'field-china-region', enabledByDefault: true },
+      { name: 'field-encryption', enabledByDefault: true },
       { name: 'field-formula', enabledByDefault: true },
       { name: 'field-sequence', enabledByDefault: true },
-      { name: 'field-encryption', enabledByDefault: true },
-      { name: 'log-viewer', enabledByDefault: true },
-      { name: 'otp', enabledByDefault: true },
-      { name: 'instrumentation', enabledByDefault: true },
       { name: 'full-text-search', enabledByDefault: true },
-      { name: 'password-policy', enabledByDefault: true },
-      { name: 'auth-pages', enabledByDefault: true },
+      { name: 'instrumentation', enabledByDefault: true },
+      { name: 'log-viewer', enabledByDefault: true },
       { name: 'manual-notification', enabledByDefault: true },
-      { name: 'auth-main-app', enabledByDefault: true },
+      { name: 'otp', enabledByDefault: true },
+      { name: 'password-policy', enabledByDefault: true },
 
       { name: 'adapter-bullmq', enabledByDefault: false },
       { name: 'adapter-red-node', enabledByDefault: false },
       { name: 'adapter-remix', enabledByDefault: false },
+      { name: 'ai-chat', enabledByDefault: false },
       { name: 'api-keys', enabledByDefault: false },
+      { name: 'api-logs', enabledByDefault: false },
       { name: 'audit-logs', enabledByDefault: false },
       { name: 'auth-cas', enabledByDefault: false },
       { name: 'auth-dingtalk', enabledByDefault: false },
@@ -219,27 +222,28 @@ module.exports = {
       { name: 'block-map', enabledByDefault: false },
       { name: 'block-step-form', enabledByDefault: false },
       { name: 'data-source-common', enabledByDefault: false },
+      { name: 'database-clean', enabledByDefault: false },
       { name: 'demos-game-runesweeper', enabledByDefault: false },
+      { name: 'department', enabledByDefault: false },
       { name: 'devtools', enabledByDefault: false },
       { name: 'field-markdown-vditor', enabledByDefault: false },
       { name: 'field-snapshot', enabledByDefault: false },
+      { name: 'form-design', enabledByDefault: false },
       { name: 'hera', enabledByDefault: false },
       { name: 'i18n-editor', enabledByDefault: false },
+      { name: 'icon-pickerv2', enabledByDefault: false },
       { name: 'multi-app', enabledByDefault: false },
       { name: 'multi-app-share-collection', enabledByDefault: false },
+      { name: 'ocr-convert', enabledByDefault: false },
       { name: 'online-user', enabledByDefault: false },
+      { name: 'pagespy', enabledByDefault: false },
       { name: 'simple-cms', enabledByDefault: false },
       { name: 'sub-accounts', enabledByDefault: false },
-      { name: 'theme-editor', enabledByDefault: false },
-      { name: 'workflow-approval', enabledByDefault: false },
-      { name: 'ai-chat', enabledByDefault: false },
-      { name: 'department', enabledByDefault: false },
-      { name: 'workflow-analysis', enabledByDefault: false },
-      { name: 'api-logs', enabledByDefault: false },
-      { name: 'ocr-convert', enabledByDefault: false },
       { name: 'text-copy', enabledByDefault: false },
+      { name: 'theme-editor', enabledByDefault: false },
       { name: 'user-manual-feishu', enabledByDefault: false },
-      { name: 'form-design', enabledByDefault: false },
+      { name: 'workflow-analysis', enabledByDefault: false },
+      { name: 'workflow-approval', enabledByDefault: false },
     ],
 
     /**
@@ -265,12 +269,12 @@ module.exports = {
     /**
      * 错误尝试次数
      */
-    // errorRetry: 3
+    // errorRetry: 3,
 
     /**
      * MB
      */
-    // maxMemory: 4096
+    // maxMemory: 4096,
   },
 
   /**
@@ -284,7 +288,7 @@ module.exports = {
     /**
      *
      */
-    // workerPageSize: 1000
+    // workerPageSize: 1000,
   },
 
   misc: {

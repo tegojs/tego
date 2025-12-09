@@ -74,4 +74,3 @@ jobs:
         run: |
           echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           pnpm -r publish --provenance --access public --no-git-checks --tag alpha
-

@@ -1,6 +1,6 @@
 {
   "name": "tego",
-  "version": "1.3.55-alpha.1",
+  "version": "1.6.0",
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
@@ -13,6 +13,7 @@
     "lint": "oxlint",
     "pm": "tegod pm",
     "prepare": "husky",
+    "settings:update": "node scripts/update-settings.js",
     "start": "tego start",
     "tego": "tego",
     "tegod": "tegod",
