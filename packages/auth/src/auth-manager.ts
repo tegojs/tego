@@ -5,6 +5,7 @@ import { Auth, AuthExtend } from './auth';
 import { JwtOptions, JwtService } from './base/jwt-service';
 import { ITokenBlacklistService } from './base/token-blacklist-service';
 import { ITokenControlService } from './base/token-control-service';
+import { IUserStatusService } from './base/user-status-service';
 
 export interface Authenticator {
   authType: string;
@@ -31,6 +32,7 @@ type AuthConfig = {
 export class AuthManager {
   jwt: JwtService;
   tokenController: ITokenControlService;
+  userStatusService: IUserStatusService;
 
   protected options: AuthManagerOptions;
   protected authTypes: Registry<AuthConfig> = new Registry();
@@ -52,6 +54,10 @@ export class AuthManager {
 
   setTokenControlService(service: ITokenControlService) {
     this.tokenController = service;
+  }
+
+  setUserStatusService(service: IUserStatusService) {
+    this.userStatusService = service;
   }
 
   /**
