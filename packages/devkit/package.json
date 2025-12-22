@@ -44,6 +44,7 @@
     "execa": "^8.0.1",
     "fast-glob": "^3.3.3",
     "fs-extra": "^11.3.2",
+    "js-yaml": "^4.1.0",
     "lodash": "^4.17.21",
     "npm-packlist": "^10.0.2",
     "open": "^10.2.0",
@@ -66,6 +67,7 @@
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
+    "@types/js-yaml": "^4.0.9",
     "@types/lodash": "^4.17.20",
     "@types/node": "20.17.10",
     "@types/npm-packlist": "^7.0.3",
