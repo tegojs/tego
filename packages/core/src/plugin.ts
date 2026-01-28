@@ -214,14 +214,65 @@ export abstract class Plugin implements PluginInterface {
    */
   async loadCollections() {
     if (!this.options.packageName) {
+      // Skip silently for 'tachybase' virtual plugin
+      if (this.getName() === 'tachybase') {
+        return;
+      }
+      this.app.logger.warn(
+        `[Plugin.loadCollections] packageName not set for plugin ${this.getName()}, skipping loadCollections`,
+        {
+          submodule: 'Plugin',
+          method: 'loadCollections',
+        },
+      );
       return;
     }
-    const directory = resolve(resolveRequest(this.options.packageName), '../../server/collections');
-    if (await fsExists(directory)) {
+    const resolvedPath = resolveRequest(this.options.packageName);
+
+    // 尝试多个可能的路径：src/server/collections 或 dist/server/collections 或 server/collections
+    const possiblePaths = [
+      resolve(resolvedPath, '../server/collections'), // src/index.ts -> src/server/collections
+      resolve(resolvedPath, '../../server/collections'), // dist/index.js -> <project-root>/server/collections
+      resolve(resolvedPath, '../../src/server/collections'), // dist/index.js -> dist/../src/server/collections
+    ];
+
+    let directory: string | null = null;
+    for (const path of possiblePaths) {
+      if (await fsExists(path)) {
+        directory = path;
+        break;
+      }
+    }
+
+    this.app.logger.debug(`[Plugin.loadCollections] Loading collections for ${this.getName()}`, {
+      submodule: 'Plugin',
+      method: 'loadCollections',
+      packageName: this.options.packageName,
+      resolvedPath,
+      collectionsDirectory: directory,
+      directoryExists: !!directory,
+      triedPaths: possiblePaths,
+    });
+
+    if (directory) {
       await this.db.import({
         directory,
         from: this.options.packageName,
       });
+      this.app.logger.debug(`[Plugin.loadCollections] Successfully imported collections from ${directory}`, {
+        submodule: 'Plugin',
+        method: 'loadCollections',
+      });
+    } else {
+      this.app.logger.warn(
+        `[Plugin.loadCollections] Collections directory for ${this.options.packageName} not found, skipping import. Notice this may be a mistake.`,
+        {
+          submodule: 'Plugin',
+          method: 'loadCollections',
+          packageName: this.options.packageName,
+          resolvedPath,
+        },
+      );
     }
   }
 

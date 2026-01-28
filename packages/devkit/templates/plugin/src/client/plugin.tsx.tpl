@@ -1,4 +1,4 @@
-import { Plugin } from '@tego/client';
+import { Plugin } from '@tachybase/client';
 
 class Plugin{{{pascalCaseName}}} extends Plugin {
   async afterAdd() {}

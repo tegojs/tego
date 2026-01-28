@@ -5,27 +5,36 @@ import jwt from 'jsonwebtoken';
 import { Auth, AuthConfig, AuthError, AuthErrorCode } from '../auth';
 import { JwtService } from './jwt-service';
 import { ITokenControlService } from './token-control-service';
+import { IUserStatusService, UserStatusCheckResult } from './user-status-service';
 
 const localeNamespace = 'auth';
+
 /**
  * BaseAuth
  * @description A base class with jwt provide some common methods.
  */
 export class BaseAuth extends Auth {
   protected userCollection: Collection;
+  protected userStatusCollection: Collection;
 
   constructor(
     config: AuthConfig & {
       userCollection: Collection;
+      userStatusCollection: Collection;
     },
   ) {
-    const { userCollection } = config;
+    const { userCollection, userStatusCollection } = config;
     super(config);
     this.userCollection = userCollection;
+    this.userStatusCollection = userStatusCollection;
   }
 
   get userRepository() {
     return this.userCollection.repository;
+  }
+
+  get userStatusRepository() {
+    return this.userStatusCollection.repository;
   }
 
   get jwt(): JwtService {
@@ -34,6 +43,10 @@ export class BaseAuth extends Auth {
 
   get tokenController(): ITokenControlService {
     return this.ctx.tego.authManager.tokenController;
+  }
+
+  get userStatusService(): IUserStatusService {
+    return this.ctx.tego.authManager.userStatusService;
   }
 
   set user(user: Model) {
@@ -55,6 +68,7 @@ export class BaseAuth extends Auth {
   async checkToken(): Promise<{
     tokenStatus: 'valid' | 'expired' | 'invalid';
     user: Awaited<ReturnType<Auth['check']>>;
+    userStatus: string;
     jti?: string;
     temp: any;
     roleName?: any;
@@ -86,7 +100,7 @@ export class BaseAuth extends Auth {
       }
     }
 
-    const { userId, roleName, iat, temp, jti, exp, signInTime } = payload ?? {};
+    const { userId, userStatus = 'active', roleName, iat, temp, jti, exp, signInTime } = payload ?? {};
 
     const user = userId
       ? await this.ctx.tego.cache.wrap(this.getCacheKey(userId), () =>
@@ -106,6 +120,20 @@ export class BaseAuth extends Auth {
       });
     }
 
+    const statusCheckResult: UserStatusCheckResult = await this.userStatusService.checkUserStatus(user.id);
+    if (!statusCheckResult.allowed) {
+      this.ctx.throw(401, {
+        message: this.ctx.t(statusCheckResult.errorMessage, { ns: localeNamespace }),
+        code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
+      });
+    }
+    if (statusCheckResult.status !== userStatus) {
+      this.ctx.throw(401, {
+        message: this.ctx.t('Your account status has changed. Please sign in again.', { ns: localeNamespace }),
+        code: AuthErrorCode.INVALID_TOKEN,
+      });
+    }
+
     if (roleName) {
       this.ctx.headers['x-role'] = roleName;
     }
@@ -121,7 +149,7 @@ export class BaseAuth extends Auth {
     // api token check first
     if (!temp) {
       if (tokenStatus === 'valid') {
-        return { tokenStatus, user, temp };
+        return { tokenStatus, user, userStatus, temp };
       } else {
         this.ctx.throw(401, {
           message: this.ctx.t('Your session has expired. Please sign in again.', { ns: localeNamespace }),
@@ -179,14 +207,14 @@ export class BaseAuth extends Auth {
           code: AuthErrorCode.INVALID_TOKEN,
         });
       }
-      return { tokenStatus, user, jti, signInTime, temp };
+      return { tokenStatus, user, userStatus, jti, signInTime, temp };
     }
 
-    return { tokenStatus, user, jti, signInTime, temp };
+    return { tokenStatus, user, userStatus, jti, signInTime, temp };
   }
 
   async check(): ReturnType<Auth['check']> {
-    const { tokenStatus, user, jti, temp, signInTime, roleName } = await this.checkToken();
+    const { tokenStatus, user, userStatus, jti, temp, signInTime, roleName } = await this.checkToken();
 
     if (tokenStatus === 'expired') {
       const tokenPolicy = await this.tokenController.getConfig();
@@ -221,7 +249,7 @@ export class BaseAuth extends Auth {
 
         const expiresIn = Math.floor(tokenPolicy.tokenExpirationTime / 1000);
         const newToken = this.jwt.sign(
-          { userId: user.id, roleName, temp, signInTime, iat: Math.floor(renewedResult.issuedTime / 1000) },
+          { userId: user.id, userStatus, roleName, temp, signInTime, iat: Math.floor(renewedResult.issuedTime / 1000) },
           { jwtid: renewedResult.jti, expiresIn },
         );
         this.ctx.res.setHeader('x-new-token', newToken);
@@ -249,12 +277,28 @@ export class BaseAuth extends Auth {
     return null;
   }
 
-  async signNewToken(userId: number) {
+  /**
+   * 签新 token
+   * @param userId 用户 ID
+   * @returns 新 token
+   */
+  private async signNewToken(userId: number) {
+    const user = await this.userRepository.findOne({
+      filter: { id: userId },
+      fields: ['id', 'status'],
+    });
+    if (!user) {
+      this.ctx.throw(401, {
+        message: this.ctx.t('User not found. Please sign in again to continue.', { ns: localeNamespace }),
+        code: AuthErrorCode.NOT_EXIST_USER,
+      });
+    }
     const tokenInfo = await this.tokenController.add({ userId });
     const expiresIn = Math.floor((await this.tokenController.getConfig()).tokenExpirationTime / 1000);
     const token = this.jwt.sign(
       {
         userId,
+        userStatus: user.status,
         temp: true,
         iat: Math.floor(tokenInfo.issuedTime / 1000),
         signInTime: tokenInfo.signInTime,
@@ -280,6 +324,13 @@ export class BaseAuth extends Auth {
       this.ctx.throw(401, {
         message: this.ctx.t('User not found. Please sign in again to continue.', { ns: localeNamespace }),
         code: AuthErrorCode.NOT_EXIST_USER,
+      });
+    }
+    const statusCheckResult: UserStatusCheckResult = await this.userStatusService.checkUserStatus(user.id);
+    if (!statusCheckResult.allowed) {
+      this.ctx.throw(401, {
+        message: this.ctx.t(statusCheckResult.errorMessage, { ns: localeNamespace }),
+        code: AuthErrorCode.USER_STATUS_NOT_ALLOW_LOGIN,
       });
     }
     const token = await this.signNewToken(user.id);

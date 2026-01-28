@@ -224,7 +224,7 @@ export function convertEnvToSettings(flatEnv: Record<string, string | undefined>
   // LOGGER_
   for (const key in flatEnv) {
     const value = flatEnv[key];
-    if (value === undefined) continue;
+    if (value === undefined || value === '') continue;
 
     if (key.startsWith('LOGGER_')) {
       const subKey = key.replace('LOGGER_', '').toLowerCase();
@@ -251,7 +251,12 @@ export function convertEnvToSettings(flatEnv: Record<string, string | undefined>
         settings.database.ssl = settings.database.ssl || {};
         settings.database.ssl[sslKey] = value;
       } else {
-        settings.database[subKey] = value;
+        // Convert boolean-like strings to actual boolean
+        if (subKey === 'logging' || subKey === 'underscored') {
+          settings.database[subKey] = value === 'true';
+        } else {
+          settings.database[subKey] = value;
+        }
       }
       continue;
     }
