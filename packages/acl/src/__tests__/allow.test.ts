@@ -20,12 +20,16 @@ describe('skip', () => {
       app: {
         acl,
       },
-      throw() {},
+      throw(code: number, message: string) {
+        const err = new Error(message);
+        (err as any).status = code;
+        throw err;
+      },
     };
 
     const nextFunc = vi.fn();
 
-    await middlewareFunc(ctx, nextFunc);
+    await expect(middlewareFunc(ctx, nextFunc)).rejects.toThrow();
     expect(nextFunc).toHaveBeenCalledTimes(0);
 
     acl.allow('users', 'login');
@@ -48,7 +52,11 @@ describe('skip', () => {
       app: {
         acl,
       },
-      throw() {},
+      throw(code: number, message: string) {
+        const err = new Error(message);
+        (err as any).status = code;
+        throw err;
+      },
     };
 
     const nextFunc = vi.fn();
@@ -59,7 +67,7 @@ describe('skip', () => {
       return skip;
     });
 
-    await middlewareFunc(ctx, nextFunc);
+    await expect(middlewareFunc(ctx, nextFunc)).rejects.toThrow();
     expect(nextFunc).toHaveBeenCalledTimes(0);
 
     skip = true;

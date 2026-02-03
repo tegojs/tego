@@ -236,6 +236,21 @@ export class ContainerInstance {
     if (Array.isArray(identifierOrIdentifierArray)) {
       identifierOrIdentifierArray.forEach((id) => this.remove(id));
     } else {
+      // Handle multiple services (registered with multiple: true)
+      const multiGroup = this.multiServiceIds.get(identifierOrIdentifierArray);
+      if (multiGroup) {
+        // Remove all masked services
+        multiGroup.tokens.forEach((maskedToken) => {
+          const serviceMetadata = this.metadataMap.get(maskedToken);
+          if (serviceMetadata) {
+            this.disposeServiceInstance(serviceMetadata);
+            this.metadataMap.delete(maskedToken);
+          }
+        });
+        this.multiServiceIds.delete(identifierOrIdentifierArray);
+      }
+
+      // Handle single service
       const serviceMetadata = this.metadataMap.get(identifierOrIdentifierArray);
 
       if (serviceMetadata) {
@@ -471,7 +486,10 @@ export class ContainerInstance {
 
     if (shouldResetValue) {
       /** If we wound a function named destroy we call it without any params. */
-      if (typeof (serviceMetadata?.value as Record<string, unknown>)['dispose'] === 'function') {
+      if (
+        serviceMetadata?.value != null &&
+        typeof (serviceMetadata.value as Record<string, unknown>)['dispose'] === 'function'
+      ) {
         try {
           (serviceMetadata.value as { dispose: CallableFunction }).dispose();
         } catch (error) {

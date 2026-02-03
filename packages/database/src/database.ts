@@ -494,7 +494,9 @@ export class Database extends EventEmitter implements AsyncEmitter {
 
   addMigrations(options: AddMigrationsOptions) {
     const { namespace, context, extensions = ['js', 'ts'], directory } = options;
-    const patten = `${directory}/*.{${extensions.join(',')}}`;
+    // Normalize path separators for glob (use forward slashes on all platforms)
+    const normalizedDir = directory.replace(/\\/g, '/');
+    const patten = `${normalizedDir}/*.{${extensions.join(',')}}`;
     const files = globSync(patten, {
       ignore: ['**/*.d.ts'],
     });

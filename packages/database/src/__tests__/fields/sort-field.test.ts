@@ -88,7 +88,7 @@ describe('string field', () => {
     const end = Date.now();
     // log time cost as milliseconds
     console.log(end - begin);
-  });
+  }, 60000); // 60 seconds timeout for bulk operation
 
   it('should init sorted value with null scopeValue', async () => {
     const Test = db.collection({

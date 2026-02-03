@@ -135,6 +135,9 @@ export class PluginManager {
    */
   static async getPackageName(name: string) {
     const pluginPaths = TachybaseGlobal.getInstance().get<string[]>('PLUGIN_PATHS');
+    if (!pluginPaths) {
+      throw new Error(`${name} plugin does not exist (PLUGIN_PATHS not initialized)`);
+    }
     const prefixes = this.getPluginPkgPrefix();
     for (const prefix of prefixes) {
       for (const basePath of pluginPaths) {
@@ -327,8 +330,16 @@ export class PluginManager {
     });
     let P: any;
     try {
-      if (options.isPreset) {
-        P = TachybaseGlobal.getInstance().get<Record<string, any>>('PRESETS')[options.name];
+      if (typeof plugin === 'function') {
+        // Plugin is directly passed as a class
+        P = plugin;
+      } else if (options.isPreset) {
+        const presets = TachybaseGlobal.getInstance().get<Record<string, any>>('PRESETS');
+        P = presets?.[options.name];
+        if (!P) {
+          this.app.logger.warn(`preset plugin [${options.name}] not found in PRESETS`);
+          return;
+        }
       } else {
         P = await PluginManager.resolvePlugin(options.packageName || plugin, isUpgrade, !!options.packageName);
       }

@@ -235,10 +235,12 @@ test('all methods', () => {
 });
 
 describe('all static methods', () => {
-  expect(Schema.compile({ aa: '{{123}}' })).toEqual({ aa: 123 });
-  expect(Schema.shallowCompile('{{123}}')).toEqual(123);
-  expect(Schema.getOrderProperties()).toEqual([]);
-  Schema.registerPatches(null);
+  test('static methods work correctly', () => {
+    expect(Schema.compile({ aa: '{{123}}' })).toEqual({ aa: 123 });
+    expect(Schema.shallowCompile('{{123}}')).toEqual(123);
+    expect(Schema.getOrderProperties()).toEqual([]);
+    Schema.registerPatches(null);
+  });
 });
 
 test('single function x-reactions', () => {

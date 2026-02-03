@@ -142,11 +142,12 @@ describe('Service Lifecycle and Cleanup', () => {
         }
       }
 
-      container.set({ type: TestService, scope: 'singleton' });
-      const instance1 = container.get(TestService);
-      const instance2 = container.get(TestService);
+      // Singleton services are stored in the default Container
+      Container.set({ type: TestService, scope: 'singleton' });
+      const instance1 = Container.get(TestService);
+      const instance2 = Container.get(TestService);
 
-      container.remove(TestService);
+      Container.remove(TestService);
 
       expect(disposeCount).toBe(1);
     });
@@ -202,6 +203,7 @@ describe('Service Lifecycle and Cleanup', () => {
       container.set({ id: 'multi-service', type: TestService, multiple: true });
       container.set({ id: 'multi-service', type: TestService, multiple: true });
 
+      // Must get the services to create instances
       const services = container.getMany('multi-service');
 
       container.remove('multi-service');
@@ -227,6 +229,9 @@ describe('Service Lifecycle and Cleanup', () => {
 
       container.set({ id: 'multi-service', type: Service1, multiple: true });
       container.set({ id: 'multi-service', type: Service2, multiple: true });
+
+      // Must get the services to create instances
+      const services = container.getMany('multi-service');
 
       container.remove('multi-service');
 
