@@ -1,6 +1,6 @@
 {
   "name": "@tachybase/components",
-  "version": "1.6.2",
+  "version": "1.6.3-alpha.3",
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,7 +16,6 @@
     "classnames": "^2.5.1",
     "dayjs": "1.11.13",
     "prop-types": "^15.8.1",
-    "react-dom": "18.3.1",
     "react-modal": "^3.16.3",
     "react-sticky-box": "^1.0.2"
   },
@@ -25,5 +24,9 @@
     "rc-input-number": "9.5.0",
     "rc-picker": "4.11.3",
     "rc-tree-select": "5.27.0"
+  },
+  "peerDependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
   }
 }
