@@ -610,7 +610,7 @@ export class Application extends EventEmitter implements AsyncEmitter {
    * This stores the plugin in the internal plugins map to be loaded later.
    * @param pluginClass - The plugin class to register
    */
-  plugin<P extends typeof Plugin>(pluginClass: P): void {
+  plugin<P extends Plugin>(pluginClass: new (app: Application, options: any) => P): void {
     const name = pluginClass.name || `test-plugin-${this.plugins.size}`;
     const instance = new pluginClass(this, {});
     this.plugins.set(name, instance);
