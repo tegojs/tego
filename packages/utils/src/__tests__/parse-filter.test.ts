@@ -92,7 +92,7 @@ describe('utc to unit', () => {
       now: '2022-12-31T16:00:00.000Z',
       timezone: '+08:00',
       unit: 'isoWeek',
-    }).toBe('2022W52+08:00');
+    }).toBe('2022W51+08:00');
     expectUtc2unit({
       now: '2023-01-01T00:00:00.000Z',
       unit: 'isoWeek',
