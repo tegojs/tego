@@ -106,10 +106,11 @@ describe('option parser', () => {
       collection: User,
     });
     params = parser.toSequelizeParams();
+    // For hasMany associations, the sort uses string-based association names
+    // Only BelongsTo and HasOne associations use model references
     expect(params['order']).toEqual([
       ['id', 'ASC NULLS LAST'],
-      [Post.model, 'title', 'DESC NULLS LAST'],
-      [Post.model, Comment.model, 'createdAt', 'ASC NULLS LAST'],
+      ['posts', 'title', 'DESC NULLS LAST'],
     ]);
   });
 

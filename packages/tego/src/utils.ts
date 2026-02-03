@@ -230,9 +230,9 @@ export function convertEnvToSettings(flatEnv: Record<string, string | undefined>
       const subKey = key.replace('LOGGER_', '').toLowerCase();
       if (subKey === 'transport') {
         settings.logger.transport = value.split(',').map((x) => x.trim());
-      } else if (subKey === 'maxfiles') {
+      } else if (subKey === 'max_files') {
         settings.logger.maxFiles = value;
-      } else if (subKey === 'maxsize') {
+      } else if (subKey === 'max_size') {
         settings.logger.maxSize = value;
       } else if (subKey === 'format') {
         settings.logger.format = value;

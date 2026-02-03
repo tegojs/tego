@@ -59,7 +59,9 @@ export const markRaw = <T>(target: T): T => {
 export const markObservable = <T>(target: T): T => {
   if (!target) return;
   if (isFn(target)) {
-    target.prototype[OBSERVABLE_TYPE] = true;
+    if (target.prototype) {
+      target.prototype[OBSERVABLE_TYPE] = true;
+    }
   } else {
     target[OBSERVABLE_TYPE] = true;
   }

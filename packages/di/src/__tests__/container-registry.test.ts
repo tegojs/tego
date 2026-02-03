@@ -96,7 +96,7 @@ describe('ContainerRegistry', () => {
       container1 = new ContainerInstance('remove-test');
       await ContainerRegistry.removeContainer(container1);
 
-      expect(async () => {
+      await expect(async () => {
         await ContainerRegistry.removeContainer(container1);
       }).rejects.toThrow('No container is registered with the given ID.');
     });

@@ -8,7 +8,7 @@ export class CannotInjectValueError extends Error {
 
   get message(): string {
     return (
-      `Cannot inject value into "${this.target.constructor.name}.${this.propertyName}". ` +
+      `Cannot inject value into "${this.target.name}.${this.propertyName}". ` +
       `Please make sure you setup reflect-metadata properly and you don't use interfaces without service tokens as injection value.`
     );
   }

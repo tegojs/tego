@@ -183,7 +183,9 @@ export class Resourcer {
    */
   public async import(options: ImportOptions): Promise<Map<string, Resource>> {
     const { extensions = ['js', 'ts', 'json'], directory } = options;
-    const patten = `${directory}/*.{${extensions.join(',')}}`;
+    // Normalize path separators for glob (use forward slashes on all platforms)
+    const normalizedDir = directory.replace(/\\/g, '/');
+    const patten = `${normalizedDir}/*.{${extensions.join(',')}}`;
     const files = globSync(patten, {
       ignore: ['**/*.d.ts'],
     });

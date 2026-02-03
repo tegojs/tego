@@ -5,12 +5,17 @@ import { vi } from 'vitest';
 import Plugin from '../plugin';
 import { PluginManager } from '../plugin-manager';
 
-describe('pm', () => {
+// 使用 sequential 以避免共享 app 变量时的竞争条件
+describe.sequential('pm', () => {
   let app: MockServer;
   afterEach(async () => {
     if (app) {
       await app.destroy();
     }
+  });
+  // Reset any mocks that might persist between tests
+  beforeEach(() => {
+    vi.restoreAllMocks();
   });
   test('addPreset', async () => {
     class Plugin1 extends Plugin {}
@@ -24,6 +29,7 @@ describe('pm', () => {
         ],
       ],
     });
+    await app.cleanDb();
     await app.load();
     expect(app.pm.get('plugin1').enabled).toBeTruthy();
     expect(app.pm.get(Plugin1).enabled).toBeTruthy();
@@ -35,6 +41,7 @@ describe('pm', () => {
     app = mockServer({
       plugins: [Plugin1],
     });
+    await app.cleanDb();
     await app.load();
     expect(app.pm.get(Plugin1).enabled).toBeTruthy();
     expect(app.pm.get(Plugin1).options.isPreset).toBeTruthy();
@@ -107,6 +114,7 @@ describe('pm', () => {
     app = mockServer({
       plugins: [Plugin1, Plugin2],
     });
+    await app.cleanDb();
     await app.pm.initPlugins();
     await app.pm.load();
     await app.pm.load();
@@ -136,6 +144,7 @@ describe('pm', () => {
     app = mockServer({
       plugins: [Plugin1, Plugin2],
     });
+    await app.cleanDb();
     await app.load();
     await app.pm.install();
     await app.pm.install();
@@ -143,6 +152,7 @@ describe('pm', () => {
   });
   test('enable', async () => {
     app = mockServer();
+    await app.cleanDb();
     await app.load();
     await expect(() => app.pm.enable('Plugin0')).rejects.toThrow('Plugin0 plugin does not exist');
   });
@@ -174,10 +184,6 @@ describe('pm', () => {
     expect(loadFn).not.toBeCalled();
   });
   test('enable', async () => {
-    const resolvePlugin = PluginManager.resolvePlugin;
-    PluginManager.resolvePlugin = async (pluginName) => {
-      return Plugin1;
-    };
     const loadFn = vi.fn();
     class Plugin1 extends Plugin {
       async beforeEnable() {
@@ -190,6 +196,10 @@ describe('pm', () => {
         loadFn();
       }
     }
+    const resolvePlugin = PluginManager.resolvePlugin;
+    PluginManager.resolvePlugin = async (pluginName) => {
+      return Plugin1;
+    };
     app = mockServer();
     await app.cleanDb();
     await app.load();
@@ -210,11 +220,6 @@ describe('pm', () => {
   });
 
   test('enable12', async () => {
-    const resolvePlugin = PluginManager.resolvePlugin;
-    PluginManager.resolvePlugin = async (pluginName) => {
-      return Plugin1;
-    };
-
     const loadFn = vi.fn();
 
     class Plugin1 extends Plugin {
@@ -228,6 +233,10 @@ describe('pm', () => {
         loadFn();
       }
     }
+    const resolvePlugin = PluginManager.resolvePlugin;
+    PluginManager.resolvePlugin = async (pluginName) => {
+      return Plugin1;
+    };
     app = mockServer();
     await app.cleanDb();
     await app.load();
@@ -308,10 +317,6 @@ describe('pm', () => {
     PluginManager.resolvePlugin = resolvePlugin;
   });
   test('disable', async () => {
-    const resolvePlugin = PluginManager.resolvePlugin;
-    PluginManager.resolvePlugin = async (pluginName) => {
-      return Plugin1;
-    };
     const loadFn = vi.fn();
     class Plugin1 extends Plugin {
       async beforeDisable() {
@@ -321,6 +326,10 @@ describe('pm', () => {
         loadFn();
       }
     }
+    const resolvePlugin = PluginManager.resolvePlugin;
+    PluginManager.resolvePlugin = async (pluginName) => {
+      return Plugin1;
+    };
     app = mockServer();
     await app.cleanDb();
     await app.load();
@@ -338,10 +347,6 @@ describe('pm', () => {
     PluginManager.resolvePlugin = resolvePlugin;
   });
   test('disable', async () => {
-    const resolvePlugin = PluginManager.resolvePlugin;
-    PluginManager.resolvePlugin = async (pluginName) => {
-      return Plugin1;
-    };
     const loadFn = vi.fn();
     class Plugin1 extends Plugin {
       async beforeDisable() {
@@ -351,6 +356,10 @@ describe('pm', () => {
         loadFn();
       }
     }
+    const resolvePlugin = PluginManager.resolvePlugin;
+    PluginManager.resolvePlugin = async (pluginName) => {
+      return Plugin1;
+    };
     app = mockServer();
     await app.cleanDb();
     await app.load();
@@ -397,7 +406,7 @@ describe('pm', () => {
       }[pluginName];
     };
     app = mockServer({
-      plugins: ['Plugin0'],
+      plugins: [[Plugin0, { name: 'Plugin0' }]],
     });
     await app.cleanDb();
     await app.load();
@@ -414,10 +423,6 @@ describe('pm', () => {
     PluginManager.resolvePlugin = resolvePlugin;
   });
   test('life-cycle', async () => {
-    const resolvePlugin = PluginManager.resolvePlugin;
-    PluginManager.resolvePlugin = async (pluginName) => {
-      return Plugin1;
-    };
     const hooks = [];
     const result = [];
     class Plugin1 extends Plugin {
@@ -453,6 +458,10 @@ describe('pm', () => {
         result.push(this.prop === 'a');
       }
     }
+    const resolvePlugin = PluginManager.resolvePlugin;
+    PluginManager.resolvePlugin = async (pluginName) => {
+      return Plugin1;
+    };
     app = mockServer();
     await app.cleanDb();
     await app.load();

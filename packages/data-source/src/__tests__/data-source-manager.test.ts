@@ -2,7 +2,8 @@ import { createMockServer, mockDatabase, supertest } from '@tachybase/test';
 
 import { SequelizeDataSource } from '../sequelize-data-source';
 
-describe('example', () => {
+// 使用 sequential 以避免资源共享时的竞争条件
+describe.sequential('example', () => {
   test.skip('case1', async () => {
     const app = await createMockServer({
       acl: false,

@@ -557,6 +557,16 @@ export class Application extends EventEmitter implements AsyncEmitter {
 
     await this.pm.load(options);
 
+    // Load test plugins registered via app.plugin()
+    for (const [name, instance] of this.plugins) {
+      if (instance.beforeLoad) {
+        await instance.beforeLoad();
+      }
+      if (instance.load) {
+        await instance.load();
+      }
+    }
+
     if (options?.sync) {
       await this.db.sync();
     }
@@ -593,6 +603,17 @@ export class Application extends EventEmitter implements AsyncEmitter {
    */
   getPlugin<P extends Plugin>(name: string | Constructable<P>) {
     return this.pm.get(name) as P;
+  }
+
+  /**
+   * Register a plugin class for testing purposes.
+   * This stores the plugin in the internal plugins map to be loaded later.
+   * @param pluginClass - The plugin class to register
+   */
+  plugin<P extends Plugin>(pluginClass: new (app: Application, options: any) => P): void {
+    const name = pluginClass.name || `test-plugin-${this.plugins.size}`;
+    const instance = new pluginClass(this, {});
+    this.plugins.set(name, instance);
   }
 
   /**
