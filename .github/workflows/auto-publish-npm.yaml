@@ -1,0 +1,217 @@
+name: Auto Publish to NPM
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_channel:
+        description: 'Release channel'
+        required: true
+        default: 'stable'
+        type: choice
+        options:
+          - stable
+          - alpha
+      version:
+        description: 'Custom version (e.g. 1.2.3 or 1.2.3-alpha.0). Leave empty to use bump type.'
+        required: false
+        type: string
+      bump:
+        description: 'Version bump type (used when version is empty)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+  push:
+    tags:
+      - 'v*'
+
+run-name: >-
+  Publish to NPM -
+  ${{ github.event_name == 'workflow_dispatch' && format('{0}:{1}', github.event.inputs.release_channel, github.event.inputs.version || github.event.inputs.bump) || github.ref_name }}
+
+jobs:
+  release:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    outputs:
+      version: ${{ steps.do_version.outputs.version }}
+      branch: ${{ steps.get_branch.outputs.branch }}
+      channel: ${{ steps.set_channel.outputs.channel }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+          ref: ${{ github.event.inputs.release_channel == 'stable' && 'main' || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.0
+
+      - name: Get branch name
+        id: get_branch
+        run: |
+          branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      - name: Resolve release channel
+        id: set_channel
+        run: |
+          echo "channel=${{ github.event.inputs.release_channel }}" >> "$GITHUB_OUTPUT"
+
+      - name: Bump workspace versions
+        id: do_version
+        run: |
+          channel="${{ github.event.inputs.release_channel }}"
+          custom_version="${{ github.event.inputs.version }}"
+          bump="${{ github.event.inputs.bump }}"
+
+          if [ -n "$custom_version" ]; then
+            pnpm -r exec -- npm version "$custom_version" --no-git-tag-version
+            npm version "$custom_version" --no-git-tag-version
+            version="v$custom_version"
+          else
+            if [ "$channel" = "alpha" ]; then
+              pnpm -r exec -- npm version prerelease --preid=alpha --no-git-tag-version
+              version=$(npm version prerelease --preid=alpha --no-git-tag-version)
+            else
+              pnpm -r exec -- npm version "$bump" --no-git-tag-version
+              version=$(npm version "$bump" --no-git-tag-version)
+            fi
+          fi
+
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and tag
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(version): release ${{ steps.do_version.outputs.version }}"
+          tagging_message: ${{ steps.do_version.outputs.version }}
+          branch: ${{ steps.get_branch.outputs.branch }}
+
+  publish_from_dispatch:
+    if: github.event_name == 'workflow_dispatch'
+    needs: release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.release.outputs.version }}
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - uses: MOZGIII/install-ldid-action@v1
+        with:
+          tag: v2.1.5-procursus7
+
+      - name: Install deps
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Publish packages (Trusted Publisher)
+        run: |
+          channel="${{ needs.release.outputs.channel }}"
+          if [ "$channel" = "alpha" ]; then
+            pnpm -r publish --provenance --access public --no-git-checks --tag alpha
+          else
+            pnpm -r publish --provenance --access public --no-git-checks
+          fi
+
+      - name: Build tega binary
+        if: needs.release.outputs.channel == 'stable'
+        run: pnpm --filter tego run build
+
+      - name: Upload release assets
+        if: needs.release.outputs.channel == 'stable'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.release.outputs.version }}
+          files: |
+            packages/tego/dist/tego-linux-x64
+            packages/tego/dist/tego-macos-x64
+            packages/tego/dist/tego-win-x64.exe
+            packages/tego/dist/tego-linux-arm64
+            packages/tego/dist/tego-macos-arm64
+
+  publish_from_tag:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Check if tag is on main branch
+        id: check_branch
+        run: |
+          TAG_COMMIT=$(git rev-list -n 1 "${{ github.ref_name }}")
+          if git branch -r --contains "$TAG_COMMIT" | grep -q 'origin/main'; then
+            echo "on_main=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "on_main=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: MOZGIII/install-ldid-action@v1
+        if: steps.check_branch.outputs.on_main == 'true'
+        with:
+          tag: v2.1.5-procursus7
+
+      - name: Setup pnpm
+        if: steps.check_branch.outputs.on_main == 'true'
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        if: steps.check_branch.outputs.on_main == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install deps
+        if: steps.check_branch.outputs.on_main == 'true'
+        run: pnpm install
+
+      - name: Build
+        if: steps.check_branch.outputs.on_main == 'true'
+        run: pnpm build
+
+      - name: Publish packages (Trusted Publisher)
+        if: steps.check_branch.outputs.on_main == 'true'
+        run: |
+          if echo "${{ github.ref_name }}" | grep -qE -- '-alpha\.'; then
+            pnpm -r publish --provenance --access public --no-git-checks --tag alpha
+          else
+            pnpm -r publish --provenance --access public --no-git-checks
+          fi
