@@ -50,9 +50,19 @@ jobs:
         if: steps.check_branch.outputs.on_main == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22.14.0
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm for trusted publishing
+        if: steps.check_branch.outputs.on_main == 'true'
+        run: npm install -g npm@^11.5.1
+
+      - name: Verify trusted publishing prerequisites
+        if: steps.check_branch.outputs.on_main == 'true'
+        run: |
+          echo "Node: $(node -v)"
+          echo "npm: $(npm -v)"
 
       - name: Install deps
         if: steps.check_branch.outputs.on_main == 'true'
