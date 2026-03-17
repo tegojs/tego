@@ -1,105 +1,23 @@
 name: Auto Publish to NPM
 
 on:
-  workflow_dispatch:
-    inputs:
-      release_channel:
-        description: 'Release channel'
-        required: true
-        default: 'stable'
-        type: choice
-        options:
-          - stable
-          - alpha
-      version:
-        description: 'Custom version (e.g. 1.2.3 or 1.2.3-alpha.0). Leave empty to use bump type.'
-        required: false
-        type: string
-      bump:
-        description: 'Version bump type (used when version is empty)'
-        required: true
-        default: 'patch'
-        type: choice
-        options:
-          - patch
-          - minor
-          - major
   push:
     tags:
       - 'v*'
+  workflow_dispatch: {}  # 无 inputs
 
-run-name: >-
-  Publish to NPM -
-  ${{ github.event_name == 'workflow_dispatch' && format('{0}:{1}', github.event.inputs.release_channel, github.event.inputs.version || github.event.inputs.bump) || github.ref_name }}
+run-name: "Publish to NPM - Version: ${{ github.ref_name }}"
 
 jobs:
-  release:
-    if: github.event_name == 'workflow_dispatch'
+  publish:
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
-    outputs:
-      version: ${{ steps.do_version.outputs.version }}
-      branch: ${{ steps.get_branch.outputs.branch }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
-          ref: ${{ github.event.inputs.release_channel == 'stable' && 'main' || github.ref_name }}
-          fetch-depth: 0
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+    # 限制只在 v* tag 上运行（自动 push 已限，手动选 branch 时若非 v* tag 直接跳过）
+    if: startsWith(github.ref, 'refs/tags/v')
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.18.0
-
-      - name: Get branch name
-        id: get_branch
-        run: |
-          branch=$(git rev-parse --abbrev-ref HEAD)
-          echo "branch=$branch" >> "$GITHUB_OUTPUT"
-
-      - name: Bump workspace versions
-        id: do_version
-        run: |
-          channel="${{ github.event.inputs.release_channel }}"
-          custom_version="${{ github.event.inputs.version }}"
-          bump="${{ github.event.inputs.bump }}"
-
-          if [ -n "$custom_version" ]; then
-            pnpm -r exec -- npm version "$custom_version" --no-git-tag-version
-            npm version "$custom_version" --no-git-tag-version
-            version="v$custom_version"
-          else
-            if [ "$channel" = "alpha" ]; then
-              pnpm -r exec -- npm version prerelease --preid=alpha --no-git-tag-version
-              version=$(npm version prerelease --preid=alpha --no-git-tag-version)
-            else
-              pnpm -r exec -- npm version "$bump" --no-git-tag-version
-              version=$(npm version "$bump" --no-git-tag-version)
-            fi
-          fi
-
-          echo "version=$version" >> "$GITHUB_OUTPUT"
-
-      - name: Commit and tag
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "chore(version): release ${{ steps.do_version.outputs.version }}"
-          tagging_message: ${{ steps.do_version.outputs.version }}
-          branch: ${{ steps.get_branch.outputs.branch }}
-
-  publish_from_tag:
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -110,11 +28,13 @@ jobs:
       - name: Check if tag is on main branch
         id: check_branch
         run: |
-          TAG_COMMIT=$(git rev-list -n 1 "${{ github.ref_name }}")
+          TAG_COMMIT=$(git rev-list -n 1 ${{ github.ref_name }})
           if git branch -r --contains "$TAG_COMMIT" | grep -q 'origin/main'; then
             echo "on_main=true" >> "$GITHUB_OUTPUT"
+            echo "✓ Tag ${{ github.ref_name }} is on main branch"
           else
             echo "on_main=false" >> "$GITHUB_OUTPUT"
+            echo "⚠ Tag ${{ github.ref_name }} is not on main branch, skipping publish"
           fi
 
       - uses: MOZGIII/install-ldid-action@v1
@@ -142,37 +62,165 @@ jobs:
         if: steps.check_branch.outputs.on_main == 'true'
         run: pnpm build
 
-      - name: Detect release channel from tag
+      - name: Publish
         if: steps.check_branch.outputs.on_main == 'true'
-        id: detect_channel
+        id: publish
         run: |
-          if echo "${{ github.ref_name }}" | grep -qE -- '-alpha\.'; then
-            echo "channel=alpha" >> "$GITHUB_OUTPUT"
-          else
-            echo "channel=stable" >> "$GITHUB_OUTPUT"
+          # 创建临时文件来记录发布结果
+          SUCCESS_FILE=$(mktemp)
+          FAILED_FILE=$(mktemp)
+          OUTPUT_FILE=$(mktemp)
+
+          # 获取所有需要发布的包列表（只获取项目自己的包，排除依赖项）
+          echo "获取需要发布的包列表..."
+
+          # 方法1: 从 packages 和 apps 目录中查找包
+          > /tmp/all-packages.txt
+          for dir in packages apps; do
+            if [ -d "$dir" ]; then
+              find "$dir" -name "package.json" -type f | while read pkg_file; do
+                pkg_name=$(jq -r '.name // empty' "$pkg_file" 2>/dev/null)
+                if [ -n "$pkg_name" ] && [ "$pkg_name" != "null" ]; then
+                  echo "$pkg_name" >> /tmp/all-packages.txt
+                fi
+              done
+            fi
+          done
+
+          # 方法2: 使用 pnpm list 但只获取工作区包（不包括依赖项）
+          if [ ! -s /tmp/all-packages.txt ]; then
+            echo "尝试使用 pnpm 获取工作区包..."
+            pnpm -r list --depth=0 --json 2>/dev/null | jq -r '.[] | select(.name != null and .name != "null" and .path != null) | .name' | sort -u > /tmp/all-packages.txt || true
           fi
 
-      - name: Publish packages (Trusted Publisher)
-        if: steps.check_branch.outputs.on_main == 'true'
-        run: |
-          if [ "${{ steps.detect_channel.outputs.channel }}" = "alpha" ]; then
-            pnpm -r publish --provenance --access public --no-git-checks --tag alpha
-          else
-            pnpm -r publish --provenance --access public --no-git-checks
+          TOTAL_PACKAGES=$(wc -l < /tmp/all-packages.txt | tr -d ' ' || echo "0")
+          echo "找到 $TOTAL_PACKAGES 个需要发布的包"
+
+          # 调试：显示找到的包列表
+          if [ -s /tmp/all-packages.txt ]; then
+            echo "包列表："
+            cat /tmp/all-packages.txt | head -10
+            if [ "$TOTAL_PACKAGES" -gt 10 ]; then
+              echo "... 还有 $((TOTAL_PACKAGES - 10)) 个包"
+            fi
           fi
 
-      - name: Build tega binary
-        if: steps.check_branch.outputs.on_main == 'true' && steps.detect_channel.outputs.channel == 'stable'
-        run: pnpm --filter tego run build
+          # 设置允许命令失败但继续执行
+          set +e
 
-      - name: Upload release assets
-        if: steps.check_branch.outputs.on_main == 'true' && steps.detect_channel.outputs.channel == 'stable'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_name }}
-          files: |
-            packages/tego/dist/tego-linux-x64
-            packages/tego/dist/tego-macos-x64
-            packages/tego/dist/tego-win-x64.exe
-            packages/tego/dist/tego-linux-arm64
-            packages/tego/dist/tego-macos-arm64
+          # 执行发布并捕获所有输出
+          echo "开始发布包到 NPM..."
+
+          # 使用更精确的发布命令，只发布工作区包
+          pnpm -r --filter="./packages/*" --filter="./apps/*" publish --provenance --access public --no-git-checks 2>&1 | tee "$OUTPUT_FILE"
+          PUBLISH_EXIT_CODE=${PIPESTATUS[0]}
+
+          set -e
+
+          # 解析输出，找出成功发布的包
+          # pnpm publish 成功时会显示类似 "Published @scope/package@1.0.0" 的信息
+          grep -iE "published|publishing" "$OUTPUT_FILE" | grep -oE '@[^/]+/[^@\s]+@[0-9.]+' | sed 's/@[0-9.]*$//' | sort -u > "$SUCCESS_FILE" || true
+
+          # 如果上面的方法没找到，尝试从输出中提取包名，但只匹配项目包
+          if [ ! -s "$SUCCESS_FILE" ]; then
+            # 从输出中查找包含包名的行，但只处理项目自己的包
+            grep -oE '@[^/]+/[^@\s/]+' "$OUTPUT_FILE" | grep -v "node_modules" | sort -u | while read pkg; do
+              # 检查这个包是否在 all-packages.txt 中（项目包列表）
+              if grep -q "^$pkg$" /tmp/all-packages.txt 2>/dev/null; then
+                # 检查这个包在输出中是否有错误信息
+                if ! grep -iE "error|failed|denied|unauthorized|forbidden" "$OUTPUT_FILE" | grep -q "$pkg"; then
+                  echo "$pkg" >> "$SUCCESS_FILE"
+                fi
+              fi
+            done
+          fi
+
+          # 找出失败的包
+          # 方法1: 从错误信息中提取包名
+          grep -iE "error|failed|denied|unauthorized|forbidden" "$OUTPUT_FILE" | grep -oE '@[^/]+/[^@\s/]+' | sort -u > "$FAILED_FILE" || true
+
+          # 方法2: 检查所有包，如果不在成功列表中且输出中有相关错误，则标记为失败
+          if [ "$PUBLISH_EXIT_CODE" -ne 0 ]; then
+            while read pkg; do
+              if [ -n "$pkg" ]; then
+                # 如果包不在成功列表中
+                if ! grep -q "^$pkg$" "$SUCCESS_FILE" 2>/dev/null; then
+                  # 检查输出中是否有这个包的特定错误
+                  if grep -iE "error|failed" "$OUTPUT_FILE" | grep -q "$pkg"; then
+                    echo "$pkg" >> "$FAILED_FILE"
+                  fi
+                fi
+              fi
+            done < /tmp/all-packages.txt
+          fi
+
+          # 去重
+          sort -u "$SUCCESS_FILE" -o "$SUCCESS_FILE" 2>/dev/null || true
+          sort -u "$FAILED_FILE" -o "$FAILED_FILE" 2>/dev/null || true
+
+          # 统计数量
+          SUCCESS_COUNT=$(wc -l < "$SUCCESS_FILE" | tr -d ' ' || echo "0")
+          FAILED_COUNT=$(wc -l < "$FAILED_FILE" | tr -d ' ' || echo "0")
+
+          # 读取包名列表
+          SUCCESS_PACKAGES=$(cat "$SUCCESS_FILE" 2>/dev/null | tr '\n' ', ' | sed 's/, $//' || echo "")
+          FAILED_PACKAGES=$(cat "$FAILED_FILE" 2>/dev/null | tr '\n' ', ' | sed 's/, $//' || echo "")
+
+          # 输出到 GitHub outputs
+          echo "success_count=$SUCCESS_COUNT" >> $GITHUB_OUTPUT
+          echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+          {
+            echo "success_packages<<EOF"
+            echo "$SUCCESS_PACKAGES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+          {
+            echo "failed_packages<<EOF"
+            echo "$FAILED_PACKAGES"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+          # 生成汇总通知
+          if [ "$SUCCESS_COUNT" -gt 0 ] && [ "$FAILED_COUNT" -eq 0 ]; then
+            echo "::notice title=✅ NPM 发布成功::成功发布 $SUCCESS_COUNT 个包到 NPM"
+          elif [ "$SUCCESS_COUNT" -gt 0 ] && [ "$FAILED_COUNT" -gt 0 ]; then
+            echo "::notice title=⚠️ NPM 发布部分成功::成功发布 $SUCCESS_COUNT 个包，失败 $FAILED_COUNT 个包"
+          elif [ "$FAILED_COUNT" -gt 0 ]; then
+            echo "::notice title=❌ NPM 发布失败::失败 $FAILED_COUNT 个包"
+          else
+            # 既没有成功也没有失败的情况（通常表示发布命令执行异常）
+            if [ "$PUBLISH_EXIT_CODE" -ne 0 ]; then
+              echo "::warning title=⚠️ NPM 发布异常::发布命令执行失败 (exit code: $PUBLISH_EXIT_CODE)，无法解析发布结果"
+            else
+              echo "::warning title=⚠️ NPM 发布无结果::未找到任何发布的包或发布结果"
+            fi
+          fi
+
+          # 输出失败的包列表（成功的包只统计数量，不列出包名）
+          if [ "$FAILED_COUNT" -gt 0 ]; then
+            FAILED_LIST=$(cat "$FAILED_FILE" 2>/dev/null | tr '\n' ', ' | sed 's/, $//' || echo "")
+            if [ -n "$FAILED_LIST" ]; then
+              echo "::notice title=❌ 失败的包 ($FAILED_COUNT 个)::$FAILED_LIST"
+            fi
+          fi
+
+      - name: Publish Summary
+        if: always() && steps.check_branch.outputs.on_main == 'true'
+        run: |
+          echo "=== NPM Publish Summary ==="
+          echo "Success Count: ${{ steps.publish.outputs.success_count || '0' }}"
+          echo "Failed Count: ${{ steps.publish.outputs.failed_count || '0' }}"
+          echo ""
+
+          SUCCESS_COUNT="${{ steps.publish.outputs.success_count || '0' }}"
+          FAILED_COUNT="${{ steps.publish.outputs.failed_count || '0' }}"
+
+          # 确保至少生成一个汇总通知
+          if [ -z "$SUCCESS_COUNT" ] || [ -z "$FAILED_COUNT" ]; then
+            echo "::notice title=⚠️ NPM 发布结果未知::无法获取发布统计信息"
+          else
+            TOTAL=$((SUCCESS_COUNT + FAILED_COUNT))
+            if [ "$TOTAL" -eq 0 ]; then
+              echo "::notice title=⚠️ NPM 发布无结果::未执行任何包的发布"
+            fi
+          fi

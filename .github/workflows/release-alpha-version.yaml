@@ -1,0 +1,447 @@
+name: Release Alpha Version
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+run-name: "Release Alpha Version - Bump: ${{ github.event.inputs.bump || 'patch' }}"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+      actions: write
+    outputs:
+      version: ${{ steps.do_version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}
+          fetch-depth: 0 # 获取完整的 git 历史，包括所有 tags
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.18.0
+      - name: Fetch all tags
+        run: |
+          # 确保获取所有远程 tags，用于版本比较
+          git fetch --tags --force
+          echo "Available tags:"
+          git tag --sort=-version:refname | head -10 || echo "No tags found"
+      - name: Do alpha version release
+        id: do_version
+        run: |
+          # 读取当前版本号
+          current_version=$(node -p "require('./package.json').version")
+          echo "Current version: $current_version"
+
+          # 移除可能存在的 alpha 后缀，获取基础版本号
+          base_version=$(echo "$current_version" | sed -E 's/-alpha\.[0-9]+$//')
+          echo "Base version: $base_version"
+
+          # 使用 bump 类型计算新的基础版本号
+          bump="${{ github.event.inputs.bump || 'patch' }}"
+          echo "Using bump type: $bump"
+
+          # 计算新的基础版本号（不实际更新 package.json）
+          IFS='.' read -r major minor patch <<< "$base_version"
+
+          if [ "$bump" = "major" ]; then
+            major=$((major + 1))
+            minor=0
+            patch=0
+          elif [ "$bump" = "minor" ]; then
+            minor=$((minor + 1))
+            patch=0
+          else
+            # patch (default)
+            patch=$((patch + 1))
+          fi
+
+          new_base_version="$major.$minor.$patch"
+          echo "New base version: $new_base_version"
+
+          # 查找最新的 alpha 版本号（针对新的基础版本）
+          # 转义基础版本号中的点号，用于正则表达式匹配
+          escaped_base_version=$(echo "$new_base_version" | sed 's/\./\\./g')
+          latest_alpha_tag=$(git tag --sort=-version:refname | grep -E "^v${escaped_base_version}-alpha\.[0-9]+$" | head -1 || echo "")
+
+          if [ -n "$latest_alpha_tag" ]; then
+            # 提取 alpha 版本号
+            alpha_number=$(echo "$latest_alpha_tag" | sed -E 's/^v[0-9]+\.[0-9]+\.[0-9]+-alpha\.([0-9]+)$/\1/')
+            alpha_number=$((alpha_number + 1))
+            echo "Found existing alpha tag: $latest_alpha_tag, incrementing to alpha.$alpha_number"
+          else
+            # 这是该基础版本的第一个 alpha 版本
+            alpha_number=1
+            echo "No existing alpha tag found for $new_base_version, starting with alpha.1"
+          fi
+
+          # 构建新的 alpha 版本号
+          version="${new_base_version}-alpha.${alpha_number}"
+          echo "New alpha version: $version"
+
+          # 更新所有 package.json 文件到新的 alpha 版本
+          # 使用 node 脚本来更新版本号
+          node -e "
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+
+            // 更新根目录 package.json
+            const rootPkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            rootPkg.version = '$version';
+            fs.writeFileSync('package.json', JSON.stringify(rootPkg, null, 2) + '\n');
+
+            // 更新所有子包的 package.json
+            const packages = execSync('find . -name package.json -not -path \"*/node_modules/*\" -not -path \"*/dist/*\"', { encoding: 'utf8' })
+              .trim()
+              .split('\n')
+              .filter(p => p !== './package.json');
+
+            packages.forEach(pkgPath => {
+              try {
+                const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+                pkg.version = '$version';
+                fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+              } catch (e) {
+                console.error('Error updating', pkgPath, ':', e.message);
+              }
+            });
+
+            console.log('✓ Updated', packages.length + 1, 'package.json files to version $version');
+          "
+
+          # 验证根目录版本号
+          ROOT_VERSION=$(node -p "require('./package.json').version")
+          if [ "$ROOT_VERSION" != "$version" ]; then
+            echo "❌ Error: Root package.json version mismatch. Expected $version, got $ROOT_VERSION"
+            exit 1
+          fi
+
+          # 统计所有更新的 package.json 文件
+          UPDATED_COUNT=$(git diff --name-only HEAD | grep -c "package.json$" || echo "0")
+          echo "✓ Version bumped to: $version ($UPDATED_COUNT package.json files updated)"
+
+          echo "New version: $version"
+          # 输出版本号（不带 v 前缀，用于内部处理）
+          echo "version=$version" >> $GITHUB_OUTPUT
+          # 输出带 v 前缀的版本号（用于创建 tag）
+          echo "version_tag=v$version" >> $GITHUB_OUTPUT
+          echo "current_version=$current_version" >> $GITHUB_OUTPUT
+          echo "base_version=$new_base_version" >> $GITHUB_OUTPUT
+          echo "::notice title=Alpha Version Updated::New alpha version: $version"
+
+      - name: Fetch all tags
+        run: |
+          # 确保获取所有远程 tags
+          git fetch --tags --force
+          echo "Available tags:"
+          git tag --sort=-version:refname | head -10 || echo "No tags found"
+
+      - name: Generate changelog
+        id: generate_changelog
+        run: |
+          set -e  # 如果任何命令失败，立即退出
+
+          current_version="${{ steps.do_version.outputs.current_version }}"
+          new_version="${{ steps.do_version.outputs.version }}"
+          base_version="${{ steps.do_version.outputs.base_version }}"
+
+          # 获取上一个 tag（排除当前要发布的版本 tag，如果存在）
+          # 优先查找相同基础版本的上一个 alpha 版本
+          # 转义基础版本号中的点号，用于正则表达式匹配
+          escaped_base_version=$(echo "$base_version" | sed 's/\./\\./g')
+          previous_alpha_tag=$(git tag --sort=-version:refname | grep -E "^v${escaped_base_version}-alpha\.[0-9]+$" | grep -v "^v${new_version}$" | head -1 || echo "")
+
+          # 如果没有找到同基础版本的 alpha，查找最新的正式版本或 alpha 版本
+          if [ -z "$previous_alpha_tag" ]; then
+            previous_tag=$(git tag --sort=-version:refname | grep -v "^v${new_version}$" | head -1 || echo "")
+          else
+            previous_tag="$previous_alpha_tag"
+          fi
+
+          # 如果还是找不到，尝试使用 git describe（但排除当前版本）
+          if [ -z "$previous_tag" ]; then
+            previous_tag=$(git describe --tags --abbrev=0 --exclude="v${new_version}" 2>/dev/null || echo "")
+          fi
+
+          echo "Generating changelog for alpha version: $new_version"
+          echo "Base version: $base_version"
+
+          # 检查 [Unreleased] 内容是否存在
+          HAS_UNRELEASED_EN=$(grep -q "^## \[Unreleased\]" CHANGELOG.md && echo "yes" || echo "no")
+          HAS_UNRELEASED_ZH=$(grep -q "^## \[未发布\]" CHANGELOG.zh-CN.md && echo "yes" || echo "no")
+          echo "  [Unreleased] content available: EN=$HAS_UNRELEASED_EN, ZH=$HAS_UNRELEASED_ZH"
+
+          CHANGELOG_GENERATED=false
+
+          if [ -n "$previous_tag" ]; then
+            echo "  From tag: $previous_tag"
+            echo "  To version: v$new_version"
+
+            # 先尝试从 git commits 生成
+            echo "  Attempting to generate from git commits..."
+            if node scripts/generate-changelog.mjs "$new_version" "$previous_tag" 2>&1; then
+              # 检查是否成功生成了版本条目
+              if grep -q "## \[$new_version\]" CHANGELOG.md; then
+                echo "  ✓ Successfully generated from git commits"
+                CHANGELOG_GENERATED=true
+              else
+                echo "  ⚠ Generated but no version entry found, may have no commits"
+              fi
+            else
+              echo "  ⚠ Failed to generate from git commits"
+            fi
+
+            # 如果从 git commits 生成失败或没有内容，使用 [Unreleased] 内容
+            if [ "$CHANGELOG_GENERATED" != "true" ]; then
+              if [ "$HAS_UNRELEASED_EN" = "yes" ] || [ "$HAS_UNRELEASED_ZH" = "yes" ]; then
+                echo "  Using [Unreleased] content to generate changelog..."
+                CHANGELOG_USE_UNRELEASED=true node scripts/generate-changelog.mjs "$new_version" "$previous_tag" || {
+                  echo "  ❌ Failed to generate changelog from [Unreleased] content"
+                  exit 1
+                }
+                CHANGELOG_GENERATED=true
+              else
+                echo "  ❌ No [Unreleased] content available and no git commits found"
+                exit 1
+              fi
+            fi
+          else
+            echo "  No previous tag found"
+            echo "  Using [Unreleased] content to generate changelog"
+            # 如果没有之前的 tag，使用 [Unreleased] 内容
+            CHANGELOG_USE_UNRELEASED=true node scripts/generate-changelog.mjs "$new_version" || {
+              echo "  ❌ Failed to generate changelog from [Unreleased] content"
+              exit 1
+            }
+            CHANGELOG_GENERATED=true
+          fi
+
+          # 验证生成的文件是否存在且有内容
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "❌ Error: CHANGELOG.md was not generated"
+            exit 1
+          fi
+
+          if [ ! -f "CHANGELOG.zh-CN.md" ]; then
+            echo "❌ Error: CHANGELOG.zh-CN.md was not generated"
+            exit 1
+          fi
+
+          # 检查是否包含新版本的条目
+          if ! grep -q "## \[$new_version\]" CHANGELOG.md; then
+            echo "❌ Error: CHANGELOG.md does not contain entry for version $new_version"
+            echo "First 50 lines of CHANGELOG.md:"
+            head -50 CHANGELOG.md
+            exit 1
+          fi
+
+          if ! grep -q "## \[$new_version\]" CHANGELOG.zh-CN.md; then
+            echo "❌ Error: CHANGELOG.zh-CN.md does not contain entry for version $new_version"
+            echo "First 50 lines of CHANGELOG.zh-CN.md:"
+            head -50 CHANGELOG.zh-CN.md
+            exit 1
+          fi
+
+          # 检查是否有变更（相对于 HEAD）
+          if git diff --quiet HEAD CHANGELOG.md CHANGELOG.zh-CN.md; then
+            echo "⚠ Warning: No changes detected in CHANGELOG files"
+            echo "This may indicate the changelog was already up to date"
+            echo "changelog_updated=false" >> $GITHUB_OUTPUT
+          else
+            echo "✓ Changelog generated successfully with changes"
+            echo "Changes preview:"
+            git diff --stat HEAD CHANGELOG.md CHANGELOG.zh-CN.md
+            echo "changelog_updated=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update workflow run name
+        env:
+          NEW_NAME: "Release Alpha Version - Bump: ${{ github.event.inputs.bump || 'patch' }} → ${{ steps.do_version.outputs.version }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          node -e "
+            const https = require('https');
+            const newName = process.env.NEW_NAME;
+            const token = process.env.GITHUB_TOKEN;
+            const repo = process.env.REPOSITORY;
+            const runId = process.env.RUN_ID;
+            const data = JSON.stringify({ display_title: newName });
+            const options = {
+              hostname: 'api.github.com',
+              path: '/repos/' + repo + '/actions/runs/' + runId,
+              method: 'PATCH',
+              headers: {
+                'Accept': 'application/vnd.github+json',
+                'Authorization': 'Bearer ' + token,
+                'X-GitHub-Api-Version': '2022-11-28',
+                'Content-Type': 'application/json',
+                'Content-Length': data.length
+              }
+            };
+            const req = https.request(options, (res) => {
+              let body = '';
+              res.on('data', (chunk) => { body += chunk; });
+              res.on('end', () => {
+                if (res.statusCode === 200 || res.statusCode === 204) {
+                  console.log('✓ Workflow run name updated successfully');
+                } else {
+                  console.log('⚠ Failed to update run name (status: ' + res.statusCode + '), but continuing...');
+                  console.log('Response:', body);
+                }
+              });
+            });
+            req.on('error', (e) => {
+              console.log('⚠ Error updating run name:', e.message, ', but continuing...');
+            });
+            req.write(data);
+            req.end();
+          "
+
+      - name: Verify files before commit
+        run: |
+          NEW_VERSION="${{ steps.do_version.outputs.version }}"
+
+          echo "=== Verifying files before commit ==="
+
+          # 验证关键文件是否存在
+          if [ ! -f "CHANGELOG.md" ]; then
+            echo "❌ Error: CHANGELOG.md does not exist"
+            exit 1
+          fi
+          if [ ! -f "CHANGELOG.zh-CN.md" ]; then
+            echo "❌ Error: CHANGELOG.zh-CN.md does not exist"
+            exit 1
+          fi
+
+          # 检查 CHANGELOG 是否包含新版本条目
+          if ! grep -q "## \[$NEW_VERSION\]" CHANGELOG.md; then
+            echo "❌ Error: CHANGELOG.md does not contain entry for version $NEW_VERSION"
+            echo "Available versions in CHANGELOG.md:"
+            grep "^## \[" CHANGELOG.md | head -5
+            exit 1
+          fi
+
+          if ! grep -q "## \[$NEW_VERSION\]" CHANGELOG.zh-CN.md; then
+            echo "❌ Error: CHANGELOG.zh-CN.md does not contain entry for version $NEW_VERSION"
+            echo "Available versions in CHANGELOG.zh-CN.md:"
+            grep "^## \[" CHANGELOG.zh-CN.md | head -5
+            exit 1
+          fi
+
+          # 显示文件变更状态
+          echo ""
+          echo "=== File changes status ==="
+          echo "All package.json files changed:"
+          git diff --name-only HEAD | grep "package.json$" | head -20 || echo "  (no package.json changes found)"
+          TOTAL_PKG_CHANGES=$(git diff --name-only HEAD | grep -c "package.json$" || echo "0")
+          echo "Total package.json files changed: $TOTAL_PKG_CHANGES"
+
+          # 验证至少更新了根目录和主要包的 package.json
+          if [ "$TOTAL_PKG_CHANGES" -lt 10 ]; then
+            echo "❌ Error: Expected at least 10+ package.json files to be updated, but only $TOTAL_PKG_CHANGES found"
+            echo "This indicates that not all packages were updated correctly"
+            exit 1
+          fi
+
+          # 验证根目录 package.json 的版本号是否正确
+          ROOT_PKG_VERSION=$(grep -E '^\s*"version"\s*:\s*"' package.json | head -1 | sed -E 's/.*"version"\s*:\s*"([^"]+)".*/\1/' || echo "")
+          if [ -z "$ROOT_PKG_VERSION" ]; then
+            echo "⚠ Warning: Could not read root package.json version"
+          elif [ "$ROOT_PKG_VERSION" != "$NEW_VERSION" ]; then
+            echo "❌ Error: Root package.json version is $ROOT_PKG_VERSION, expected $NEW_VERSION"
+            exit 1
+          else
+            echo "✓ Root package.json version verified: $ROOT_PKG_VERSION"
+          fi
+
+          echo ""
+          echo "CHANGELOG.md changes:"
+          git diff --stat HEAD CHANGELOG.md 2>/dev/null || echo "  (no changes)"
+
+          echo ""
+          echo "CHANGELOG.zh-CN.md changes:"
+          git diff --stat HEAD CHANGELOG.zh-CN.md 2>/dev/null || echo "  (no changes)"
+
+          # 显示 CHANGELOG 中新版本条目的预览
+          echo ""
+          echo "=== CHANGELOG.md entry preview for $NEW_VERSION ==="
+          grep -A 10 "## \[$NEW_VERSION\]" CHANGELOG.md | head -15
+
+          echo ""
+          echo "=== CHANGELOG.zh-CN.md entry preview for $NEW_VERSION ==="
+          grep -A 10 "## \[$NEW_VERSION\]" CHANGELOG.zh-CN.md | head -15
+
+          echo ""
+          echo "✓ All files verified successfully"
+
+      - name: Stage all changed files
+        run: |
+          # 显式添加所有需要提交的文件
+          echo "Staging all changed files..."
+
+          # 添加根目录 package.json
+          if [ -f "package.json" ]; then
+            git add package.json
+            echo "✓ Added package.json"
+          fi
+
+          # 添加所有子目录的 package.json 文件（排除 node_modules 和 dist）
+          find . \
+            -type d \( -name node_modules -o -name dist \) -prune \
+            -o -name package.json -type f -print | \
+          while IFS= read -r file; do
+            if [ "$file" != "./package.json" ]; then
+              git add "$file"
+            fi
+          done
+          echo "✓ Added all package.json files"
+
+          # 添加 CHANGELOG 文件
+          git add CHANGELOG.md CHANGELOG.zh-CN.md
+          echo "✓ Added CHANGELOG files"
+
+          # 显示将要提交的文件
+          echo ""
+          echo "Files staged for commit:"
+          git diff --cached --name-only | head -20
+          TOTAL_STAGED=$(git diff --cached --name-only | wc -l | tr -d ' ')
+          echo "Total files staged: $TOTAL_STAGED"
+
+          if [ "$TOTAL_STAGED" -lt 10 ]; then
+            echo "❌ Error: Expected at least 10+ files to be staged"
+            exit 1
+          fi
+
+      - name: Commit and tag
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          tagging_message: ${{ steps.do_version.outputs.version_tag || format('v{0}', steps.do_version.outputs.version) }}
+          commit_message: "chore(version): release alpha ${{ steps.do_version.outputs.version_tag || format('v{0}', steps.do_version.outputs.version) }}"
+          # 由于我们已经显式暂存了文件，file_pattern 用于验证
+          # 匹配所有 package.json 文件（根目录和所有子目录）
+          file_pattern: |
+            package.json
+            **/package.json
+            CHANGELOG.md
+            CHANGELOG.zh-CN.md
+          skip_dirty_check: true
+          skip_fetch: false
