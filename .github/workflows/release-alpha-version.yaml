@@ -204,31 +204,6 @@ jobs:
 
           echo "=== Verifying files before commit ==="
 
-          # 验证关键文件是否存在
-          if [ ! -f "CHANGELOG.md" ]; then
-            echo "❌ Error: CHANGELOG.md does not exist"
-            exit 1
-          fi
-          if [ ! -f "CHANGELOG.zh-CN.md" ]; then
-            echo "❌ Error: CHANGELOG.zh-CN.md does not exist"
-            exit 1
-          fi
-
-          # 检查 CHANGELOG 是否包含新版本条目
-          if ! grep -q "## \[$NEW_VERSION\]" CHANGELOG.md; then
-            echo "❌ Error: CHANGELOG.md does not contain entry for version $NEW_VERSION"
-            echo "Available versions in CHANGELOG.md:"
-            grep "^## \[" CHANGELOG.md | head -5
-            exit 1
-          fi
-
-          if ! grep -q "## \[$NEW_VERSION\]" CHANGELOG.zh-CN.md; then
-            echo "❌ Error: CHANGELOG.zh-CN.md does not contain entry for version $NEW_VERSION"
-            echo "Available versions in CHANGELOG.zh-CN.md:"
-            grep "^## \[" CHANGELOG.zh-CN.md | head -5
-            exit 1
-          fi
-
           # 显示文件变更状态
           echo ""
           echo "=== File changes status ==="
@@ -256,23 +231,6 @@ jobs:
           fi
 
           echo ""
-          echo "CHANGELOG.md changes:"
-          git diff --stat HEAD CHANGELOG.md 2>/dev/null || echo "  (no changes)"
-
-          echo ""
-          echo "CHANGELOG.zh-CN.md changes:"
-          git diff --stat HEAD CHANGELOG.zh-CN.md 2>/dev/null || echo "  (no changes)"
-
-          # 显示 CHANGELOG 中新版本条目的预览
-          echo ""
-          echo "=== CHANGELOG.md entry preview for $NEW_VERSION ==="
-          grep -A 10 "## \[$NEW_VERSION\]" CHANGELOG.md | head -15
-
-          echo ""
-          echo "=== CHANGELOG.zh-CN.md entry preview for $NEW_VERSION ==="
-          grep -A 10 "## \[$NEW_VERSION\]" CHANGELOG.zh-CN.md | head -15
-
-          echo ""
           echo "✓ All files verified successfully"
 
       - name: Stage all changed files
@@ -297,10 +255,6 @@ jobs:
           done
           echo "✓ Added all package.json files"
 
-          # 添加 CHANGELOG 文件
-          git add CHANGELOG.md CHANGELOG.zh-CN.md
-          echo "✓ Added CHANGELOG files"
-
           # 显示将要提交的文件
           echo ""
           echo "Files staged for commit:"
@@ -323,7 +277,5 @@ jobs:
           file_pattern: |
             package.json
             **/package.json
-            CHANGELOG.md
-            CHANGELOG.zh-CN.md
           skip_dirty_check: true
           skip_fetch: false
