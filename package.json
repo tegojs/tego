@@ -2,6 +2,14 @@
   "name": "tego",
   "version": "1.6.7-alpha.1",
   "private": true,
+  "homepage": "https://github.com/tegojs/tego#readme",
+  "bugs": {
+    "url": "https://github.com/tegojs/tego/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tegojs/tego"
+  },
   "license": "Apache-2.0",
   "scripts": {
     "build": "tegod build",
@@ -11,6 +19,7 @@
     "preinstall": "npx only-allow pnpm",
     "postinstall": "tegod postinstall",
     "lint": "oxlint",
+    "metadata:sync": "node scripts/sync-package-metadata.js",
     "pm": "tegod pm",
     "prepare": "husky",
     "settings:update": "node scripts/update-settings.js",
