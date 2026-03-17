@@ -42,7 +42,6 @@ jobs:
     outputs:
       version: ${{ steps.do_version.outputs.version }}
       branch: ${{ steps.get_branch.outputs.branch }}
-      channel: ${{ steps.set_channel.outputs.channel }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,11 +63,6 @@ jobs:
         run: |
           branch=$(git rev-parse --abbrev-ref HEAD)
           echo "branch=$branch" >> "$GITHUB_OUTPUT"
-
-      - name: Resolve release channel
-        id: set_channel
-        run: |
-          echo "channel=${{ github.event.inputs.release_channel }}" >> "$GITHUB_OUTPUT"
 
       - name: Bump workspace versions
         id: do_version
@@ -99,65 +93,6 @@ jobs:
           commit_message: "chore(version): release ${{ steps.do_version.outputs.version }}"
           tagging_message: ${{ steps.do_version.outputs.version }}
           branch: ${{ steps.get_branch.outputs.branch }}
-
-  publish_from_dispatch:
-    if: github.event_name == 'workflow_dispatch'
-    needs: release
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.release.outputs.version }}
-          fetch-depth: 0
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
-
-      - uses: MOZGIII/install-ldid-action@v1
-        with:
-          tag: v2.1.5-procursus7
-
-      - name: Install deps
-        run: pnpm install
-
-      - name: Build
-        run: pnpm build
-
-      - name: Publish packages (Trusted Publisher)
-        run: |
-          channel="${{ needs.release.outputs.channel }}"
-          if [ "$channel" = "alpha" ]; then
-            pnpm -r publish --provenance --access public --no-git-checks --tag alpha
-          else
-            pnpm -r publish --provenance --access public --no-git-checks
-          fi
-
-      - name: Build tega binary
-        if: needs.release.outputs.channel == 'stable'
-        run: pnpm --filter tego run build
-
-      - name: Upload release assets
-        if: needs.release.outputs.channel == 'stable'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ needs.release.outputs.version }}
-          files: |
-            packages/tego/dist/tego-linux-x64
-            packages/tego/dist/tego-macos-x64
-            packages/tego/dist/tego-win-x64.exe
-            packages/tego/dist/tego-linux-arm64
-            packages/tego/dist/tego-macos-arm64
 
   publish_from_tag:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
@@ -207,11 +142,37 @@ jobs:
         if: steps.check_branch.outputs.on_main == 'true'
         run: pnpm build
 
+      - name: Detect release channel from tag
+        if: steps.check_branch.outputs.on_main == 'true'
+        id: detect_channel
+        run: |
+          if echo "${{ github.ref_name }}" | grep -qE -- '-alpha\.'; then
+            echo "channel=alpha" >> "$GITHUB_OUTPUT"
+          else
+            echo "channel=stable" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish packages (Trusted Publisher)
         if: steps.check_branch.outputs.on_main == 'true'
         run: |
-          if echo "${{ github.ref_name }}" | grep -qE -- '-alpha\.'; then
+          if [ "${{ steps.detect_channel.outputs.channel }}" = "alpha" ]; then
             pnpm -r publish --provenance --access public --no-git-checks --tag alpha
           else
             pnpm -r publish --provenance --access public --no-git-checks
           fi
+
+      - name: Build tega binary
+        if: steps.check_branch.outputs.on_main == 'true' && steps.detect_channel.outputs.channel == 'stable'
+        run: pnpm --filter tego run build
+
+      - name: Upload release assets
+        if: steps.check_branch.outputs.on_main == 'true' && steps.detect_channel.outputs.channel == 'stable'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            packages/tego/dist/tego-linux-x64
+            packages/tego/dist/tego-macos-x64
+            packages/tego/dist/tego-win-x64.exe
+            packages/tego/dist/tego-linux-arm64
+            packages/tego/dist/tego-macos-arm64
