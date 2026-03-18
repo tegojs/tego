@@ -1,10 +1,11 @@
+# 本文件与 tego-standard 仓库相同文件保持同步
 name: Release Alpha Version
 
 on:
   workflow_dispatch:
     inputs:
-      bump:
-        description: 'Version bump type'
+      bump_when_stable:
+        description: 'Version bump type (only used when current version is stable)'
         required: true
         default: 'patch'
         type: choice
@@ -13,7 +14,7 @@ on:
           - minor
           - major
 
-run-name: "Release Alpha Version - Bump: ${{ github.event.inputs.bump || 'patch' }}"
+run-name: "Release Alpha Version - Stable bump: ${{ github.event.inputs.bump_when_stable || 'patch' }}"
 
 jobs:
   release:
@@ -50,50 +51,52 @@ jobs:
           current_version=$(node -p "require('./package.json').version")
           echo "Current version: $current_version"
 
-          # 移除可能存在的 alpha 后缀，获取基础版本号
-          base_version=$(echo "$current_version" | sed -E 's/-alpha\.[0-9]+$//')
-          echo "Base version: $base_version"
+          bump_when_stable="${{ github.event.inputs.bump_when_stable || 'patch' }}"
+          echo "Stable bump strategy: $bump_when_stable"
 
-          # 使用 bump 类型计算新的基础版本号
-          bump="${{ github.event.inputs.bump || 'patch' }}"
-          echo "Using bump type: $bump"
-
-          # 计算新的基础版本号（不实际更新 package.json）
-          IFS='.' read -r major minor patch <<< "$base_version"
-
-          if [ "$bump" = "major" ]; then
-            major=$((major + 1))
-            minor=0
-            patch=0
-          elif [ "$bump" = "minor" ]; then
-            minor=$((minor + 1))
-            patch=0
+          # 规则：
+          # 1) 当前已是 alpha 版本：仅 alpha 序号 +1（不改基础版本）
+          # 2) 当前是稳定版本：先按 bump 策略升级基础版本，再生成 alpha.1（若该基础版本已存在 alpha，则继续递增）
+          if [[ "$current_version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-alpha\.([0-9]+)$ ]]; then
+            new_base_version="${BASH_REMATCH[1]}"
+            alpha_number=$(( ${BASH_REMATCH[2]} + 1 ))
+            version="${new_base_version}-alpha.${alpha_number}"
+            echo "Current version is alpha, incrementing alpha number to: alpha.$alpha_number"
           else
-            # patch (default)
-            patch=$((patch + 1))
+            base_version="$current_version"
+            echo "Current version is stable, base version: $base_version"
+
+            IFS='.' read -r major minor patch <<< "$base_version"
+
+            if [ "$bump_when_stable" = "major" ]; then
+              major=$((major + 1))
+              minor=0
+              patch=0
+            elif [ "$bump_when_stable" = "minor" ]; then
+              minor=$((minor + 1))
+              patch=0
+            else
+              patch=$((patch + 1))
+            fi
+
+            new_base_version="$major.$minor.$patch"
+            echo "Bumped base version: $new_base_version"
+
+            escaped_base_version=$(echo "$new_base_version" | sed 's/\./\\./g')
+            latest_alpha_tag=$(git tag --sort=-version:refname | grep -E "^v${escaped_base_version}-alpha\.[0-9]+$" | head -1 || echo "")
+
+            if [ -n "$latest_alpha_tag" ]; then
+              alpha_number=$(echo "$latest_alpha_tag" | sed -E 's/^v[0-9]+\.[0-9]+\.[0-9]+-alpha\.([0-9]+)$/\1/')
+              alpha_number=$((alpha_number + 1))
+              echo "Found existing alpha tag: $latest_alpha_tag, incrementing to alpha.$alpha_number"
+            else
+              alpha_number=1
+              echo "No existing alpha tag found for $new_base_version, starting with alpha.1"
+            fi
+
+            version="${new_base_version}-alpha.${alpha_number}"
           fi
 
-          new_base_version="$major.$minor.$patch"
-          echo "New base version: $new_base_version"
-
-          # 查找最新的 alpha 版本号（针对新的基础版本）
-          # 转义基础版本号中的点号，用于正则表达式匹配
-          escaped_base_version=$(echo "$new_base_version" | sed 's/\./\\./g')
-          latest_alpha_tag=$(git tag --sort=-version:refname | grep -E "^v${escaped_base_version}-alpha\.[0-9]+$" | head -1 || echo "")
-
-          if [ -n "$latest_alpha_tag" ]; then
-            # 提取 alpha 版本号
-            alpha_number=$(echo "$latest_alpha_tag" | sed -E 's/^v[0-9]+\.[0-9]+\.[0-9]+-alpha\.([0-9]+)$/\1/')
-            alpha_number=$((alpha_number + 1))
-            echo "Found existing alpha tag: $latest_alpha_tag, incrementing to alpha.$alpha_number"
-          else
-            # 这是该基础版本的第一个 alpha 版本
-            alpha_number=1
-            echo "No existing alpha tag found for $new_base_version, starting with alpha.1"
-          fi
-
-          # 构建新的 alpha 版本号
-          version="${new_base_version}-alpha.${alpha_number}"
           echo "New alpha version: $version"
 
           # 更新所有 package.json 文件到新的 alpha 版本
@@ -155,7 +158,7 @@ jobs:
 
       - name: Update workflow run name
         env:
-          NEW_NAME: "Release Alpha Version - Bump: ${{ github.event.inputs.bump || 'patch' }} → ${{ steps.do_version.outputs.version }}"
+          NEW_NAME: "Release Alpha Version - Stable bump: ${{ github.event.inputs.bump_when_stable || 'patch' }} → ${{ steps.do_version.outputs.version }}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}

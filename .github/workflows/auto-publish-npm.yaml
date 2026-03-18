@@ -1,3 +1,4 @@
+# 本文件与 tego-standard 仓库相同文件保持同步
 name: Auto Publish to NPM
 
 on:
@@ -121,82 +122,129 @@ jobs:
           # 执行发布并捕获所有输出
           echo "开始发布包到 NPM..."
 
+          # 根据版本自动选择 dist-tag：alpha 预发布使用 alpha，其余使用 latest
+          VERSION="${GITHUB_REF_NAME#v}"
+          DIST_TAG="latest"
+          if echo "$VERSION" | grep -Eq -- '-alpha\.[0-9]+$'; then
+            DIST_TAG="alpha"
+          fi
+          echo "发布版本: $VERSION"
+          echo "使用 dist-tag: $DIST_TAG"
+
           # 使用更精确的发布命令，只发布工作区包
-          pnpm -r --filter="./packages/*" --filter="./apps/*" publish --provenance --access public --no-git-checks 2>&1 | tee "$OUTPUT_FILE"
+          pnpm -r --filter="./packages/*" --filter="./apps/*" publish --provenance --access public --tag "$DIST_TAG" --no-git-checks 2>&1 | tee "$OUTPUT_FILE"
           PUBLISH_EXIT_CODE=${PIPESTATUS[0]}
 
           set -e
 
-          # 解析输出，找出成功发布的包
-          # pnpm publish 成功时会显示类似 "Published @scope/package@1.0.0" 的信息
-          grep -iE "published|publishing" "$OUTPUT_FILE" | grep -oE '@[^/]+/[^@\s]+@[0-9.]+' | sed 's/@[0-9.]*$//' | sort -u > "$SUCCESS_FILE" || true
+          # 统一去重工作区包列表，避免后续统计偏差
+          sort -u /tmp/all-packages.txt -o /tmp/all-packages.txt 2>/dev/null || true
 
-          # 如果上面的方法没找到，尝试从输出中提取包名，但只匹配项目包
-          if [ ! -s "$SUCCESS_FILE" ]; then
-            # 从输出中查找包含包名的行，但只处理项目自己的包
-            grep -oE '@[^/]+/[^@\s/]+' "$OUTPUT_FILE" | grep -v "node_modules" | sort -u | while read pkg; do
-              # 检查这个包是否在 all-packages.txt 中（项目包列表）
-              if grep -q "^$pkg$" /tmp/all-packages.txt 2>/dev/null; then
-                # 检查这个包在输出中是否有错误信息
-                if ! grep -iE "error|failed|denied|unauthorized|forbidden" "$OUTPUT_FILE" | grep -q "$pkg"; then
-                  echo "$pkg" >> "$SUCCESS_FILE"
-                fi
-              fi
-            done
-          fi
+          # 解析输出：
+          # - 成功依据：`+ @scope/pkg@x.y.z`（npm/pnpm 实际发布成功行）
+          # - 失败依据：错误行按当前包上下文归因，并提取首条错误原因
+          # FAILED_FILE 使用 TSV: package<TAB>reason
+          export OUTPUT_FILE SUCCESS_FILE FAILED_FILE
+          node - <<'NODE'
+          const fs = require('fs')
 
-          # 找出失败的包
-          # 方法1: 从错误信息中提取包名
-          grep -iE "error|failed|denied|unauthorized|forbidden" "$OUTPUT_FILE" | grep -oE '@[^/]+/[^@\s/]+' | sort -u > "$FAILED_FILE" || true
+          const output = fs.readFileSync(process.env.OUTPUT_FILE, 'utf8').split(/\r?\n/)
+          const workspace = new Set(
+            fs
+              .readFileSync('/tmp/all-packages.txt', 'utf8')
+              .split(/\r?\n/)
+              .map((s) => s.trim())
+              .filter(Boolean),
+          )
 
-          # 方法2: 检查所有包，如果不在成功列表中且输出中有相关错误，则标记为失败
-          if [ "$PUBLISH_EXIT_CODE" -ne 0 ]; then
-            while read pkg; do
-              if [ -n "$pkg" ]; then
-                # 如果包不在成功列表中
-                if ! grep -q "^$pkg$" "$SUCCESS_FILE" 2>/dev/null; then
-                  # 检查输出中是否有这个包的特定错误
-                  if grep -iE "error|failed" "$OUTPUT_FILE" | grep -q "$pkg"; then
-                    echo "$pkg" >> "$FAILED_FILE"
-                  fi
-                fi
-              fi
-            done < /tmp/all-packages.txt
-          fi
+          const success = new Set()
+          const failReason = new Map()
+          let currentPkg = ''
 
-          # 去重
-          sort -u "$SUCCESS_FILE" -o "$SUCCESS_FILE" 2>/dev/null || true
-          sort -u "$FAILED_FILE" -o "$FAILED_FILE" 2>/dev/null || true
+          const headerReg = /npm notice .*📦\s+((?:@[^/\s]+\/)?[^@\s]+)@[0-9][0-9A-Za-z.-]*/
+          const successReg = /^\+\s+((?:@[^/\s]+\/)?[^@\s]+)@[0-9][0-9A-Za-z.-]*/
+          const packageWithVersionReg = /((?:@[^/\s]+\/)?[^@\s]+)@[0-9][0-9A-Za-z.-]*/
+          const errorReg = /(npm\s+ERR!|\berror\b|\bfailed\b|\bforbidden\b|\bunauthorized\b|\bdenied\b|\bE[0-9]{3}\b|cannot publish|already exists|you cannot publish over)/i
+
+          for (const raw of output) {
+            const line = raw.replace(/\x1b\[[0-9;]*m/g, '').trim()
+            if (!line) continue
+
+            let m = line.match(headerReg)
+            if (m) {
+              currentPkg = m[1]
+              continue
+            }
+
+            m = line.match(successReg)
+            if (m) {
+              const pkg = m[1]
+              if (workspace.has(pkg)) {
+                success.add(pkg)
+                failReason.delete(pkg)
+              }
+              continue
+            }
+
+            if (!errorReg.test(line)) continue
+
+            let pkg = currentPkg
+            if (!pkg) {
+              const pm = line.match(packageWithVersionReg)
+              if (pm) pkg = pm[1]
+            }
+            if (!pkg || !workspace.has(pkg) || success.has(pkg) || failReason.has(pkg)) continue
+
+            const reason = line.slice(0, 240)
+            failReason.set(pkg, reason || 'Unknown error')
+          }
+
+          const successList = [...success].sort((a, b) => a.localeCompare(b))
+          const failedList = [...failReason.entries()].sort((a, b) => a[0].localeCompare(b[0]))
+
+          fs.writeFileSync(process.env.SUCCESS_FILE, successList.join('\n') + (successList.length ? '\n' : ''))
+          fs.writeFileSync(
+            process.env.FAILED_FILE,
+            failedList.map(([pkg, reason]) => `${pkg}\t${reason}`).join('\n') + (failedList.length ? '\n' : ''),
+          )
+          NODE
 
           # 统计数量
           SUCCESS_COUNT=$(wc -l < "$SUCCESS_FILE" | tr -d ' ' || echo "0")
           FAILED_COUNT=$(wc -l < "$FAILED_FILE" | tr -d ' ' || echo "0")
 
-          # 读取包名列表
-          SUCCESS_PACKAGES=$(cat "$SUCCESS_FILE" 2>/dev/null | tr '\n' ', ' | sed 's/, $//' || echo "")
-          FAILED_PACKAGES=$(cat "$FAILED_FILE" 2>/dev/null | tr '\n' ', ' | sed 's/, $//' || echo "")
+          # 读取包列表（成功包列表、失败包列表、失败详情）
+          SUCCESS_PACKAGES=$(cat "$SUCCESS_FILE" 2>/dev/null || true)
+          FAILED_PACKAGES=$(cut -f1 "$FAILED_FILE" 2>/dev/null || true)
+          FAILED_DETAILS=$(awk -F '\t' '{print $1": "$2}' "$FAILED_FILE" 2>/dev/null || true)
 
           # 输出到 GitHub outputs
-          echo "success_count=$SUCCESS_COUNT" >> $GITHUB_OUTPUT
-          echo "failed_count=$FAILED_COUNT" >> $GITHUB_OUTPUT
+          echo "success_count=$SUCCESS_COUNT" >> "$GITHUB_OUTPUT"
+          echo "failed_count=$FAILED_COUNT" >> "$GITHUB_OUTPUT"
+          echo "dist_tag=$DIST_TAG" >> "$GITHUB_OUTPUT"
           {
             echo "success_packages<<EOF"
             echo "$SUCCESS_PACKAGES"
             echo "EOF"
-          } >> $GITHUB_OUTPUT
+          } >> "$GITHUB_OUTPUT"
           {
             echo "failed_packages<<EOF"
             echo "$FAILED_PACKAGES"
             echo "EOF"
-          } >> $GITHUB_OUTPUT
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "failed_details<<EOF"
+            echo "$FAILED_DETAILS"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
-          # 生成汇总通知
+          # 生成汇总通知和可读 Markdown 总结
           if [ "$SUCCESS_COUNT" -gt 0 ] && [ "$FAILED_COUNT" -eq 0 ]; then
-            echo "::notice title=✅ NPM 发布成功::成功发布 $SUCCESS_COUNT 个包到 NPM"
+            echo "::notice title=✅ NPM 发布成功::dist-tag=$DIST_TAG，成功发布 $SUCCESS_COUNT 个包"
           elif [ "$SUCCESS_COUNT" -gt 0 ] && [ "$FAILED_COUNT" -gt 0 ]; then
-            echo "::notice title=⚠️ NPM 发布部分成功::成功发布 $SUCCESS_COUNT 个包，失败 $FAILED_COUNT 个包"
+            echo "::warning title=⚠️ NPM 发布部分成功::dist-tag=$DIST_TAG，成功 $SUCCESS_COUNT，失败 $FAILED_COUNT"
           elif [ "$FAILED_COUNT" -gt 0 ]; then
-            echo "::notice title=❌ NPM 发布失败::失败 $FAILED_COUNT 个包"
+            echo "::error title=❌ NPM 发布失败::dist-tag=$DIST_TAG，失败 $FAILED_COUNT 个包"
           else
             # 既没有成功也没有失败的情况（通常表示发布命令执行异常）
             if [ "$PUBLISH_EXIT_CODE" -ne 0 ]; then
@@ -206,20 +254,52 @@ jobs:
             fi
           fi
 
-          # 输出失败的包列表（成功的包只统计数量，不列出包名）
-          if [ "$FAILED_COUNT" -gt 0 ]; then
-            FAILED_LIST=$(cat "$FAILED_FILE" 2>/dev/null | tr '\n' ', ' | sed 's/, $//' || echo "")
-            if [ -n "$FAILED_LIST" ]; then
-              echo "::notice title=❌ 失败的包 ($FAILED_COUNT 个)::$FAILED_LIST"
+          {
+            echo "### NPM Publish Summary"
+            echo ""
+            echo "- Dist Tag: $DIST_TAG"
+            echo "- Publish Exit Code: $PUBLISH_EXIT_CODE"
+            echo "- Success Count: $SUCCESS_COUNT"
+            echo "- Failed Count: $FAILED_COUNT"
+            echo ""
+            echo "#### ✅ Success Packages"
+            if [ "$SUCCESS_COUNT" -gt 0 ]; then
+              sed 's/^/- /' "$SUCCESS_FILE"
+            else
+              echo "- (none)"
             fi
-          fi
+            echo ""
+            echo "#### ❌ Failed Packages"
+            if [ "$FAILED_COUNT" -gt 0 ]; then
+              awk -F '\t' '{print "- "$1" : "$2}' "$FAILED_FILE"
+            else
+              echo "- (none)"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Publish Summary
         if: always() && steps.check_branch.outputs.on_main == 'true'
         run: |
           echo "=== NPM Publish Summary ==="
+          echo "Dist Tag: ${{ steps.publish.outputs.dist_tag || 'unknown' }}"
           echo "Success Count: ${{ steps.publish.outputs.success_count || '0' }}"
           echo "Failed Count: ${{ steps.publish.outputs.failed_count || '0' }}"
+          echo ""
+
+          echo "Success Packages:"
+          if [ -n "${{ steps.publish.outputs.success_packages }}" ]; then
+            echo "${{ steps.publish.outputs.success_packages }}"
+          else
+            echo "(none)"
+          fi
+          echo ""
+
+          echo "Failed Packages (with reasons):"
+          if [ -n "${{ steps.publish.outputs.failed_details }}" ]; then
+            echo "${{ steps.publish.outputs.failed_details }}"
+          else
+            echo "(none)"
+          fi
           echo ""
 
           SUCCESS_COUNT="${{ steps.publish.outputs.success_count || '0' }}"

@@ -1,10 +1,11 @@
+# 本文件与 tego-standard 仓库相同文件保持同步
 name: Release New Version
 
 on:
   workflow_dispatch:
     inputs:
-      bump:
-        description: 'Version bump type'
+      bump_when_stable:
+        description: 'Version bump type (only used when current version is stable)'
         required: true
         default: 'patch'
         type: choice
@@ -12,13 +13,8 @@ on:
           - patch
           - minor
           - major
-      from_alpha:
-        description: 'Release from alpha version (based on latest tested alpha)'
-        required: false
-        default: false
-        type: boolean
 
-run-name: "Release New Version - Bump: ${{ github.event.inputs.bump || 'patch' }}${{ github.event.inputs.from_alpha == 'true' && ' (from alpha)' || '' }}"
+run-name: "Release New Version - Stable bump: ${{ github.event.inputs.bump_when_stable || 'patch' }}"
 
 jobs:
   release:
@@ -55,107 +51,72 @@ jobs:
           current_version=$(node -p "require('./package.json').version")
           echo "Current version: $current_version"
 
-          # 检查是否基于 alpha 版本发布
-          from_alpha="${{ github.event.inputs.from_alpha }}"
-          echo "Release from alpha: $from_alpha"
+          bump_when_stable="${{ github.event.inputs.bump_when_stable || 'patch' }}"
+          echo "Stable bump strategy: $bump_when_stable"
 
-          if [ "$from_alpha" = "true" ]; then
-            echo "=== Releasing from alpha version ==="
+          # 规则：
+          # 1) 当前是 alpha 版本：发布为同基础版本稳定版（去掉 -alpha.x）
+          # 2) 当前是稳定版本：按 bump 策略升级基础版本
+          if [[ "$current_version" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-alpha\.([0-9]+)$ ]]; then
+            echo "=== Releasing stable version from current alpha version ==="
+            base_version="${BASH_REMATCH[1]}"
+            version="$base_version"
+            alpha_source_tag="v$current_version"
 
-            # 查找最新的 alpha 版本 tag
-            latest_alpha_tag=$(git tag --sort=-version:refname | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+-alpha\.[0-9]+$" | head -1 || echo "")
-
-            if [ -z "$latest_alpha_tag" ]; then
-              echo "❌ Error: No alpha version tag found. Please create an alpha version first."
-              echo "Available tags:"
-              git tag --sort=-version:refname | head -10
-              exit 1
-            fi
-
-            echo "Found latest alpha tag: $latest_alpha_tag"
-
-            # 提取基础版本号（去掉 alpha 后缀）
-            base_version=$(echo "$latest_alpha_tag" | sed -E 's/^v([0-9]+\.[0-9]+\.[0-9]+)-alpha\.[0-9]+$/\1/')
-
-            if [ -z "$base_version" ] || [ "$base_version" = "$latest_alpha_tag" ]; then
-              echo "❌ Error: Failed to extract base version from alpha tag: $latest_alpha_tag"
-              exit 1
-            fi
-
-            echo "Base version extracted: $base_version"
-
-            # 检查该基础版本是否已经作为正式版本发布
-            # 转义基础版本号中的点号，用于正则表达式匹配
             escaped_base_version=$(echo "$base_version" | sed 's/\./\\./g')
             existing_release_tag=$(git tag --sort=-version:refname | grep -E "^v${escaped_base_version}$" | head -1 || echo "")
             if [ -n "$existing_release_tag" ]; then
               echo "❌ Error: Version $base_version has already been released as $existing_release_tag"
-              echo "Please use a different bump type or create a new alpha version first."
               exit 1
             fi
 
-            # 使用基础版本号作为正式版本
-            version="$base_version"
             echo "Using base version as release version: $version"
-
-            # 更新所有 package.json 文件到正式版本号
-            node -e "
-              const fs = require('fs');
-              const { execSync } = require('child_process');
-
-              // 更新根目录 package.json
-              const rootPkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-              rootPkg.version = '$version';
-              fs.writeFileSync('package.json', JSON.stringify(rootPkg, null, 2) + '\n');
-
-              // 更新所有子包的 package.json
-              const packages = execSync('find . -name package.json -not -path \"*/node_modules/*\" -not -path \"*/dist/*\"', { encoding: 'utf8' })
-                .trim()
-                .split('\n')
-                .filter(p => p !== './package.json');
-
-              packages.forEach(pkgPath => {
-                try {
-                  const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
-                  pkg.version = '$version';
-                  fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
-                } catch (e) {
-                  console.error('Error updating', pkgPath, ':', e.message);
-                }
-              });
-
-              console.log('✓ Updated', packages.length + 1, 'package.json files from alpha to version $version');
-            "
-
-            echo "alpha_version=$latest_alpha_tag" >> $GITHUB_OUTPUT
+            echo "alpha_source_tag=$alpha_source_tag" >> $GITHUB_OUTPUT
           else
-            echo "=== Releasing new version (standard bump) ==="
+            echo "=== Releasing new stable version (bump) ==="
+            IFS='.' read -r major minor patch <<< "$current_version"
 
-            # 使用 bump 类型
-            bump="${{ github.event.inputs.bump || 'patch' }}"
-            echo "Using bump type: $bump"
-
-            if [ "$bump" = "major" ]; then
-              if ! pnpm -r exec -- npm version major --no-git-tag-version; then
-                echo "❌ Error: Failed to bump version in some packages"
-                exit 1
-              fi
-              version=$(npm version major --no-git-tag-version | sed 's/^v//')
-            elif [ "$bump" = "minor" ]; then
-              if ! pnpm -r exec -- npm version minor --no-git-tag-version; then
-                echo "❌ Error: Failed to bump version in some packages"
-                exit 1
-              fi
-              version=$(npm version minor --no-git-tag-version | sed 's/^v//')
+            if [ "$bump_when_stable" = "major" ]; then
+              major=$((major + 1))
+              minor=0
+              patch=0
+            elif [ "$bump_when_stable" = "minor" ]; then
+              minor=$((minor + 1))
+              patch=0
             else
-              # patch (default)
-              if ! pnpm -r exec -- npm version patch --no-git-tag-version; then
-                echo "❌ Error: Failed to bump version in some packages"
-                exit 1
-              fi
-              version=$(npm version patch --no-git-tag-version | sed 's/^v//')
+              patch=$((patch + 1))
             fi
+
+            version="$major.$minor.$patch"
+            echo "Bumped stable version to: $version"
           fi
+
+          # 统一更新所有 package.json 文件
+          node -e "
+            const fs = require('fs');
+            const { execSync } = require('child_process');
+
+            const rootPkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            rootPkg.version = '$version';
+            fs.writeFileSync('package.json', JSON.stringify(rootPkg, null, 2) + '\n');
+
+            const packages = execSync('find . -name package.json -not -path \"*/node_modules/*\" -not -path \"*/dist/*\"', { encoding: 'utf8' })
+              .trim()
+              .split('\n')
+              .filter(p => p !== './package.json');
+
+            packages.forEach(pkgPath => {
+              try {
+                const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
+                pkg.version = '$version';
+                fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
+              } catch (e) {
+                console.error('Error updating', pkgPath, ':', e.message);
+              }
+            });
+
+            console.log('✓ Updated', packages.length + 1, 'package.json files to version $version');
+          "
 
           # 验证根目录版本号
           ROOT_VERSION=$(node -p "require('./package.json').version")
@@ -185,7 +146,7 @@ jobs:
 
       - name: Update workflow run name
         env:
-          NEW_NAME: "Release New Version - Bump: ${{ github.event.inputs.bump || 'patch' }}${{ github.event.inputs.from_alpha == 'true' && ' (from alpha)' || '' }} → ${{ steps.do_version.outputs.version }}"
+          NEW_NAME: "Release New Version - Stable bump: ${{ github.event.inputs.bump_when_stable || 'patch' }} → ${{ steps.do_version.outputs.version }}"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
