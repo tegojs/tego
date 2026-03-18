@@ -1,6 +1,6 @@
 {
   "name": "@tachybase/schema",
-  "version": "1.6.9-alpha.2",
+  "version": "1.6.9",
   "homepage": "https://github.com/tegojs/tego#readme",
   "bugs": {
     "url": "https://github.com/tegojs/tego/issues"
