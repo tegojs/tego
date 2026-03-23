@@ -60,15 +60,16 @@ export class Cache {
     const next = new Promise<void>((res) => {
       release = res;
     });
-    this.memoryWriteQueues.set(
-      k,
-      previous.then(() => next),
-    );
+    const current = previous.then(() => next);
+    this.memoryWriteQueues.set(k, current);
     await previous;
     try {
       return await fn();
     } finally {
       release();
+      if (this.memoryWriteQueues.get(k) === current) {
+        this.memoryWriteQueues.delete(k);
+      }
     }
   }
 
