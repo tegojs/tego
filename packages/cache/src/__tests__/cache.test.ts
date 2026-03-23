@@ -64,8 +64,10 @@ describe('cache', () => {
   });
 
   it('setIfNotExists: first wins, second does not overwrite (memory)', async () => {
-    const ok1 = await cache.setIfNotExists('lock', { v: 1 }, 60_000);
-    const ok2 = await cache.setIfNotExists('lock', { v: 2 }, 60_000);
+    const [ok1, ok2] = await Promise.all([
+      cache.setIfNotExists('lock', { v: 1 }, 60_000),
+      cache.setIfNotExists('lock', { v: 2 }, 60_000),
+    ]);
     expect(ok1).toBe(true);
     expect(ok2).toBe(false);
     expect(await cache.get<{ v: number }>('lock')).toEqual({ v: 1 });
