@@ -1,9 +1,29 @@
 import { Cache as BasicCache, Milliseconds } from 'cache-manager';
+import { NoCacheableError } from 'cache-manager-redis-yet';
+
+type RedisLikeStore = {
+  client: {
+    set(key: string, value: string, options?: { NX?: boolean; PX?: number }): Promise<string | null>;
+  };
+};
+
+function serializeRedisValue(value: unknown): string {
+  return JSON.stringify(value) ?? '"undefined"';
+}
+
+function isRedisLikeStore(store: unknown): store is RedisLikeStore {
+  if (!store || typeof store !== 'object') return false;
+  const s = store as RedisLikeStore;
+  return typeof s.client?.set === 'function';
+}
 
 export class Cache {
   name: string;
   prefix?: string;
   store: BasicCache;
+
+  /** Serializes concurrent `setIfNotExists` on memory-backed caches (single-process atomicity). */
+  private memoryNxMutex: Promise<void> = Promise.resolve();
 
   constructor({ name, prefix, store }: { name: string; store: BasicCache; prefix?: string }) {
     this.name = name;
@@ -102,5 +122,42 @@ export class Cache {
     const object = (await this.get(key)) || {};
     delete object[objectKey];
     await this.set(key, object);
+  }
+
+  /**
+   * Atomically set `key` to `value` with expiry `ttl` (ms) only if `key` is absent.
+   * Returns `true` if the key was set, `false` if it already existed.
+   *
+   * - **Redis**: `SET` with `NX` and `PX` (safe across processes/instances).
+   * - **Memory**: serialized via an internal mutex; atomic only within one process - do not rely on it for multi-instance locks (use Redis in production).
+   */
+  async setIfNotExists(key: string, value: unknown, ttl: number): Promise<boolean> {
+    if (value === undefined || value === null) {
+      throw new NoCacheableError(`"${value}" is not a cacheable value`);
+    }
+    const k = this.key(key);
+    const raw = this.store.store;
+
+    if (isRedisLikeStore(raw)) {
+      const payload = serializeRedisValue(value);
+      const opts = ttl !== undefined && ttl !== 0 ? ({ NX: true, PX: ttl } as const) : ({ NX: true } as const);
+      const reply = await raw.client.set(k, payload, opts);
+      return reply === 'OK';
+    }
+
+    const run = async () => {
+      const existing = await this.store.get(k);
+      if (existing !== undefined) {
+        return false;
+      }
+      await this.store.set(k, value, ttl);
+      return true;
+    };
+    const p = this.memoryNxMutex.then(run);
+    this.memoryNxMutex = p.then(
+      () => {},
+      () => {},
+    );
+    return p;
   }
 }
