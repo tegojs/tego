@@ -1,6 +1,6 @@
 {
   "name": "@tachybase/logger",
-  "version": "1.6.9",
+  "version": "1.6.10-alpha.1",
   "description": "logging library",
   "homepage": "https://github.com/tegojs/tego#readme",
   "bugs": {
