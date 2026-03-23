@@ -62,4 +62,19 @@ describe('cache', () => {
     expect(val2).toBe(obj);
     expect(await cache.get('key')).toMatchObject(obj);
   });
+
+  it('setIfNotExists: first wins, second does not overwrite (memory)', async () => {
+    const [ok1, ok2] = await Promise.all([
+      cache.setIfNotExists('lock', { v: 1 }, 60_000),
+      cache.setIfNotExists('lock', { v: 2 }, 60_000),
+    ]);
+    expect(ok1).toBe(true);
+    expect(ok2).toBe(false);
+    expect(await cache.get<{ v: number }>('lock')).toEqual({ v: 1 });
+  });
+
+  it('setIfNotExists rejects null/undefined like redis store', async () => {
+    await expect(cache.setIfNotExists('k', null as any, 100)).rejects.toThrow();
+    await expect(cache.setIfNotExists('k', undefined as any, 100)).rejects.toThrow();
+  });
 });
