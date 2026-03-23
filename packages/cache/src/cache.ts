@@ -8,7 +8,19 @@ type RedisLikeStore = {
 };
 
 function serializeRedisValue(value: unknown): string {
-  return JSON.stringify(value) ?? '"undefined"';
+  try {
+    const serialized = JSON.stringify(value);
+    if (serialized === undefined) {
+      throw new NoCacheableError(`"${String(value)}" is not a cacheable value`);
+    }
+    return serialized;
+  } catch (e) {
+    if (e instanceof NoCacheableError) {
+      throw e;
+    }
+    const msg = e instanceof Error ? e.message : String(e);
+    throw new NoCacheableError(`"${String(value)}" is not a cacheable value: ${msg}`);
+  }
 }
 
 function isRedisLikeStore(store: unknown): store is RedisLikeStore {
