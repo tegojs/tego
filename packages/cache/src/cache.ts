@@ -34,8 +34,11 @@ export class Cache {
   prefix?: string;
   store: BasicCache;
 
-  /** Serializes concurrent `setIfNotExists` on memory-backed caches (single-process atomicity). */
-  private memoryNxMutex: Promise<void> = Promise.resolve();
+  /**
+   * Per prefixed key: serializes memory `store.set` / `store.get`+`store.set` so `set` and
+   * `setIfNotExists` cannot interleave for the same key (single-process).
+   */
+  private memoryWriteQueues = new Map<string, Promise<void>>();
 
   constructor({ name, prefix, store }: { name: string; store: BasicCache; prefix?: string }) {
     this.name = name;
@@ -47,8 +50,38 @@ export class Cache {
     return this.prefix ? `${this.prefix}:${key}` : key;
   }
 
+  /**
+   * For memory store, waits on the same per-key queue as `setIfNotExists` so another writer
+   * cannot run `this.store.set` between that method's `get` and `set`.
+   */
+  private async runWithMemoryWriteLock<T>(k: string, fn: () => Promise<T>): Promise<T> {
+    const previous = this.memoryWriteQueues.get(k) ?? Promise.resolve();
+    let release!: () => void;
+    const next = new Promise<void>((res) => {
+      release = res;
+    });
+    this.memoryWriteQueues.set(
+      k,
+      previous.then(() => next),
+    );
+    await previous;
+    try {
+      return await fn();
+    } finally {
+      release();
+    }
+  }
+
   async set(key: string, value: unknown, ttl?: Milliseconds): Promise<void> {
-    await this.store.set(this.key(key), value, ttl);
+    const k = this.key(key);
+    const raw = this.store.store;
+    if (isRedisLikeStore(raw)) {
+      await this.store.set(k, value, ttl);
+      return;
+    }
+    await this.runWithMemoryWriteLock(k, async () => {
+      await this.store.set(k, value, ttl);
+    });
   }
 
   async get<T>(key: string): Promise<T> {
@@ -141,7 +174,9 @@ export class Cache {
    * Returns `true` if the key was set, `false` if it already existed.
    *
    * - **Redis**: `SET` with `NX` and `PX` (safe across processes/instances).
-   * - **Memory**: serialized via an internal mutex; atomic only within one process - do not rely on it for multi-instance locks (use Redis in production).
+   * - **Memory**: `this.store.get` / `this.store.set` run under the same per-key `memoryWriteQueues`
+   *   lock as `set`, so another `cache.set` cannot interleave between get and set (single-process;
+   *   multi-instance locks still require Redis).
    */
   async setIfNotExists(key: string, value: unknown, ttl: number): Promise<boolean> {
     if (value === undefined || value === null) {
@@ -157,19 +192,13 @@ export class Cache {
       return reply === 'OK';
     }
 
-    const run = async () => {
+    return this.runWithMemoryWriteLock(k, async () => {
       const existing = await this.store.get(k);
       if (existing !== undefined) {
         return false;
       }
       await this.store.set(k, value, ttl);
       return true;
-    };
-    const p = this.memoryNxMutex.then(run);
-    this.memoryNxMutex = p.then(
-      () => {},
-      () => {},
-    );
-    return p;
+    });
   }
 }
