@@ -1270,6 +1270,7 @@ class ReactImageLightbox extends Component<IReactImageLightboxProps, IReactImage
       imageCrossOrigin,
       reactModalProps,
       loader,
+      otherProps,
     } = this.props;
     const { zoomLevel, offsetX, offsetY, isClosing, loadErrorStatus } = this.state;
 
@@ -1327,6 +1328,7 @@ class ReactImageLightbox extends Component<IReactImageLightboxProps, IReactImage
           }}
         >
           {checkedComponent({
+            ...otherProps,
             key: `${fieldType + keyEndings[srcType]}`,
             onDoubleClick: this.handleImageDoubleClick,
             onWheel: this.handleImageMouseWheel,
