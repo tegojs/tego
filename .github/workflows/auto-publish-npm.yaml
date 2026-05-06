@@ -276,6 +276,21 @@ jobs:
               echo "- (none)"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Build tego binary
+        if: steps.check_branch.outputs.on_main == 'true'
+        run: pnpm --filter tego run build
+
+      - name: Upload release assets
+        if: steps.check_branch.outputs.on_main == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          files: |
+            packages/tego/dist/tego-linux-x64
+            packages/tego/dist/tego-macos-x64
+            packages/tego/dist/tego-win-x64.exe
+            packages/tego/dist/tego-linux-arm64
+            packages/tego/dist/tego-macos-arm64
 
       - name: Publish Summary
         if: always() && steps.check_branch.outputs.on_main == 'true'
