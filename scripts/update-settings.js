@@ -31,7 +31,14 @@ const EXCLUDE_PLUGINS = [
 ];
 
 // 特殊处理：这些 module- 开头的文件夹视为 plugin
-const MODULE_AS_PLUGIN = ['instrumentation', 'hera', 'multi-app'];
+const MODULE_AS_PLUGIN = [
+  // 默认启用
+  'instrumentation',
+  // 默认不启用
+  'hera',
+  'multi-app',
+  'tenant',
+];
 
 // 日志函数
 function log(message, level = 'info') {

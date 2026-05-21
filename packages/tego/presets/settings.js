@@ -239,6 +239,7 @@ module.exports = {
       { name: 'pagespy', enabledByDefault: false },
       { name: 'simple-cms', enabledByDefault: false },
       { name: 'sub-accounts', enabledByDefault: false },
+      { name: 'tenant', enabledByDefault: false },
       { name: 'text-copy', enabledByDefault: false },
       { name: 'theme-editor', enabledByDefault: false },
       { name: 'user-manual-feishu', enabledByDefault: false },
