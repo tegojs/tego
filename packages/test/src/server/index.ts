@@ -6,6 +6,7 @@ import ws from 'ws';
 export { mockDatabase } from '@tachybase/database';
 export { default as supertest } from 'supertest';
 export * from './mockServer';
+export * from './setupTestEnvironment';
 
 export const pgOnly: () => any = () =>
   TachybaseGlobal.settings.database.dialect === 'postgres' ? describe : describe.skip;
