@@ -1,9 +1,11 @@
 import { existsSync as _existsSync, existsSync, mkdirSync, readFileSync, rmSync, watch, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname as _dirname, sep as _sep, join, relative, resolve, sep } from 'node:path';
 
-import { sync } from 'fast-glob';
+import fastGlob from 'fast-glob';
 
-import { version } from '../package.json';
+const require = createRequire(import.meta.url);
+const { version } = require('../package.json');
 
 const ProjectRoot = process.cwd();
 
@@ -78,7 +80,7 @@ function getPackagePaths() {
     if (Object.hasOwnProperty.call(paths, key)) {
       for (let dir of paths[key]) {
         if (dir.includes('*')) {
-          const files = sync(dir, { cwd: ProjectRoot, onlyDirectories: true });
+          const files = fastGlob.sync(dir, { cwd: ProjectRoot, onlyDirectories: true });
           for (const file of files) {
             const dirname = resolve(ProjectRoot, file);
             if (existsSync(dirname)) {
@@ -199,7 +201,7 @@ export default function devDynamicImport(packageName: string): Promise<any> {
   }
 
   getContent(pluginsPath) {
-    const pluginFolders = sync(['plugin-*/package.json', 'module-*/package.json'], {
+    const pluginFolders = fastGlob.sync(['plugin-*/package.json', 'module-*/package.json'], {
       cwd: pluginsPath,
       onlyFiles: true,
       absolute: true,

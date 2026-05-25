@@ -7,22 +7,16 @@ describe('defineTegoVitestConfig', () => {
     expect(defaultConfig.test?.projects).toHaveLength(2);
   });
 
-  it('accepts server setup options for external workspaces', () => {
+  it('accepts a server setup file for external workspaces', () => {
     const config = defineTegoVitestConfig({
       server: {
-        setupOptions: {
-          workspaceRoot: '/workspace/app',
-          pluginPaths: ['/workspace/app/packages'],
-          packageDirByPluginName: {
-            users: 'module-user',
-          },
-          disableRuntimePlugins: true,
-          disableOtherPlugins: true,
-        },
+        setupFile: '/workspace/app/vitest.setup.server.ts',
       },
     });
 
+    const serverProject = config.test?.projects?.[0] as any;
     expect(config.test?.projects).toHaveLength(2);
     expect(config.test?.alias).toEqual(expect.any(Array));
+    expect(serverProject.test.setupFiles).toBe('/workspace/app/vitest.setup.server.ts');
   });
 });

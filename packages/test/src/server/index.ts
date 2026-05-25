@@ -1,6 +1,5 @@
 import TachybaseGlobal from '@tachybase/globals';
 
-import { describe } from 'vitest';
 import ws from 'ws';
 
 export { mockDatabase } from '@tachybase/database';
@@ -8,8 +7,10 @@ export { default as supertest } from 'supertest';
 export * from './mockServer';
 export * from './setupTestEnvironment';
 
-export const pgOnly: () => any = () =>
-  TachybaseGlobal.settings.database.dialect === 'postgres' ? describe : describe.skip;
+export const pgOnly: () => any = () => {
+  const describe = (globalThis as any).describe;
+  return TachybaseGlobal.settings.database.dialect === 'postgres' ? describe : describe.skip;
+};
 export const isPg = () => TachybaseGlobal.settings.database.dialect === 'postgres';
 
 export function randomStr() {

@@ -3,7 +3,6 @@ import { execa } from 'execa';
 
 function runVitest(args: string[]) {
   return execa('pnpm', ['exec', 'vitest', ...args], {
-    shell: true,
     stdio: 'inherit',
   });
 }

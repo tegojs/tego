@@ -2,8 +2,7 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
-import { pathToFileURL } from 'node:url';
-import TachybaseGlobal from '@tachybase/globals';
+import TachybaseGlobalModule from '@tachybase/globals';
 
 export interface ServerTestEnvironmentOptions {
   workspaceRoot?: string;
@@ -14,6 +13,23 @@ export interface ServerTestEnvironmentOptions {
 }
 
 const require = createRequire(import.meta.url);
+const ImportedTachybaseGlobal = (TachybaseGlobalModule as any).getInstance
+  ? TachybaseGlobalModule
+  : (TachybaseGlobalModule as any).default;
+
+function createRuntimeRequire(workspaceRoot: string) {
+  const hostPackageJson = path.resolve(workspaceRoot, 'package.json');
+  if (fs.existsSync(hostPackageJson)) {
+    return createRequire(hostPackageJson);
+  }
+
+  return require;
+}
+
+function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
+  const tachybaseGlobalModule = runtimeRequire('@tachybase/globals');
+  return tachybaseGlobalModule.getInstance ? tachybaseGlobalModule : tachybaseGlobalModule.default;
+}
 
 function createTestDbStorage() {
   const testDbName = `test-${Date.now()}-${Math.random().toString(36).slice(2)}.sqlite`;
@@ -32,9 +48,21 @@ function workspacePackageNameByShortName(workspaceRoot: string, name: string, ma
   return null;
 }
 
-function workspacePackageDirByPackageName(workspaceRoot: string, packageName?: string) {
+function workspacePackageDirByPackageName(
+  workspaceRoot: string,
+  packageName: string | undefined,
+  map: Record<string, string> = {},
+) {
   if (!packageName) {
     return null;
+  }
+
+  const mappedPackageDir = Object.values(map).find((packageDir) => {
+    const packageJsonPath = path.resolve(workspaceRoot, 'packages', packageDir, 'package.json');
+    return fs.existsSync(packageJsonPath) && require(packageJsonPath).name === packageName;
+  });
+  if (mappedPackageDir) {
+    return mappedPackageDir;
   }
 
   const packageDir = packageName.replace('@tachybase/', '');
@@ -42,7 +70,7 @@ function workspacePackageDirByPackageName(workspaceRoot: string, packageName?: s
   return fs.existsSync(packageJsonPath) ? packageDir : null;
 }
 
-function patchPluginRuntime(core: any, workspaceRoot: string) {
+function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPluginName: Record<string, string>) {
   if (core.Plugin.prototype.__serverTestEnvironmentPatched) {
     return;
   }
@@ -51,7 +79,7 @@ function patchPluginRuntime(core: any, workspaceRoot: string) {
 
   core.Plugin.prototype.loadCollections = async function loadWorkspaceCollections() {
     const packageDir = this.options?.workspaceSource
-      ? workspacePackageDirByPackageName(workspaceRoot, this.options?.packageName)
+      ? workspacePackageDirByPackageName(workspaceRoot, this.options?.packageName, packageDirByPluginName)
       : null;
     if (!packageDir) {
       return originalLoadCollections.call(this);
@@ -88,7 +116,7 @@ function patchPluginManager(
     workspacePackageNameByShortName(workspaceRoot, name, options.packageDirByPluginName) || name;
 
   PluginManager.getPackageJson = async (packageName: string) => {
-    const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName);
+    const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName);
     if (packageDir) {
       return require(path.resolve(workspaceRoot, 'packages', packageDir, 'package.json'));
     }
@@ -101,17 +129,11 @@ function patchPluginManager(
     }
 
     const packageName = isPkg ? pluginName : await PluginManager.getPackageName(pluginName);
-    const packageDir = workspaceSourcePackages.has(packageName)
-      ? workspacePackageDirByPackageName(workspaceRoot, packageName)
-      : null;
-    if (!packageDir) {
-      return resolvePlugin(pluginName, isUpgrade, isPkg);
+    if (workspaceSourcePackages.has(packageName)) {
+      return resolvePlugin(packageName, isUpgrade, true);
     }
 
-    const pluginModule = await import(
-      pathToFileURL(path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts')).href
-    );
-    return pluginModule.default;
+    return resolvePlugin(pluginName, isUpgrade, isPkg);
   };
 
   if (options.disableRuntimePlugins) {
@@ -151,15 +173,17 @@ function patchPluginManager(
   };
 
   PluginManager.__serverTestEnvironmentPatched = true;
+  PluginManager.findPackagePatched = true;
 }
 
 export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions = {}) {
   const workspaceRoot = options.workspaceRoot || process.cwd();
   const pluginPaths = options.pluginPaths || [];
   const packageDirByPluginName = options.packageDirByPluginName || {};
-  const settings = require('tego/presets/settings');
-
-  TachybaseGlobal.settings = {
+  const runtimeRequire = createRuntimeRequire(workspaceRoot);
+  const TachybaseGlobal = getTachybaseGlobal(runtimeRequire);
+  const settings = runtimeRequire('tego/presets/settings');
+  const testSettings = {
     ...settings,
     env: {
       ...settings.env,
@@ -179,12 +203,16 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
     },
   };
 
+  ImportedTachybaseGlobal.settings = testSettings;
+  TachybaseGlobal.settings = testSettings;
+
+  ImportedTachybaseGlobal.getInstance().set('PLUGIN_PATHS', pluginPaths);
   TachybaseGlobal.getInstance().set('PLUGIN_PATHS', pluginPaths);
   process.env.TEGO_RUNTIME_HOME = path.join(os.tmpdir(), 'test-sqlite');
   process.env.APP_ENV_PATH = process.env.APP_ENV_PATH || '.env.test';
 
-  patchPluginRuntime(require('@tego/core'), workspaceRoot);
-  patchPluginManager(require('@tego/core'), {
+  patchPluginRuntime(runtimeRequire('@tego/core'), workspaceRoot, packageDirByPluginName);
+  patchPluginManager(runtimeRequire('@tego/core'), {
     ...options,
     workspaceRoot,
     packageDirByPluginName,

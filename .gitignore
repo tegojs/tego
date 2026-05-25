@@ -11,6 +11,7 @@
 .pnpm-store
 .swc
 /.idea
+/.packs
 /.vscode
 /playwright
 /uploads

@@ -42,9 +42,47 @@
         "default": "./es/e2e/index.mjs"
       }
     },
-    "./server": "./src/server/index.ts",
+    "./server": {
+      "require": {
+        "types": "./lib/server/index.d.ts",
+        "default": "./lib/server/index.js"
+      },
+      "import": {
+        "types": "./es/server/index.d.ts",
+        "default": "./es/server/index.mjs"
+      }
+    },
+    "./server/mockServer": {
+      "require": {
+        "types": "./lib/server/mockServer.d.ts",
+        "default": "./lib/server/mockServer.js"
+      },
+      "import": {
+        "types": "./lib/server/mockServer.d.ts",
+        "default": "./lib/server/mockServer.js"
+      }
+    },
+    "./setup-server": {
+      "require": {
+        "types": "./lib/setup-server.d.ts",
+        "default": "./lib/setup-server.js"
+      },
+      "import": {
+        "types": "./es/setup-server.d.ts",
+        "default": "./es/setup-server.mjs"
+      }
+    },
     "./package.json": "./package.json",
-    "./vitest": "./vitest.ts"
+    "./vitest": {
+      "require": {
+        "types": "./vitest.d.ts",
+        "default": "./vitest.js"
+      },
+      "import": {
+        "types": "./es/vitest.d.ts",
+        "default": "./es/vitest.mjs"
+      }
+    }
   },
   "main": "lib/index.js",
   "module": "./src/index.ts",
