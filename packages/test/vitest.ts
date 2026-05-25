@@ -83,6 +83,7 @@ export function defineTegoVitestConfig(options: TegoVitestConfigOptions = {}) {
           },
           extends: true,
           test: {
+            name: 'server',
             setupFiles: serverSetupFile,
             include: ['packages/**/__tests__/**/*.test.ts', 'apps/**/__tests__/**/*.test.ts'],
             exclude: [
@@ -108,6 +109,7 @@ export function defineTegoVitestConfig(options: TegoVitestConfigOptions = {}) {
             'process.env.__E2E__': false,
           },
           test: {
+            name: 'client',
             globals: true,
             setupFiles: resolve(__dirname, './setup/client.ts'),
             environment: 'jsdom',
