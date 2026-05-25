@@ -42,6 +42,7 @@
         "default": "./es/e2e/index.mjs"
       }
     },
+    "./server": "./src/server/index.ts",
     "./package.json": "./package.json",
     "./vitest": "./vitest.ts"
   },
