@@ -1,6 +1,6 @@
 import { mockDatabase } from '@tachybase/database';
-
 import { Application, ApplicationOptions, AppSupervisor, Gateway, PluginManager } from '@tego/core';
+
 import jwt from 'jsonwebtoken';
 import qs from 'qs';
 import supertest, { SuperAgentTest } from 'supertest';
@@ -253,6 +253,17 @@ export async function createMockServer(
   }
   if (!skipStart) {
     await app.runCommandThrowError('start');
+  }
+  if (!app.authManager.userStatusService) {
+    app.authManager.setUserStatusService({
+      async checkUserStatus() {
+        return {
+          allowed: true,
+          status: 'active',
+          isExpired: false,
+        };
+      },
+    });
   }
   return app;
 }

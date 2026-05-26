@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import TachybaseGlobalModule from '@tachybase/globals';
 
 export interface ServerTestEnvironmentOptions {
@@ -13,9 +14,13 @@ export interface ServerTestEnvironmentOptions {
 }
 
 const runtimeRequire = createRequire(path.resolve(process.cwd(), 'package.json'));
+const workspacePluginNameAliases: Record<string, string> = {
+  map: 'block-map',
+};
 const ImportedTachybaseGlobal = (TachybaseGlobalModule as any).getInstance
   ? TachybaseGlobalModule
   : (TachybaseGlobalModule as any).default;
+const testUnsafeBuiltinPlugins = new Set(['event-source', 'worker-thread']);
 
 function createRuntimeRequire(workspaceRoot: string) {
   const hostPackageJson = path.resolve(workspaceRoot, 'package.json');
@@ -31,13 +36,29 @@ function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
   return tachybaseGlobalModule.getInstance ? tachybaseGlobalModule : tachybaseGlobalModule.default;
 }
 
+function getCoreModules(runtimeRequire: NodeJS.Require) {
+  const cores = [runtimeRequire('@tego/core')];
+
+  try {
+    const serverRequire = createRequire(runtimeRequire.resolve('@tego/server/package.json'));
+    cores.push(serverRequire('@tego/core'));
+  } catch {
+    // @tego/server is optional for client-only test consumers.
+  }
+
+  return [...new Set(cores)];
+}
+
 function createTestDbStorage() {
   const testDbName = `test-${Date.now()}-${Math.random().toString(36).slice(2)}.sqlite`;
   return path.join(os.tmpdir(), 'tego-test', testDbName);
 }
 
 function workspacePackageNameByShortName(workspaceRoot: string, name: string, map: Record<string, string>) {
-  const candidates = [map[name], `module-${name}`, `plugin-${name}`].filter(Boolean);
+  const normalizedName = workspacePluginNameAliases[name] || name;
+  const candidates = [map[name], map[normalizedName], `module-${normalizedName}`, `plugin-${normalizedName}`].filter(
+    Boolean,
+  );
   for (const packageDir of candidates) {
     const packageJsonPath = path.resolve(workspaceRoot, 'packages', packageDir, 'package.json');
     if (fs.existsSync(packageJsonPath)) {
@@ -85,7 +106,9 @@ function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPlugin
       return originalLoadCollections.call(this);
     }
 
-    const directory = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/collections');
+    const sourceDirectory = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/collections');
+    const compiledDirectory = path.resolve(workspaceRoot, 'packages', packageDir, 'dist/server/collections');
+    const directory = fs.existsSync(compiledDirectory) ? compiledDirectory : sourceDirectory;
     if (!fs.existsSync(directory)) {
       return;
     }
@@ -101,7 +124,8 @@ function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPlugin
 
 function patchPluginManager(
   core: any,
-  options: Required<Pick<ServerTestEnvironmentOptions, 'packageDirByPluginName'>> & ServerTestEnvironmentOptions,
+  options: Required<Pick<ServerTestEnvironmentOptions, 'packageDirByPluginName'>> &
+    ServerTestEnvironmentOptions & { settings: any },
 ) {
   const PluginManager = core.PluginManager;
   if (PluginManager.__serverTestEnvironmentPatched) {
@@ -130,6 +154,14 @@ function patchPluginManager(
 
     const packageName = isPkg ? pluginName : await PluginManager.getPackageName(pluginName);
     if (workspaceSourcePackages.has(packageName)) {
+      const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName);
+      if (packageDir) {
+        const sourceEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts');
+        if (fs.existsSync(sourceEntry)) {
+          const mod = await import(pathToFileURL(sourceEntry).href);
+          return mod.default || mod;
+        }
+      }
       return resolvePlugin(packageName, isUpgrade, true);
     }
 
@@ -148,25 +180,109 @@ function patchPluginManager(
     };
   }
 
+  const originalAdd = PluginManager.prototype.add;
+  PluginManager.prototype.add = async function addWorkspaceSourcePlugin(
+    plugin: any,
+    pluginOptions: any = {},
+    insert = false,
+    isUpgrade = false,
+  ) {
+    if (typeof plugin === 'string' && pluginOptions?.workspaceSource && pluginOptions?.packageName) {
+      const packageDir = workspacePackageDirByPackageName(
+        workspaceRoot,
+        pluginOptions.packageName,
+        options.packageDirByPluginName,
+      );
+      const sourceEntry = packageDir
+        ? path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts')
+        : null;
+      if (sourceEntry && fs.existsSync(sourceEntry)) {
+        const mod = await import(pathToFileURL(sourceEntry).href);
+        return originalAdd.call(this, mod.default || mod, pluginOptions, insert, isUpgrade);
+      }
+    }
+
+    return originalAdd.call(this, plugin, pluginOptions, insert, isUpgrade);
+  };
+
+  const originalEnable = PluginManager.prototype.enable;
+  PluginManager.prototype.enable = async function enableWorkspacePlugin(name: string | string[]) {
+    const normalize = (pluginName: string) => workspacePluginNameAliases[pluginName] || pluginName;
+    const normalizedName = Array.isArray(name) ? name.map(normalize) : normalize(name);
+    return originalEnable.call(this, normalizedName);
+  };
+
   PluginManager.prototype.initPresetPlugins = async function initWorkspacePresetPlugins() {
     if (this['_initPresetPlugins']) {
       return;
     }
 
-    for (const plugin of this.options.plugins || []) {
-      const [pluginName, pluginOptions = {}] = Array.isArray(plugin) ? plugin : [plugin];
+    const addWorkspacePlugin = async (pluginName: any, pluginOptions: any = {}) => {
+      const normalizedPluginName =
+        typeof pluginName === 'string' ? workspacePluginNameAliases[pluginName] || pluginName : pluginName;
       const packageName =
         typeof pluginName === 'string'
           ? workspacePackageNameByShortName(workspaceRoot, pluginName, options.packageDirByPluginName)
           : null;
       if (packageName) {
         workspaceSourcePackages.add(packageName);
-        await this.add(pluginName, { enabled: true, ...pluginOptions, packageName, workspaceSource: true });
+        const sourceEntry = path.resolve(
+          workspaceRoot,
+          'packages',
+          workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName) || '',
+          'src/server/index.ts',
+        );
+        if (fs.existsSync(sourceEntry)) {
+          const mod = await import(pathToFileURL(sourceEntry).href);
+          await this.add(mod.default || mod, {
+            name: pluginName,
+            ...pluginOptions,
+            packageName,
+            workspaceSource: true,
+          });
+        } else {
+          await this.add(normalizedPluginName, {
+            name: pluginName,
+            ...pluginOptions,
+            packageName,
+            workspaceSource: true,
+          });
+        }
       } else if (typeof pluginName === 'function') {
-        await this.add(pluginName, { enabled: true, ...pluginOptions });
+        await this.add(pluginName, pluginOptions);
       } else {
-        await this.add(pluginName, { enabled: true, isPreset: true, ...pluginOptions });
+        await this.add(normalizedPluginName, { name: pluginName, isPreset: true, ...pluginOptions });
       }
+    };
+
+    const addTachybasePresetPlugin = async (pluginName: string, pluginOptions: any = {}) => {
+      if (testUnsafeBuiltinPlugins.has(pluginName)) {
+        return;
+      }
+      await addWorkspacePlugin(pluginName, { enabled: true, ...pluginOptions });
+    };
+
+    const addTachybaseExternalPlugin = async (plugin: any, pluginOptions: any = {}) => {
+      const pluginName = typeof plugin === 'string' ? plugin : plugin?.name;
+      if (!pluginName || testUnsafeBuiltinPlugins.has(pluginName)) {
+        return;
+      }
+      await addWorkspacePlugin(pluginName, { enabled: !!plugin?.enabledByDefault, ...pluginOptions });
+    };
+
+    for (const plugin of this.options.plugins || []) {
+      const [pluginName, pluginOptions = {}] = Array.isArray(plugin) ? plugin : [plugin];
+      if (pluginName === 'tachybase') {
+        for (const builtinPlugin of options.settings?.presets?.builtinPlugins || []) {
+          await addTachybasePresetPlugin(builtinPlugin, pluginOptions);
+        }
+        for (const externalPlugin of options.settings?.presets?.externalPlugins || []) {
+          await addTachybaseExternalPlugin(externalPlugin, pluginOptions);
+        }
+        continue;
+      }
+
+      await addWorkspacePlugin(pluginName, { enabled: true, ...pluginOptions });
     }
 
     this['_initPresetPlugins'] = true;
@@ -211,10 +327,14 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
   process.env.TEGO_RUNTIME_HOME = path.join(os.tmpdir(), 'test-sqlite');
   process.env.APP_ENV_PATH = process.env.APP_ENV_PATH || '.env.test';
 
-  patchPluginRuntime(runtimeRequire('@tego/core'), workspaceRoot, packageDirByPluginName);
-  patchPluginManager(runtimeRequire('@tego/core'), {
-    ...options,
-    workspaceRoot,
-    packageDirByPluginName,
-  });
+  const coreModules = getCoreModules(runtimeRequire);
+  for (const core of coreModules) {
+    patchPluginRuntime(core, workspaceRoot, packageDirByPluginName);
+    patchPluginManager(core, {
+      ...options,
+      workspaceRoot,
+      packageDirByPluginName,
+      settings: testSettings,
+    });
+  }
 }
