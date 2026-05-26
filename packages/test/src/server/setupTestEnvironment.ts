@@ -12,7 +12,7 @@ export interface ServerTestEnvironmentOptions {
   disableOtherPlugins?: boolean;
 }
 
-const require = createRequire(import.meta.url);
+const runtimeRequire = createRequire(path.resolve(process.cwd(), 'package.json'));
 const ImportedTachybaseGlobal = (TachybaseGlobalModule as any).getInstance
   ? TachybaseGlobalModule
   : (TachybaseGlobalModule as any).default;
@@ -23,7 +23,7 @@ function createRuntimeRequire(workspaceRoot: string) {
     return createRequire(hostPackageJson);
   }
 
-  return require;
+  return runtimeRequire;
 }
 
 function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
@@ -41,7 +41,7 @@ function workspacePackageNameByShortName(workspaceRoot: string, name: string, ma
   for (const packageDir of candidates) {
     const packageJsonPath = path.resolve(workspaceRoot, 'packages', packageDir, 'package.json');
     if (fs.existsSync(packageJsonPath)) {
-      const packageJson = require(packageJsonPath);
+      const packageJson = runtimeRequire(packageJsonPath);
       return packageJson.name;
     }
   }
@@ -59,7 +59,7 @@ function workspacePackageDirByPackageName(
 
   const mappedPackageDir = Object.values(map).find((packageDir) => {
     const packageJsonPath = path.resolve(workspaceRoot, 'packages', packageDir, 'package.json');
-    return fs.existsSync(packageJsonPath) && require(packageJsonPath).name === packageName;
+    return fs.existsSync(packageJsonPath) && runtimeRequire(packageJsonPath).name === packageName;
   });
   if (mappedPackageDir) {
     return mappedPackageDir;
@@ -118,9 +118,9 @@ function patchPluginManager(
   PluginManager.getPackageJson = async (packageName: string) => {
     const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName);
     if (packageDir) {
-      return require(path.resolve(workspaceRoot, 'packages', packageDir, 'package.json'));
+      return runtimeRequire(path.resolve(workspaceRoot, 'packages', packageDir, 'package.json'));
     }
-    return require(require.resolve(path.join(packageName, 'package.json')));
+    return runtimeRequire(runtimeRequire.resolve(path.join(packageName, 'package.json')));
   };
 
   PluginManager.resolvePlugin = async (pluginName: any, isUpgrade = false, isPkg = false) => {

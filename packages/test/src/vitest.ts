@@ -1,12 +1,14 @@
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path, { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vitest/config';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = resolve(__dirname, '..');
+const runtimeRequire = createRequire(path.resolve(process.cwd(), 'package.json'));
+const packageRoot = fs.existsSync(path.resolve(process.cwd(), 'packages/test/package.json'))
+  ? path.resolve(process.cwd(), 'packages/test')
+  : path.dirname(runtimeRequire.resolve('@tachybase/test/package.json'));
 
 const relativePathToAbsolute = (relativePath) => {
   return path.resolve(process.cwd(), relativePath);
