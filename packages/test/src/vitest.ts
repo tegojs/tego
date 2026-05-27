@@ -52,10 +52,14 @@ export interface TegoVitestConfigOptions {
   server?: {
     setupFile?: string;
   };
+  client?: {
+    setupFile?: string;
+  };
 }
 
 export function defineTegoVitestConfig(options: TegoVitestConfigOptions = {}) {
   const serverSetupFile = options.server?.setupFile || resolve(packageRoot, './setup/server.ts');
+  const clientSetupFiles = [resolve(packageRoot, './setup/client.ts'), options.client?.setupFile].filter(Boolean);
 
   return defineConfig({
     test: {
@@ -111,7 +115,7 @@ export function defineTegoVitestConfig(options: TegoVitestConfigOptions = {}) {
           test: {
             name: 'client',
             globals: true,
-            setupFiles: resolve(packageRoot, './setup/client.ts'),
+            setupFiles: clientSetupFiles,
             environment: 'jsdom',
             css: false,
             alias: tsConfigPathsToAlias(),

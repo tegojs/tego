@@ -9,9 +9,9 @@ export * from './setupTestEnvironment';
 
 export const pgOnly: () => any = () => {
   const describe = (globalThis as any).describe;
-  return TachybaseGlobal.settings.database.dialect === 'postgres' ? describe : describe.skip;
+  return TachybaseGlobal.settings?.database?.dialect === 'postgres' ? describe : describe.skip;
 };
-export const isPg = () => TachybaseGlobal.settings.database.dialect === 'postgres';
+export const isPg = () => TachybaseGlobal.settings?.database?.dialect === 'postgres';
 
 export function randomStr() {
   // create random string

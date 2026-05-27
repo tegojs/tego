@@ -69,7 +69,7 @@
       },
       "import": {
         "types": "./es/setup-server.d.ts",
-        "default": "./es/setup-server.mjs"
+        "default": "./es/index.mjs"
       }
     },
     "./package.json": "./package.json",

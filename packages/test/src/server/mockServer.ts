@@ -254,6 +254,34 @@ export async function createMockServer(
   if (!skipStart) {
     await app.runCommandThrowError('start');
   }
+  if (!app.authManager.tokenController) {
+    app.authManager.setTokenControlService({
+      async getConfig() {
+        return {
+          tokenExpirationTime: 24 * 60 * 60 * 1000,
+          sessionExpirationTime: 7 * 24 * 60 * 60 * 1000,
+          expiredTokenRenewLimit: 24 * 60 * 60 * 1000,
+        };
+      },
+      async setConfig() {},
+      async renew() {
+        return {
+          jti: `test-jti-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          issuedTime: Date.now(),
+        };
+      },
+      async add({ userId }) {
+        return {
+          jti: `test-jti-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          userId,
+          issuedTime: Date.now(),
+          signInTime: Date.now(),
+          renewed: false,
+        };
+      },
+      async removeSessionExpiredTokens() {},
+    });
+  }
   if (!app.authManager.userStatusService) {
     app.authManager.setUserStatusService({
       async checkUserStatus() {

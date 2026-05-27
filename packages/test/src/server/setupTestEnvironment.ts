@@ -40,10 +40,18 @@ function getCoreModules(runtimeRequire: NodeJS.Require) {
   const cores = [runtimeRequire('@tego/core')];
 
   try {
+    cores.push(runtimeRequire('@tego/server'));
     const serverRequire = createRequire(runtimeRequire.resolve('@tego/server/package.json'));
     cores.push(serverRequire('@tego/core'));
   } catch {
     // @tego/server is optional for client-only test consumers.
+  }
+
+  for (const mod of Object.values(runtimeRequire.cache)) {
+    const exports = mod?.exports as any;
+    if (exports?.Plugin && exports?.PluginManager) {
+      cores.push(exports);
+    }
   }
 
   return [...new Set(cores)];
@@ -91,6 +99,20 @@ function workspacePackageDirByPackageName(
   return fs.existsSync(packageJsonPath) ? packageDir : null;
 }
 
+function workspaceServerEntry(workspaceRoot: string, packageDir: string) {
+  const compiledEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'dist/server/index.js');
+  if (fs.existsSync(compiledEntry)) {
+    return compiledEntry;
+  }
+
+  const sourceEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts');
+  return fs.existsSync(sourceEntry) ? sourceEntry : null;
+}
+
+function getModuleDefault(mod: any) {
+  return mod?.default?.default || mod?.default || mod;
+}
+
 function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPluginName: Record<string, string>) {
   if (core.Plugin.prototype.__serverTestEnvironmentPatched) {
     return;
@@ -128,12 +150,19 @@ function patchPluginManager(
     ServerTestEnvironmentOptions & { settings: any },
 ) {
   const PluginManager = core.PluginManager;
-  if (PluginManager.__serverTestEnvironmentPatched) {
+  if (PluginManager.__serverTestEnvironmentPatchVersion === 2) {
     return;
   }
 
   const workspaceRoot = options.workspaceRoot || process.cwd();
-  const resolvePlugin = PluginManager.resolvePlugin.bind(PluginManager);
+  const resolvePlugin = (
+    PluginManager.__serverTestEnvironmentOriginalResolvePlugin || PluginManager.resolvePlugin
+  ).bind(PluginManager);
+  const originalAdd = PluginManager.__serverTestEnvironmentOriginalAdd || PluginManager.prototype.add;
+  const originalEnable = PluginManager.__serverTestEnvironmentOriginalEnable || PluginManager.prototype.enable;
+  PluginManager.__serverTestEnvironmentOriginalResolvePlugin = resolvePlugin;
+  PluginManager.__serverTestEnvironmentOriginalAdd = originalAdd;
+  PluginManager.__serverTestEnvironmentOriginalEnable = originalEnable;
   const workspaceSourcePackages = new Set<string>();
 
   PluginManager.getPackageName = async (name: string) =>
@@ -155,12 +184,10 @@ function patchPluginManager(
     const packageName = isPkg ? pluginName : await PluginManager.getPackageName(pluginName);
     if (workspaceSourcePackages.has(packageName)) {
       const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName);
-      if (packageDir) {
-        const sourceEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts');
-        if (fs.existsSync(sourceEntry)) {
-          const mod = await import(pathToFileURL(sourceEntry).href);
-          return mod.default || mod;
-        }
+      const entry = packageDir ? workspaceServerEntry(workspaceRoot, packageDir) : null;
+      if (entry) {
+        const mod = await import(pathToFileURL(entry).href);
+        return getModuleDefault(mod);
       }
       return resolvePlugin(packageName, isUpgrade, true);
     }
@@ -180,7 +207,6 @@ function patchPluginManager(
     };
   }
 
-  const originalAdd = PluginManager.prototype.add;
   PluginManager.prototype.add = async function addWorkspaceSourcePlugin(
     plugin: any,
     pluginOptions: any = {},
@@ -193,19 +219,16 @@ function patchPluginManager(
         pluginOptions.packageName,
         options.packageDirByPluginName,
       );
-      const sourceEntry = packageDir
-        ? path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts')
-        : null;
-      if (sourceEntry && fs.existsSync(sourceEntry)) {
-        const mod = await import(pathToFileURL(sourceEntry).href);
-        return originalAdd.call(this, mod.default || mod, pluginOptions, insert, isUpgrade);
+      const entry = packageDir ? workspaceServerEntry(workspaceRoot, packageDir) : null;
+      if (entry) {
+        const mod = await import(pathToFileURL(entry).href);
+        return originalAdd.call(this, getModuleDefault(mod), pluginOptions, insert, isUpgrade);
       }
     }
 
     return originalAdd.call(this, plugin, pluginOptions, insert, isUpgrade);
   };
 
-  const originalEnable = PluginManager.prototype.enable;
   PluginManager.prototype.enable = async function enableWorkspacePlugin(name: string | string[]) {
     const normalize = (pluginName: string) => workspacePluginNameAliases[pluginName] || pluginName;
     const normalizedName = Array.isArray(name) ? name.map(normalize) : normalize(name);
@@ -226,15 +249,12 @@ function patchPluginManager(
           : null;
       if (packageName) {
         workspaceSourcePackages.add(packageName);
-        const sourceEntry = path.resolve(
-          workspaceRoot,
-          'packages',
-          workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName) || '',
-          'src/server/index.ts',
-        );
-        if (fs.existsSync(sourceEntry)) {
-          const mod = await import(pathToFileURL(sourceEntry).href);
-          await this.add(mod.default || mod, {
+        const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName);
+        const entry = packageDir ? workspaceServerEntry(workspaceRoot, packageDir) : null;
+        if (entry) {
+          const mod = await import(pathToFileURL(entry).href);
+          const P = getModuleDefault(mod);
+          await this.add(P, {
             name: pluginName,
             ...pluginOptions,
             packageName,
@@ -288,8 +308,36 @@ function patchPluginManager(
     this['_initPresetPlugins'] = true;
   };
 
-  PluginManager.__serverTestEnvironmentPatched = true;
+  PluginManager.__serverTestEnvironmentPatchVersion = 2;
+  PluginManager.__serverTestEnvironmentPatchOptions = options;
   PluginManager.findPackagePatched = true;
+}
+
+function patchAppSupervisor(
+  core: any,
+  options: Required<Pick<ServerTestEnvironmentOptions, 'packageDirByPluginName'>> &
+    ServerTestEnvironmentOptions & { settings: any },
+) {
+  const AppSupervisor = core.AppSupervisor;
+  if (!AppSupervisor?.getInstance || AppSupervisor.__serverTestEnvironmentPatchVersion === 1) {
+    return;
+  }
+
+  const supervisor = AppSupervisor.getInstance();
+  const originalAddApp = supervisor.addApp.bind(supervisor);
+  supervisor.addApp = (app: any) => {
+    if (app?.pm?.constructor) {
+      patchPluginManager(
+        {
+          PluginManager: app.pm.constructor,
+        },
+        options,
+      );
+    }
+    return originalAddApp(app);
+  };
+
+  AppSupervisor.__serverTestEnvironmentPatchVersion = 1;
 }
 
 export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions = {}) {
@@ -310,6 +358,7 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
       level: 'error',
     },
     database: {
+      dialect: settings.database?.dialect || 'sqlite',
       ...settings.database,
       storage: createTestDbStorage(),
     },
@@ -331,6 +380,12 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
   for (const core of coreModules) {
     patchPluginRuntime(core, workspaceRoot, packageDirByPluginName);
     patchPluginManager(core, {
+      ...options,
+      workspaceRoot,
+      packageDirByPluginName,
+      settings: testSettings,
+    });
+    patchAppSupervisor(core, {
       ...options,
       workspaceRoot,
       packageDirByPluginName,
