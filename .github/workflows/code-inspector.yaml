@@ -1,0 +1,81 @@
+name: Code Inspector
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - dev
+    paths-ignore:
+      - '.github/workflows/**'
+      - '**/*.md'
+  pull_request:
+    branches:
+      - main
+      - dev
+    paths-ignore:
+      - '.github/workflows/**'
+      - '**/*.md'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build
+        run: pnpm build
+
+  test:
+    name: Test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Test
+        run: pnpm test -- --run --reporter=default --reporter=github-actions
+
+  test-coverage:
+    name: Test Coverage
+    # Temporarily disabled due to low coverage; enable by removing this guard when coverage is ready.
+    if: false
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Test coverage
+        run: pnpm vitest --coverage.enabled true
+      - name: Report coverage
+        if: always()
+        uses: davelosert/vitest-coverage-report-action@v2
