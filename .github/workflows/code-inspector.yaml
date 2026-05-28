@@ -1,3 +1,4 @@
+# 本文件 tego 与 tego-standard 保持同步, 但是两边 test 命令有微小差异
 name: Code Inspector
 
 on:
@@ -27,6 +28,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
       - name: Setup Node.js
@@ -45,6 +48,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
       - name: Setup Node.js
@@ -65,6 +70,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
       - name: Setup Node.js

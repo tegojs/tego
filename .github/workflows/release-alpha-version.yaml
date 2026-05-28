@@ -1,4 +1,4 @@
-# 本文件与 tego-standard 仓库相同文件保持同步
+# 本文件 tego 与 tego-standard 保持同步, 但是 tego-standard 多出 CHANGELOG 相关逻辑
 name: Release Alpha Version
 
 on:
@@ -29,6 +29,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           ref: ${{ github.ref }}
           fetch-depth: 0 # 获取完整的 git 历史，包括所有 tags

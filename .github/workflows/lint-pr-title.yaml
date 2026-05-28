@@ -1,4 +1,5 @@
-name: "Lint PR Title"
+# 本文件 tego 与 tego-standard 保持同步
+name: 'Lint PR Title'
 
 on:
   pull_request_target:
