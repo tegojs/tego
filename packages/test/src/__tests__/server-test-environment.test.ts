@@ -7,9 +7,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { setupServerTestEnvironment } from '../server/setupTestEnvironment';
 
 const globalsLibDir = path.resolve(process.cwd(), 'packages/globals/lib');
-const movedGlobalsLibDir = path.resolve(process.cwd(), 'packages/globals/lib.tmp-server-env-test');
 const coreLibDir = path.resolve(process.cwd(), 'packages/core/lib');
-const movedCoreLibDir = path.resolve(process.cwd(), 'packages/core/lib.tmp-server-env-test');
+let movedGlobalsLibDir: string;
+let movedCoreLibDir: string;
 
 function moveIfExists(from: string, to: string) {
   if (fs.existsSync(from)) {
@@ -21,6 +21,10 @@ function restoreIfMoved(from: string, to: string) {
   if (fs.existsSync(from)) {
     fs.renameSync(from, to);
   }
+}
+
+function createTempLibDir(packageName: string) {
+  return path.resolve(process.cwd(), 'packages', packageName, `lib.tmp-server-env-test-${process.pid}-${Date.now()}`);
 }
 
 let originalSettings: typeof TachybaseGlobal.settings;
@@ -45,6 +49,8 @@ function restoreEnv() {
 beforeEach(() => {
   originalSettings = structuredClone(TachybaseGlobal.settings);
   originalEnv = { ...process.env };
+  movedGlobalsLibDir = createTempLibDir('globals');
+  movedCoreLibDir = createTempLibDir('core');
 });
 
 afterEach(() => {
@@ -55,7 +61,7 @@ afterEach(() => {
   restoreIfMoved(movedCoreLibDir, coreLibDir);
 });
 
-describe('setupServerTestEnvironment', () => {
+describe.sequential('setupServerTestEnvironment', () => {
   it('configures an isolated sqlite test environment without built globals and core output', async () => {
     moveIfExists(globalsLibDir, movedGlobalsLibDir);
     moveIfExists(coreLibDir, movedCoreLibDir);
