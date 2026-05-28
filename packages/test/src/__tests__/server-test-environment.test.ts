@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import TachybaseGlobal from '@tachybase/globals';
 
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { setupServerTestEnvironment } from '../server/setupTestEnvironment';
 
@@ -23,7 +23,18 @@ function restoreIfMoved(from: string, to: string) {
   }
 }
 
+let originalSettings: typeof TachybaseGlobal.settings;
+let originalEnv: NodeJS.ProcessEnv;
+
+beforeEach(() => {
+  originalSettings = structuredClone(TachybaseGlobal.settings);
+  originalEnv = { ...process.env };
+});
+
 afterEach(() => {
+  TachybaseGlobal.getInstance().clear();
+  TachybaseGlobal.settings = originalSettings;
+  process.env = originalEnv;
   restoreIfMoved(movedGlobalsLibDir, globalsLibDir);
   restoreIfMoved(movedCoreLibDir, coreLibDir);
 });
@@ -44,5 +55,24 @@ describe('setupServerTestEnvironment', () => {
     expect(TachybaseGlobal.settings.database.storage).toContain('tego-test');
     expect(TachybaseGlobal.settings.presets.runtimePlugins).toEqual([]);
     expect(TachybaseGlobal.getInstance().get('PLUGIN_PATHS')).toEqual([path.resolve(process.cwd(), 'packages')]);
+  });
+
+  it('updates environment options on subsequent calls', () => {
+    const firstPluginPath = path.resolve(process.cwd(), 'packages');
+    const secondPluginPath = path.resolve(process.cwd(), 'packages/test');
+
+    setupServerTestEnvironment({
+      workspaceRoot: process.cwd(),
+      pluginPaths: [firstPluginPath],
+      disableRuntimePlugins: true,
+    });
+    setupServerTestEnvironment({
+      workspaceRoot: process.cwd(),
+      pluginPaths: [secondPluginPath],
+      disableRuntimePlugins: false,
+    });
+
+    expect(TachybaseGlobal.getInstance().get('PLUGIN_PATHS')).toEqual([secondPluginPath]);
+    expect(TachybaseGlobal.settings.presets.runtimePlugins).toEqual(originalSettings.presets.runtimePlugins);
   });
 });

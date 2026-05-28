@@ -74,7 +74,9 @@ function getCoreModules(runtimeRequire: NodeJS.Require) {
 
 function createTestDbStorage() {
   const testDbName = `test-${Date.now()}-${Math.random().toString(36).slice(2)}.sqlite`;
-  return path.join(os.tmpdir(), 'tego-test', testDbName);
+  const testDbDir = path.join(os.tmpdir(), 'tego-test');
+  fs.mkdirSync(testDbDir, { recursive: true });
+  return path.join(testDbDir, testDbName);
 }
 
 function workspacePackageNameByShortName(workspaceRoot: string, name: string, map: Record<string, string>) {
@@ -128,7 +130,12 @@ function getModuleDefault(mod: any) {
   return mod?.default?.default || mod?.default || mod;
 }
 
+function getServerTestEnvironmentOptions(core: any) {
+  return core.Plugin.__serverTestEnvironmentOptions;
+}
+
 function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPluginName: Record<string, string>) {
+  core.Plugin.__serverTestEnvironmentOptions = { workspaceRoot, packageDirByPluginName };
   if (core.Plugin.prototype.__serverTestEnvironmentPatched) {
     return;
   }
@@ -136,15 +143,18 @@ function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPlugin
   const originalLoadCollections = core.Plugin.prototype.loadCollections;
 
   core.Plugin.prototype.loadCollections = async function loadWorkspaceCollections() {
+    const currentOptions = getServerTestEnvironmentOptions(core);
+    const currentWorkspaceRoot = currentOptions?.workspaceRoot || workspaceRoot;
+    const currentPackageDirByPluginName = currentOptions?.packageDirByPluginName || packageDirByPluginName;
     const packageDir = this.options?.workspaceSource
-      ? workspacePackageDirByPackageName(workspaceRoot, this.options?.packageName, packageDirByPluginName)
+      ? workspacePackageDirByPackageName(currentWorkspaceRoot, this.options?.packageName, currentPackageDirByPluginName)
       : null;
     if (!packageDir) {
       return originalLoadCollections.call(this);
     }
 
-    const sourceDirectory = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/collections');
-    const compiledDirectory = path.resolve(workspaceRoot, 'packages', packageDir, 'dist/server/collections');
+    const sourceDirectory = path.resolve(currentWorkspaceRoot, 'packages', packageDir, 'src/server/collections');
+    const compiledDirectory = path.resolve(currentWorkspaceRoot, 'packages', packageDir, 'dist/server/collections');
     const directory = fs.existsSync(compiledDirectory) ? compiledDirectory : sourceDirectory;
     if (!fs.existsSync(directory)) {
       return;
@@ -159,34 +169,64 @@ function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPlugin
   core.Plugin.prototype.__serverTestEnvironmentPatched = true;
 }
 
+function getPluginManagerOptions(PluginManager: any) {
+  return PluginManager.__serverTestEnvironmentOptions;
+}
+
 function patchPluginManager(
   core: any,
   options: Required<Pick<ServerTestEnvironmentOptions, 'packageDirByPluginName'>> &
     ServerTestEnvironmentOptions & { settings: any },
 ) {
   const PluginManager = core.PluginManager;
+  PluginManager.__serverTestEnvironmentOptions = options;
   if (PluginManager.__serverTestEnvironmentPatchVersion === 2) {
     return;
   }
 
-  const workspaceRoot = options.workspaceRoot || process.cwd();
   const resolvePlugin = (
     PluginManager.__serverTestEnvironmentOriginalResolvePlugin || PluginManager.resolvePlugin
   ).bind(PluginManager);
+  const originalGetPackageName = (
+    PluginManager.__serverTestEnvironmentOriginalGetPackageName || PluginManager.getPackageName
+  ).bind(PluginManager);
   const originalAdd = PluginManager.__serverTestEnvironmentOriginalAdd || PluginManager.prototype.add;
   const originalEnable = PluginManager.__serverTestEnvironmentOriginalEnable || PluginManager.prototype.enable;
+  const originalInitRuntimePlugins =
+    PluginManager.__serverTestEnvironmentOriginalInitRuntimePlugins || PluginManager.prototype.initRuntimePlugins;
+  const originalInitOtherPlugins =
+    PluginManager.__serverTestEnvironmentOriginalInitOtherPlugins || PluginManager.prototype.initOtherPlugins;
   PluginManager.__serverTestEnvironmentOriginalResolvePlugin = resolvePlugin;
+  PluginManager.__serverTestEnvironmentOriginalGetPackageName = originalGetPackageName;
   PluginManager.__serverTestEnvironmentOriginalAdd = originalAdd;
   PluginManager.__serverTestEnvironmentOriginalEnable = originalEnable;
+  PluginManager.__serverTestEnvironmentOriginalInitRuntimePlugins = originalInitRuntimePlugins;
+  PluginManager.__serverTestEnvironmentOriginalInitOtherPlugins = originalInitOtherPlugins;
   const workspaceSourcePackages = new Set<string>();
 
-  PluginManager.getPackageName = async (name: string) =>
-    workspacePackageNameByShortName(workspaceRoot, name, options.packageDirByPluginName) || name;
+  PluginManager.getPackageName = async (name: string) => {
+    const currentOptions = getPluginManagerOptions(PluginManager);
+    const currentWorkspaceRoot = currentOptions?.workspaceRoot || process.cwd();
+    const currentPackageDirByPluginName = currentOptions?.packageDirByPluginName || {};
+    const workspacePackageName = workspacePackageNameByShortName(
+      currentWorkspaceRoot,
+      name,
+      currentPackageDirByPluginName,
+    );
+    return workspacePackageName || originalGetPackageName(name);
+  };
 
   PluginManager.getPackageJson = async (packageName: string) => {
-    const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName);
+    const currentOptions = getPluginManagerOptions(PluginManager);
+    const currentWorkspaceRoot = currentOptions?.workspaceRoot || process.cwd();
+    const currentPackageDirByPluginName = currentOptions?.packageDirByPluginName || {};
+    const packageDir = workspacePackageDirByPackageName(
+      currentWorkspaceRoot,
+      packageName,
+      currentPackageDirByPluginName,
+    );
     if (packageDir) {
-      return runtimeRequire(path.resolve(workspaceRoot, 'packages', packageDir, 'package.json'));
+      return runtimeRequire(path.resolve(currentWorkspaceRoot, 'packages', packageDir, 'package.json'));
     }
     return runtimeRequire(runtimeRequire.resolve(path.join(packageName, 'package.json')));
   };
@@ -198,8 +238,15 @@ function patchPluginManager(
 
     const packageName = isPkg ? pluginName : await PluginManager.getPackageName(pluginName);
     if (workspaceSourcePackages.has(packageName)) {
-      const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName);
-      const entry = packageDir ? workspaceServerEntry(workspaceRoot, packageDir) : null;
+      const currentOptions = getPluginManagerOptions(PluginManager);
+      const currentWorkspaceRoot = currentOptions?.workspaceRoot || process.cwd();
+      const currentPackageDirByPluginName = currentOptions?.packageDirByPluginName || {};
+      const packageDir = workspacePackageDirByPackageName(
+        currentWorkspaceRoot,
+        packageName,
+        currentPackageDirByPluginName,
+      );
+      const entry = packageDir ? workspaceServerEntry(currentWorkspaceRoot, packageDir) : null;
       if (entry) {
         const mod = await import(pathToFileURL(entry).href);
         return getModuleDefault(mod);
@@ -210,17 +257,23 @@ function patchPluginManager(
     return resolvePlugin(pluginName, isUpgrade, isPkg);
   };
 
-  if (options.disableRuntimePlugins) {
-    PluginManager.prototype.initRuntimePlugins = async function initNoRuntimePlugins() {
+  PluginManager.prototype.initRuntimePlugins = async function initTestRuntimePlugins() {
+    const currentOptions = getPluginManagerOptions(PluginManager);
+    if (currentOptions?.disableRuntimePlugins) {
       this['_initRuntimePlugins'] = true;
-    };
-  }
+      return;
+    }
+    return originalInitRuntimePlugins.call(this);
+  };
 
-  if (options.disableOtherPlugins) {
-    PluginManager.prototype.initOtherPlugins = async function initNoOtherPlugins() {
+  PluginManager.prototype.initOtherPlugins = async function initTestOtherPlugins() {
+    const currentOptions = getPluginManagerOptions(PluginManager);
+    if (currentOptions?.disableOtherPlugins) {
       this['_initOtherPlugins'] = true;
-    };
-  }
+      return;
+    }
+    return originalInitOtherPlugins.call(this);
+  };
 
   PluginManager.prototype.add = async function addWorkspaceSourcePlugin(
     plugin: any,
@@ -229,12 +282,15 @@ function patchPluginManager(
     isUpgrade = false,
   ) {
     if (typeof plugin === 'string' && pluginOptions?.workspaceSource && pluginOptions?.packageName) {
+      const currentOptions = getPluginManagerOptions(PluginManager);
+      const currentWorkspaceRoot = currentOptions?.workspaceRoot || process.cwd();
+      const currentPackageDirByPluginName = currentOptions?.packageDirByPluginName || {};
       const packageDir = workspacePackageDirByPackageName(
-        workspaceRoot,
+        currentWorkspaceRoot,
         pluginOptions.packageName,
-        options.packageDirByPluginName,
+        currentPackageDirByPluginName,
       );
-      const entry = packageDir ? workspaceServerEntry(workspaceRoot, packageDir) : null;
+      const entry = packageDir ? workspaceServerEntry(currentWorkspaceRoot, packageDir) : null;
       if (entry) {
         const mod = await import(pathToFileURL(entry).href);
         return originalAdd.call(this, getModuleDefault(mod), pluginOptions, insert, isUpgrade);
@@ -258,14 +314,21 @@ function patchPluginManager(
     const addWorkspacePlugin = async (pluginName: any, pluginOptions: any = {}) => {
       const normalizedPluginName =
         typeof pluginName === 'string' ? workspacePluginNameAliases[pluginName] || pluginName : pluginName;
+      const currentOptions = getPluginManagerOptions(PluginManager);
+      const currentWorkspaceRoot = currentOptions?.workspaceRoot || process.cwd();
+      const currentPackageDirByPluginName = currentOptions?.packageDirByPluginName || {};
       const packageName =
         typeof pluginName === 'string'
-          ? workspacePackageNameByShortName(workspaceRoot, pluginName, options.packageDirByPluginName)
+          ? workspacePackageNameByShortName(currentWorkspaceRoot, pluginName, currentPackageDirByPluginName)
           : null;
       if (packageName) {
         workspaceSourcePackages.add(packageName);
-        const packageDir = workspacePackageDirByPackageName(workspaceRoot, packageName, options.packageDirByPluginName);
-        const entry = packageDir ? workspaceServerEntry(workspaceRoot, packageDir) : null;
+        const packageDir = workspacePackageDirByPackageName(
+          currentWorkspaceRoot,
+          packageName,
+          currentPackageDirByPluginName,
+        );
+        const entry = packageDir ? workspaceServerEntry(currentWorkspaceRoot, packageDir) : null;
         if (entry) {
           const mod = await import(pathToFileURL(entry).href);
           const P = getModuleDefault(mod);
@@ -308,10 +371,12 @@ function patchPluginManager(
     for (const plugin of this.options.plugins || []) {
       const [pluginName, pluginOptions = {}] = Array.isArray(plugin) ? plugin : [plugin];
       if (pluginName === 'tachybase') {
-        for (const builtinPlugin of options.settings?.presets?.builtinPlugins || []) {
+        const currentOptions = getPluginManagerOptions(PluginManager);
+        const currentSettings = currentOptions?.settings || options.settings;
+        for (const builtinPlugin of currentSettings?.presets?.builtinPlugins || []) {
           await addTachybasePresetPlugin(builtinPlugin, pluginOptions);
         }
-        for (const externalPlugin of options.settings?.presets?.externalPlugins || []) {
+        for (const externalPlugin of currentSettings?.presets?.externalPlugins || []) {
           await addTachybaseExternalPlugin(externalPlugin, pluginOptions);
         }
         continue;
@@ -334,7 +399,11 @@ function patchAppSupervisor(
     ServerTestEnvironmentOptions & { settings: any },
 ) {
   const AppSupervisor = core.AppSupervisor;
-  if (!AppSupervisor?.getInstance || AppSupervisor.__serverTestEnvironmentPatchVersion === 1) {
+  if (!AppSupervisor?.getInstance) {
+    return;
+  }
+  AppSupervisor.__serverTestEnvironmentOptions = options;
+  if (AppSupervisor.__serverTestEnvironmentPatchVersion === 1) {
     return;
   }
 
@@ -346,7 +415,7 @@ function patchAppSupervisor(
         {
           PluginManager: app.pm.constructor,
         },
-        options,
+        AppSupervisor.__serverTestEnvironmentOptions,
       );
     }
     return originalAddApp(app);

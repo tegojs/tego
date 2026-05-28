@@ -35,9 +35,10 @@ describe('defineTegoVitestConfig', () => {
       },
     });
 
-    const serverProject = config.test?.projects?.[0] as any;
+    const serverProject = config.test?.projects?.find((project) => project.test?.name === 'server');
     expect(config.test?.projects).toHaveLength(2);
     expect(config.test?.alias).toEqual(expect.any(Array));
-    expect(serverProject.test.setupFiles).toBe('/workspace/app/vitest.setup.server.ts');
+    expect(serverProject).toBeDefined();
+    expect(serverProject!.test.setupFiles).toBe('/workspace/app/vitest.setup.server.ts');
   });
 });
