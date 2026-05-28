@@ -1,0 +1,5 @@
+tools:
+  eslint:
+    enabled: false
+  oxlint:
+    enabled: true
