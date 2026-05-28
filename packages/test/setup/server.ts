@@ -1,7 +1,6 @@
 import path from 'node:path';
+import { setupServerTestEnvironment } from '@tachybase/test/server';
 import { initEnv } from '@tego/devkit';
-
-import { setupServerTestEnvironment } from '../src/server/setupTestEnvironment';
 
 setupServerTestEnvironment({
   workspaceRoot: process.cwd(),
