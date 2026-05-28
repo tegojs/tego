@@ -32,8 +32,15 @@ function createRuntimeRequire(workspaceRoot: string) {
 }
 
 function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
-  const tachybaseGlobalModule = runtimeRequire('@tachybase/globals');
-  return tachybaseGlobalModule.getInstance ? tachybaseGlobalModule : tachybaseGlobalModule.default;
+  try {
+    const tachybaseGlobalModule = runtimeRequire('@tachybase/globals');
+    return tachybaseGlobalModule.getInstance ? tachybaseGlobalModule : tachybaseGlobalModule.default;
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === 'MODULE_NOT_FOUND') {
+      return ImportedTachybaseGlobal;
+    }
+    throw error;
+  }
 }
 
 function getCoreModules(runtimeRequire: NodeJS.Require) {
