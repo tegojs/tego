@@ -1,5 +1,5 @@
-tools:
-  eslint:
-    enabled: false
-  oxlint:
-    enabled: true
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+reviews:
+  tools:
+    eslint:
+      enabled: false
