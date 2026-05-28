@@ -1,15 +1,28 @@
+import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { defineTegoVitestConfig } from '../vitest';
 
 const runtimeRequire = createRequire(path.resolve(process.cwd(), 'package.json'));
+const testPackageRoot = path.resolve(process.cwd(), 'packages/test');
+const libDir = path.resolve(testPackageRoot, 'lib');
+const movedLibDir = path.resolve(testPackageRoot, 'lib.tmp-vitest-entry-test');
+
+afterEach(() => {
+  if (fs.existsSync(movedLibDir)) {
+    fs.renameSync(movedLibDir, libDir);
+  }
+});
 
 describe('defineTegoVitestConfig', () => {
-  it('keeps the CommonJS package entry compatible', () => {
-    const cjsEntry = runtimeRequire(path.resolve(process.cwd(), 'packages/test/vitest.js'));
+  it('keeps the CommonJS package entry compatible without built output', () => {
+    if (fs.existsSync(libDir)) {
+      fs.renameSync(libDir, movedLibDir);
+    }
+    const cjsEntry = runtimeRequire(path.resolve(testPackageRoot, 'vitest.js'));
 
     expect(cjsEntry.default.test?.projects).toHaveLength(2);
     expect(cjsEntry.defineTegoVitestConfig().test?.projects).toHaveLength(2);
