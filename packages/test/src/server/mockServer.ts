@@ -114,7 +114,7 @@ export class MockServer extends Application {
               .auth(
                 jwt.sign(
                   {
-                    userId: typeof userOrId === 'number' ? userOrId : userOrId?.id,
+                    userId: typeof userOrId === 'number' ? userOrId : (userOrId?.id ?? userOrId?.get?.('id')),
                   },
                   process.env.APP_KEY,
                   {

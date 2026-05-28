@@ -13,6 +13,7 @@ export {
   Collection,
   CollectionGroupManager,
   DataTypes,
+  col,
   Database,
   Field,
   FilterParser,
@@ -73,6 +74,7 @@ export type {
   SyncOptions,
   Transactionable,
   UpdateOptions,
+  WhereOptions,
 } from '@tachybase/database';
 export {
   AppSupervisor,

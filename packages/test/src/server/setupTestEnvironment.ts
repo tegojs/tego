@@ -115,13 +115,13 @@ function workspacePackageDirByPackageName(
 }
 
 function workspaceServerEntry(workspaceRoot: string, packageDir: string) {
-  const compiledEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'dist/server/index.js');
-  if (fs.existsSync(compiledEntry)) {
-    return compiledEntry;
+  const sourceEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts');
+  if (fs.existsSync(sourceEntry)) {
+    return sourceEntry;
   }
 
-  const sourceEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts');
-  return fs.existsSync(sourceEntry) ? sourceEntry : null;
+  const compiledEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'dist/server/index.js');
+  return fs.existsSync(compiledEntry) ? compiledEntry : null;
 }
 
 function getModuleDefault(mod: any) {

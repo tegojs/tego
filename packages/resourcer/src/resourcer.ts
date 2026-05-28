@@ -253,6 +253,16 @@ export class Resourcer {
 
   registerActionHandler(name: ActionName, handler: HandlerType) {
     this.actionHandlers.set(name, handler);
+
+    const [resourceName] = `${name}`.split(':');
+    const resources = `${name}`.includes(':')
+      ? [this.resources.get(resourceName)].filter(Boolean)
+      : this.resources.values();
+    for (const resource of resources) {
+      if (!resource.actions.has(name) && !resource.getExcept().includes(name)) {
+        resource.addAction(name, handler);
+      }
+    }
   }
 
   /**

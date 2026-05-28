@@ -200,6 +200,50 @@ describe('resourcer', () => {
     );
     expect(context.arr).toStrictEqual([33, 44]);
   });
+
+  it('registerActionHandlers() after define', async () => {
+    const resourcer = new Resourcer();
+    resourcer.define({
+      name: 'test',
+    });
+    resourcer.define({
+      name: 'test2',
+    });
+    resourcer.registerActionHandlers({
+      'test:list': async (ctx, next) => {
+        ctx.arr.push(1);
+        await next();
+        ctx.arr.push(2);
+      },
+      list: async (ctx, next) => {
+        ctx.arr.push(11);
+        await next();
+        ctx.arr.push(22);
+      },
+    });
+    let context = {
+      arr: [],
+    };
+    await resourcer.execute(
+      {
+        resource: 'test',
+        action: 'list',
+      },
+      context,
+    );
+    expect(context.arr).toStrictEqual([1, 2]);
+    context = {
+      arr: [],
+    };
+    await resourcer.execute(
+      {
+        resource: 'test2',
+        action: 'list',
+      },
+      context,
+    );
+    expect(context.arr).toStrictEqual([11, 22]);
+  });
   it('only', async () => {
     const resourcer = new Resourcer();
     resourcer.registerActionHandlers({

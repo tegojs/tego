@@ -29,6 +29,9 @@ export async function buildEsm(cwd: string, userConfig: UserConfig, sourcemap: b
     const e2eEntry = path.join(cwd, 'src/e2e/index.ts').replaceAll(/\\/g, '/');
     const e2eOutDir = path.resolve(cwd, 'es/e2e');
     await build(cwd, e2eEntry, e2eOutDir, userConfig, sourcemap, log);
+
+    const vitestEntry = path.join(cwd, 'src/vitest.ts').replaceAll(/\\/g, '/');
+    await build(cwd, vitestEntry, outDir, userConfig, sourcemap, log, 'vitest', false);
   }
 }
 
@@ -39,6 +42,8 @@ function build(
   userConfig: UserConfig,
   sourcemap: boolean = false,
   log: PkgLog,
+  fileName: string = 'index',
+  emptyOutDir: boolean = true,
 ) {
   const cwdWin = cwd.replaceAll(/\\/g, '/');
   const cwdUnix = cwd.replaceAll(/\//g, '\\');
@@ -60,12 +65,12 @@ function build(
         minify: false,
         outDir,
         cssCodeSplit: true,
-        emptyOutDir: true,
+        emptyOutDir,
         sourcemap,
         lib: {
           entry,
           formats: ['es'],
-          fileName: 'index',
+          fileName,
         },
         target: ['node16'],
         rollupOptions: {
