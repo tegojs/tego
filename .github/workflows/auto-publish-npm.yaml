@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.2
         with:
           persist-credentials: false
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
@@ -46,11 +46,11 @@ jobs:
 
       - name: Setup pnpm
         if: steps.check_branch.outputs.on_main == 'true'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6.0.8
 
       - name: Setup Node.js
         if: steps.check_branch.outputs.on_main == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6.4.0
         with:
           node-version: 22.14.0
           cache: 'pnpm'
@@ -283,7 +283,7 @@ jobs:
 
       - name: Upload release assets
         if: steps.check_branch.outputs.on_main == 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3.0.0
         with:
           tag_name: ${{ github.ref_name }}
           files: |
