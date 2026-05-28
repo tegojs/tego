@@ -7,9 +7,15 @@ export { default as supertest } from 'supertest';
 export * from './mockServer';
 export * from './setupTestEnvironment';
 
+const noopDescribe = () => {};
+
 export const pgOnly: () => any = () => {
   const describe = (globalThis as any).describe;
-  return TachybaseGlobal.settings?.database?.dialect === 'postgres' ? describe : describe.skip;
+  const isPostgres = TachybaseGlobal.settings?.database?.dialect === 'postgres';
+  if (isPostgres) {
+    return describe || noopDescribe;
+  }
+  return describe?.skip || noopDescribe;
 };
 export const isPg = () => TachybaseGlobal.settings?.database?.dialect === 'postgres';
 

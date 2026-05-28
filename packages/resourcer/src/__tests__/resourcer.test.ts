@@ -244,6 +244,48 @@ describe('resourcer', () => {
     );
     expect(context.arr).toStrictEqual([11, 22]);
   });
+  it('registerActionHandlers() after define respects only', async () => {
+    const resourcer = new Resourcer();
+    resourcer.define({
+      name: 'test',
+      only: ['list'],
+    });
+    resourcer.registerActionHandlers({
+      async list(ctx, next) {
+        ctx.arr.push(1);
+        await next();
+        ctx.arr.push(2);
+      },
+      async test(ctx, next) {
+        ctx.arr.push('test1');
+        await next();
+        ctx.arr.push('test2');
+      },
+    });
+    const context = {
+      arr: [],
+    };
+    await resourcer.execute(
+      {
+        resource: 'test',
+        action: 'list',
+      },
+      context,
+    );
+    expect(context.arr).toStrictEqual([1, 2]);
+    await expect(
+      resourcer.execute(
+        {
+          resource: 'test',
+          action: 'test',
+        },
+        {
+          arr: [],
+        },
+      ),
+    ).rejects.toThrow('test action is not allowed');
+  });
+
   it('only', async () => {
     const resourcer = new Resourcer();
     resourcer.registerActionHandlers({

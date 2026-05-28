@@ -26,6 +26,22 @@ function restoreIfMoved(from: string, to: string) {
 let originalSettings: typeof TachybaseGlobal.settings;
 let originalEnv: NodeJS.ProcessEnv;
 
+function restoreEnv() {
+  for (const key of Object.keys(process.env)) {
+    if (!(key in originalEnv)) {
+      delete process.env[key];
+    }
+  }
+  for (const key of Object.keys(originalEnv)) {
+    const value = originalEnv[key];
+    if (value === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = value;
+    }
+  }
+}
+
 beforeEach(() => {
   originalSettings = structuredClone(TachybaseGlobal.settings);
   originalEnv = { ...process.env };
@@ -34,7 +50,7 @@ beforeEach(() => {
 afterEach(() => {
   TachybaseGlobal.getInstance().clear();
   TachybaseGlobal.settings = originalSettings;
-  process.env = originalEnv;
+  restoreEnv();
   restoreIfMoved(movedGlobalsLibDir, globalsLibDir);
   restoreIfMoved(movedCoreLibDir, coreLibDir);
 });

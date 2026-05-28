@@ -259,7 +259,15 @@ export class Resourcer {
       ? [this.resources.get(resourceName)].filter(Boolean)
       : this.resources.values();
     for (const resource of resources) {
-      if (!resource.actions.has(name) && !resource.getExcept().includes(name)) {
+      const except = resource.getExcept();
+      const only = resource.options.only || [];
+      if (only.length && !only.includes(name)) {
+        if (!except.includes(name)) {
+          except.push(name);
+        }
+        continue;
+      }
+      if (!resource.actions.has(name) && !except.includes(name)) {
         resource.addAction(name, handler);
       }
     }

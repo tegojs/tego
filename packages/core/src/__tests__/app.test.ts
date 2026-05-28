@@ -20,14 +20,14 @@ describe('app destroy', () => {
       await app.destroy();
     }
   });
-  test('case1', async () => {
+  test('installs and upgrades plugin field migration via commands', async () => {
     app = mockServer({ plugins: [ApplicationPluginsFooPlugin] });
     await app.runCommand('install', ['-f']);
     await app.runCommand('upgrade');
     const exists = await app.db.getCollection('applicationPlugins').getField('foo').existsInDb();
     expect(exists).toBeTruthy();
   });
-  test('case2', async () => {
+  test('runs registered migration during install and upgrade', async () => {
     app = mockServer({ plugins: [ApplicationPluginsFooPlugin] });
     await app.load();
     app.db.addMigration({
@@ -41,7 +41,7 @@ describe('app destroy', () => {
     const exists = await app.db.getCollection('applicationPlugins').getField('foo').existsInDb();
     expect(exists).toBeTruthy();
   });
-  test('case3', async () => {
+  test('keeps migrated plugin field after adding unique constraint', async () => {
     app = mockServer({ plugins: [ApplicationPluginsFooPlugin] });
     await app.cleanDb();
     await app.load();

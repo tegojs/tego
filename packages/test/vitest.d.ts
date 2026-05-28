@@ -1,2 +1,2 @@
-export * from './lib/vitest';
-export { default } from './lib/vitest';
+export * from './src/vitest';
+export { default } from './src/vitest';
