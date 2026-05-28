@@ -1,5 +1,6 @@
 import TachybaseGlobal from '@tachybase/globals';
 
+import { describe } from 'vitest';
 import ws from 'ws';
 
 export { mockDatabase } from '@tachybase/database';
@@ -10,12 +11,11 @@ export * from './setupTestEnvironment';
 const noopDescribe = () => {};
 
 export const pgOnly: () => any = () => {
-  const describe = (globalThis as any).describe;
   const isPostgres = TachybaseGlobal.settings?.database?.dialect === 'postgres';
   if (isPostgres) {
     return describe || noopDescribe;
   }
-  return describe?.skip || noopDescribe;
+  return describe.skip || noopDescribe;
 };
 export const isPg = () => TachybaseGlobal.settings?.database?.dialect === 'postgres';
 

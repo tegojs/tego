@@ -223,7 +223,7 @@ function toMoment(value) {
   return dayjs(value);
 }
 
-function toIsoWeekLabel(m) {
+function toIsoWeekLabel(m: dayjs.Dayjs) {
   const [year, month, day] = m.format('YYYY-MM-DD').split('-').map(Number);
   const date = new Date(Date.UTC(year, month - 1, day));
   date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));

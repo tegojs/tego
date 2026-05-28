@@ -15,19 +15,7 @@ const relativePathToAbsolute = (relativePath) => {
 };
 
 function tsConfigPathsToAlias() {
-  const json = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), './tsconfig.paths.json'), { encoding: 'utf8' }));
-  const paths = json.compilerOptions.paths;
-  const alias = Object.keys(paths).reduce((acc, key) => {
-    if (key !== '@@/*') {
-      const value = paths[key][0];
-      acc.push({
-        find: key,
-        replacement: value,
-      });
-    }
-    return acc;
-  }, []);
-  alias.unshift(
+  const alias = [
     {
       find: '@tachybase/utils/plugin-symlink',
       replacement: 'node_modules/@tachybase/utils/plugin-symlink.js',
@@ -36,7 +24,31 @@ function tsConfigPathsToAlias() {
       find: '@opentelemetry/resources',
       replacement: 'node_modules/@opentelemetry/resources/build/src/index.js',
     },
-  );
+  ];
+
+  try {
+    const json = JSON.parse(
+      fs.readFileSync(path.resolve(process.cwd(), './tsconfig.paths.json'), { encoding: 'utf8' }),
+    );
+    const paths = json.compilerOptions?.paths || {};
+    alias.push(
+      ...Object.keys(paths).reduce((acc, key) => {
+        if (key !== '@@/*') {
+          const value = paths[key]?.[0];
+          if (value) {
+            acc.push({
+              find: key,
+              replacement: value,
+            });
+          }
+        }
+        return acc;
+      }, []),
+    );
+  } catch {
+    // ignore missing or invalid tsconfig.paths.json
+  }
+
   return [
     { find: /^~antd\/(.*)/, replacement: 'antd/$1' },
     ...alias.map((item) => {
