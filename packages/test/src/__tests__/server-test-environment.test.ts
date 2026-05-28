@@ -8,18 +8,30 @@ import { setupServerTestEnvironment } from '../server/setupTestEnvironment';
 
 const globalsLibDir = path.resolve(process.cwd(), 'packages/globals/lib');
 const movedGlobalsLibDir = path.resolve(process.cwd(), 'packages/globals/lib.tmp-server-env-test');
+const coreLibDir = path.resolve(process.cwd(), 'packages/core/lib');
+const movedCoreLibDir = path.resolve(process.cwd(), 'packages/core/lib.tmp-server-env-test');
+
+function moveIfExists(from: string, to: string) {
+  if (fs.existsSync(from)) {
+    fs.renameSync(from, to);
+  }
+}
+
+function restoreIfMoved(from: string, to: string) {
+  if (fs.existsSync(from)) {
+    fs.renameSync(from, to);
+  }
+}
 
 afterEach(() => {
-  if (fs.existsSync(movedGlobalsLibDir)) {
-    fs.renameSync(movedGlobalsLibDir, globalsLibDir);
-  }
+  restoreIfMoved(movedGlobalsLibDir, globalsLibDir);
+  restoreIfMoved(movedCoreLibDir, coreLibDir);
 });
 
 describe('setupServerTestEnvironment', () => {
-  it('configures an isolated sqlite test environment without built globals output', async () => {
-    if (fs.existsSync(globalsLibDir)) {
-      fs.renameSync(globalsLibDir, movedGlobalsLibDir);
-    }
+  it('configures an isolated sqlite test environment without built globals and core output', async () => {
+    moveIfExists(globalsLibDir, movedGlobalsLibDir);
+    moveIfExists(coreLibDir, movedCoreLibDir);
     setupServerTestEnvironment({
       workspaceRoot: process.cwd(),
       pluginPaths: [path.resolve(process.cwd(), 'packages')],

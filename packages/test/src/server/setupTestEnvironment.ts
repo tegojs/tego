@@ -44,7 +44,15 @@ function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
 }
 
 function getCoreModules(runtimeRequire: NodeJS.Require) {
-  const cores = [runtimeRequire('@tego/core')];
+  const cores = [];
+
+  try {
+    cores.push(runtimeRequire('@tego/core'));
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'MODULE_NOT_FOUND') {
+      throw error;
+    }
+  }
 
   try {
     cores.push(runtimeRequire('@tego/server'));
