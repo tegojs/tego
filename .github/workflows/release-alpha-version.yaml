@@ -29,7 +29,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
-          persist-credentials: false
+          persist-credentials: true # 需要权限来推送代码和创建 tag
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           ref: ${{ github.ref }}
           fetch-depth: 0 # 获取完整的 git 历史，包括所有 tags
