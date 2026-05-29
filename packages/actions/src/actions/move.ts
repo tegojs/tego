@@ -92,15 +92,6 @@ export class SortAbleCollection {
         targetSort = targetSort + 1;
       }
 
-      await this.collection.repository.update({
-        targetCollection: this.collection.name,
-        filterByTk: sourceInstanceId,
-        values: {
-          [this.scopeKey]: targetInstance.get(this.scopeKey),
-        },
-        silent: false,
-      });
-
       await this.collection.model.increment(fieldName, {
         where: {
           [this.scopeKey]: {
@@ -118,9 +109,11 @@ export class SortAbleCollection {
         targetCollection: this.collection.name,
         filterByTk: sourceInstanceId,
         values: {
+          [this.scopeKey]: targetInstance.get(this.scopeKey),
           [fieldName]: targetSort,
         },
-        silent: true,
+        silent: false,
+        skipSortScopeChangeAppend: true,
       });
 
       return;

@@ -32,24 +32,24 @@ describe('unique index', () => {
 
     await db.sync();
 
-    expect(async () => {
-      await User.repository.create({
+    await expect(
+      User.repository.create({
         values: {
           userName: 'test',
           userEmail: 'test@tachybase.com',
         },
-      });
-    }).not.toThrow();
+      }),
+    ).resolves.toBeDefined();
 
     await waitSecond(1000);
-    expect(async () => {
-      await User.repository.create({
+    await expect(
+      User.repository.create({
         values: {
           userName: 'test',
           userEmail: 'test123@tachybase.com',
         },
-      });
-    }).not.toThrow();
+      }),
+    ).resolves.toBeDefined();
 
     await waitSecond(1000);
 

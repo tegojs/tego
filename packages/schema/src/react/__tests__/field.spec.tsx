@@ -166,7 +166,6 @@ test('useAttach with array field', async () => {
   });
 });
 
-// Skipped: React testing-library timing issues with act() and async operations
 test('useFormEffects', async () => {
   const form = createForm();
   const CustomField = observer(() => {

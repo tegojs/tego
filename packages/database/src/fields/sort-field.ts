@@ -15,7 +15,10 @@ export class SortField extends Field {
     const { name, scopeKey } = this.options;
     const { model } = this.context.collection;
 
-    if (isNumber(instance.get(name)) && instance._previousDataValues[scopeKey] === instance[scopeKey]) {
+    if (
+      isNumber(instance.get(name)) &&
+      (options.skipSortScopeChangeAppend || instance._previousDataValues[scopeKey] === instance[scopeKey])
+    ) {
       return;
     }
 
