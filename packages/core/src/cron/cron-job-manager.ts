@@ -1,3 +1,5 @@
+import { CronExpressionParser } from 'cron-parser';
+
 import Application from '../application';
 
 export interface CronJobParameters {
@@ -8,19 +10,50 @@ export interface CronJobParameters {
   context?: any;
 }
 
+const MAX_TIMEOUT = 2 ** 31 - 1;
+
 export class CronJob {
-  constructor(params: CronJobParameters) {
+  private timer?: ReturnType<typeof setTimeout>;
+
+  constructor(private params: CronJobParameters) {
     if (params.start !== false) {
       this.start();
     }
   }
 
   start() {
-    console.log('Mock CronJob started');
+    if (this.timer) {
+      return;
+    }
+    this.scheduleNext();
+  }
+
+  private scheduleNext() {
+    const interval = CronExpressionParser.parse(this.params.cronTime, {
+      tz: this.params.timeZone,
+    });
+    const next = interval.next().getTime();
+    const delay = Math.max(0, next - Date.now());
+
+    if (delay > MAX_TIMEOUT) {
+      this.timer = setTimeout(() => {
+        this.timer = undefined;
+        this.scheduleNext();
+      }, MAX_TIMEOUT);
+    } else {
+      this.timer = setTimeout(() => {
+        this.timer = undefined;
+        this.params.onTick();
+        this.scheduleNext();
+      }, delay);
+    }
   }
 
   stop() {
-    console.log('Mock CronJob stopped');
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = undefined;
+    }
   }
 }
 

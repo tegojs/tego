@@ -213,16 +213,25 @@ export function getDayRange(options: GetDayRangeOptions) {
   ];
 }
 
-function toMoment(value, unit = '') {
+function toMoment(value) {
   if (!value) {
-    // isoWeek设置为该 ISO 周的周一
-    return unit === 'isoWeek' ? dayjs().isoWeekday(1) : dayjs();
+    return dayjs();
   }
   if (dayjs.isDayjs(value)) {
     return value;
   }
-  // isoWeek设置为该 ISO 周的周一
-  return unit === 'isoWeek' ? dayjs(value).isoWeekday(1) : dayjs(value);
+  return dayjs(value);
+}
+
+function toIsoWeekLabel(m: dayjs.Dayjs) {
+  const [year, month, day] = m.format('YYYY-MM-DD').split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const isoYear = date.getUTCFullYear();
+  const yearStart = new Date(Date.UTC(isoYear, 0, 1));
+  const isoWeek = Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+
+  return `${isoYear}W${String(isoWeek).padStart(2, '0')}`;
 }
 
 export type Utc2unitOptions = {
@@ -234,9 +243,11 @@ export type Utc2unitOptions = {
 
 export function utc2unit(options: Utc2unitOptions) {
   const { now, unit, timezone = '+00:00', offset } = options;
-  let m = toMoment(now, unit);
+  let m = toMoment(now);
   m = m.utcOffset(offsetFromString(timezone));
-  m = m.startOf(unit);
+  if (unit !== 'isoWeek') {
+    m = m.startOf(unit);
+  }
   if (offset > 0) {
     m = m.add(offset, unit === 'isoWeek' ? 'week' : unit);
   } else if (offset < 0) {
@@ -247,7 +258,7 @@ export function utc2unit(options: Utc2unitOptions) {
     quarter: () => m.format('YYYY[Q]Q'),
     month: () => m.format('YYYY-MM'),
     week: () => m.format('gggg[w]ww'),
-    isoWeek: () => m.format('GGGG[W]WW'),
+    isoWeek: () => toIsoWeekLabel(m),
     day: () => m.format('YYYY-MM-DD'),
   };
   const r = fn[unit]?.();

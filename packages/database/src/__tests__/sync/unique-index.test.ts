@@ -15,8 +15,7 @@ describe('unique index', () => {
     await db.close();
   });
 
-  it.skip('should sync multiple column unique index', async () => {
-    // SQLite may not enforce multi-column unique constraints properly in test environment
+  it('should sync multiple column unique index', async () => {
     const User = db.collection({
       name: 'users',
       indexes: [
@@ -33,24 +32,24 @@ describe('unique index', () => {
 
     await db.sync();
 
-    expect(async () => {
-      await User.repository.create({
+    await expect(
+      User.repository.create({
         values: {
           userName: 'test',
           userEmail: 'test@tachybase.com',
         },
-      });
-    }).not.toThrow();
+      }),
+    ).resolves.toBeDefined();
 
     await waitSecond(1000);
-    expect(async () => {
-      await User.repository.create({
+    await expect(
+      User.repository.create({
         values: {
           userName: 'test',
           userEmail: 'test123@tachybase.com',
         },
-      });
-    }).not.toThrow();
+      }),
+    ).resolves.toBeDefined();
 
     await waitSecond(1000);
 

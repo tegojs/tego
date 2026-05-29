@@ -52,8 +52,7 @@ describe('evaluate', () => {
     });
   });
 
-  describe.skip('math.js', () => {
-    // math.js evaluator is not registered in server-side evaluators
+  describe('math.js', () => {
     const mathEval = evaluators.get('math.js');
 
     it('number path to array item 0 (math.js)', () => {
@@ -65,7 +64,7 @@ describe('evaluate', () => {
       expect(result).toBe(1);
     });
 
-    it('number path to array item 0 (math.js)', () => {
+    it('dot-number path returns first array item (math.js)', () => {
       const result = mathEval('{{a.0}}', { a: [1, 2, 3] });
       expect(result).toBe(1);
     });

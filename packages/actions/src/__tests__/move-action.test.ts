@@ -471,8 +471,7 @@ describe('sort action', () => {
       expect(beforeUpdated).not.toEqual(afterT1.get('updatedAt'));
     });
 
-    it.skip('targetId/1->6', async () => {
-      // Skipped: Sort logic differences in cross-scope move operations
+    it('targetId/1->6', async () => {
       await api.agent().resource('tests').move({
         sourceId: 1,
         targetId: 6,
@@ -538,8 +537,7 @@ describe('sort action', () => {
       });
     });
 
-    it.skip('targetId/1->6 - method=insertAfter', async () => {
-      // Skipped: Sort logic differences in cross-scope move operations
+    it('targetId/1->6 - method=insertAfter', async () => {
       await api.agent().resource('tests').move({
         sourceId: 1,
         targetId: 6,
@@ -603,7 +601,7 @@ describe('sort action', () => {
       });
     });
 
-    it.skip('targetId/6->2', async () => {
+    it('targetId/6->2', async () => {
       await api.agent().resource('tests').move({
         sourceId: 6,
         targetId: 2,
@@ -664,7 +662,7 @@ describe('sort action', () => {
       });
     });
 
-    it.skip('targetId/6->2 - method=insertAfter', async () => {
+    it('targetId/6->2 - method=insertAfter', async () => {
       await api.agent().resource('tests').move({
         sourceId: 6,
         targetId: 2,

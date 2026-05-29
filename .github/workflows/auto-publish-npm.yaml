@@ -1,13 +1,13 @@
-# 本文件与 tego-standard 仓库相同文件保持同步
+# 本文件 tego 与 tego-standard 保持同步, 但是 Tego 多出了 Build tego binary 和 Upload release assets
 name: Auto Publish to NPM
 
 on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch: {}  # 无 inputs
+  workflow_dispatch: {} # 无 inputs
 
-run-name: "Publish to NPM - Version: ${{ github.ref_name }}"
+run-name: 'Publish to NPM - Version: ${{ github.ref_name }}'
 
 jobs:
   publish:
@@ -21,8 +21,9 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
+          persist-credentials: false
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           fetch-depth: 0
 
@@ -45,11 +46,11 @@ jobs:
 
       - name: Setup pnpm
         if: steps.check_branch.outputs.on_main == 'true'
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node.js
         if: steps.check_branch.outputs.on_main == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 22.14.0
           cache: 'pnpm'
@@ -282,7 +283,7 @@ jobs:
 
       - name: Upload release assets
         if: steps.check_branch.outputs.on_main == 'true'
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
           files: |

@@ -166,8 +166,7 @@ test('useAttach with array field', async () => {
   });
 });
 
-// Skipped: React testing-library timing issues with act() and async operations
-test.skip('useFormEffects', async () => {
+test('useFormEffects', async () => {
   const form = createForm();
   const CustomField = observer(() => {
     const field = useField<FieldType>();
@@ -179,34 +178,35 @@ test.skip('useFormEffects', async () => {
     });
     return <div data-testid="custom-value">{field.value}</div>;
   });
-  await act(async () => {
-    const { queryByTestId, rerender } = render(
-      <FormProvider form={form}>
-        <Field name="aa" decorator={[Decorator]} component={[Input]} />
-        <Field name="bb" component={[CustomField, { tag: 'xxx' }]} />
-      </FormProvider>,
-    );
+  const { queryByTestId, rerender } = render(
+    <FormProvider form={form}>
+      <Field name="aa" decorator={[Decorator]} component={[Input]} />
+      <Field name="bb" component={[CustomField, { tag: 'xxx' }]} />
+    </FormProvider>,
+  );
 
+  await waitFor(() => {
     expect(queryByTestId('custom-value')?.textContent).toEqual('');
+  });
+  act(() => {
     form.query('aa').take((aa) => {
       if (isField(aa)) {
         aa.setValue('123');
       }
     });
-    await waitFor(() => {
-      expect(queryByTestId('custom-value')?.textContent).toEqual('123');
-    });
-    rerender(
-      <FormProvider form={form}>
-        <Field name="aa" decorator={[Decorator]} component={[Input]} />
-        <Field name="bb" component={[CustomField, { tag: 'yyy' }]} />
-      </FormProvider>,
-    );
   });
+  await waitFor(() => {
+    expect(queryByTestId('custom-value')?.textContent).toEqual('123');
+  });
+  rerender(
+    <FormProvider form={form}>
+      <Field name="aa" decorator={[Decorator]} component={[Input]} />
+      <Field name="bb" component={[CustomField, { tag: 'yyy' }]} />
+    </FormProvider>,
+  );
 });
 
-test.skip('connect', async () => {
-  // Skipped: React testing-library timing issues with async state updates
+test('connect', async () => {
   const CustomField = connect(
     (props: CustomProps) => {
       return <div>{props.list}</div>;
@@ -257,8 +257,7 @@ test.skip('connect', async () => {
   });
 });
 
-test.skip('fields unmount and validate', async () => {
-  // Skipped: React testing-library timing issues with form validation state
+test('fields unmount and validate', async () => {
   const fn = vi.fn();
   const form = createForm({
     initialValues: {

@@ -444,7 +444,7 @@ describe.runIf(isPg())('collection inherits', () => {
     await db.sync();
   });
 
-  it.skip('should not conflict when fields have same DateType', async () => {
+  it('should not conflict when fields have same DateType', async () => {
     db.collection({
       name: 'parent',
       fields: [{ name: 'field1', type: 'string' }],

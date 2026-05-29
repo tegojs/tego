@@ -6,24 +6,29 @@ import { vi } from 'vitest';
 import Plugin from '../plugin';
 
 describe('app destroy', () => {
+  class ApplicationPluginsFooPlugin extends Plugin {
+    async load() {
+      this.db.getCollection('applicationPlugins').addField('foo', {
+        type: 'string',
+      });
+    }
+  }
+
   let app: MockServer;
   afterEach(async () => {
     if (app) {
       await app.destroy();
     }
   });
-  test.skip('case1', async () => {
-    app = mockServer();
+  test('installs and upgrades plugin field migration via commands', async () => {
+    app = mockServer({ plugins: [ApplicationPluginsFooPlugin] });
     await app.runCommand('install', ['-f']);
-    app.pm.collection.addField('foo', {
-      type: 'string',
-    });
     await app.runCommand('upgrade');
-    const exists = await app.pm.collection.getField('foo').existsInDb();
+    const exists = await app.db.getCollection('applicationPlugins').getField('foo').existsInDb();
     expect(exists).toBeTruthy();
   });
-  test.skip('case2', async () => {
-    app = mockServer();
+  test('runs registered migration during install and upgrade', async () => {
+    app = mockServer({ plugins: [ApplicationPluginsFooPlugin] });
     await app.load();
     app.db.addMigration({
       name: 'test',
@@ -32,15 +37,12 @@ describe('app destroy', () => {
       },
     });
     await app.install();
-    app.pm.collection.addField('foo', {
-      type: 'string',
-    });
     await app.upgrade();
-    const exists = await app.pm.collection.getField('foo').existsInDb();
+    const exists = await app.db.getCollection('applicationPlugins').getField('foo').existsInDb();
     expect(exists).toBeTruthy();
   });
-  test.skip('case3', async () => {
-    app = mockServer();
+  test('keeps migrated plugin field after adding unique constraint', async () => {
+    app = mockServer({ plugins: [ApplicationPluginsFooPlugin] });
     await app.cleanDb();
     await app.load();
     const tableNameWithSchema = app.db.getCollection('applicationPlugins').getTableNameWithSchema();
@@ -57,12 +59,8 @@ describe('app destroy', () => {
       },
     });
     await app.install();
-    app.pm.collection.addField('foo', {
-      type: 'string',
-      unique: true,
-    });
     await app.upgrade();
-    const exists = await app.pm.collection.getField('foo').existsInDb();
+    const exists = await app.db.getCollection('applicationPlugins').getField('foo').existsInDb();
     expect(exists).toBeTruthy();
   });
   test('case4', async () => {

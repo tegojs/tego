@@ -410,8 +410,7 @@ describe('tree test', function () {
     expect(repository).toBeInstanceOf(AdjacencyListRepository);
   });
 
-  // Skipped: This test creates 1000+ records, which may cause database connection contention issues when run in parallel
-  test.skip('performance', async () => {
+  test('performance', async () => {
     const collection = db.collection({
       name: 'categories',
       tree: 'adjacency-list',

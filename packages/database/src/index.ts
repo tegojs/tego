@@ -1,5 +1,6 @@
 export {
   BaseError,
+  col,
   DataTypes,
   fn,
   literal,
@@ -17,6 +18,7 @@ export type {
   HasManyGetAssociationsMixin,
   ModelStatic,
   SyncOptions,
+  WhereOptions,
 } from 'sequelize';
 export * from './collection';
 export * from './collection-group-manager';

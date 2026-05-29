@@ -142,6 +142,7 @@ export interface UpdateOptions extends Omit<SequelizeUpdateOptions, 'where'> {
   updateAssociationValues?: AssociationKeysToBeUpdate;
   targetCollection?: string;
   context?: any;
+  skipSortScopeChangeAppend?: boolean;
   /**
    * false: will not update updateAt field, default: false
    * @default false

@@ -85,14 +85,49 @@ export class SortAbleCollection {
     const targetInstance = await this.collection.repository.findById(targetInstanceId);
 
     if (this.scopeKey && sourceInstance.get(this.scopeKey) !== targetInstance.get(this.scopeKey)) {
-      await this.collection.repository.update({
-        targetCollection: this.collection.name,
-        filterByTk: sourceInstanceId,
-        values: {
-          [this.scopeKey]: targetInstance.get(this.scopeKey),
-        },
-        silent: false,
-      });
+      const fieldName = this.field.get('name');
+      let targetSort = targetInstance.get(fieldName);
+
+      if (options.insertAfter) {
+        targetSort = targetSort + 1;
+      }
+
+      const transaction = await this.collection.model.sequelize.transaction();
+
+      try {
+        await this.collection.model.increment(fieldName, {
+          where: {
+            [this.scopeKey]: {
+              [Op.eq]: targetInstance.get(this.scopeKey),
+            },
+            [fieldName]: {
+              [Op.gte]: targetSort,
+            },
+          },
+          by: 1,
+          silent: true,
+          transaction,
+        });
+
+        await this.collection.repository.update({
+          targetCollection: this.collection.name,
+          filterByTk: sourceInstanceId,
+          values: {
+            [this.scopeKey]: targetInstance.get(this.scopeKey),
+            [fieldName]: targetSort,
+          },
+          silent: false,
+          skipSortScopeChangeAppend: true,
+          transaction,
+        });
+
+        await transaction.commit();
+      } catch (err) {
+        await transaction.rollback();
+        throw err;
+      }
+
+      return;
     }
 
     await this.sameScopeMove(sourceInstance, targetInstance, options, sourceInstanceId);

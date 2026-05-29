@@ -231,6 +231,23 @@ export class SyncRunner {
         });
       }
     }
+
+    const uniqueIndexes = this.model['_indexes'].filter((index) => index.unique);
+    for (const uniqueIndex of uniqueIndexes) {
+      const columnNames = uniqueIndex.fields.map((field) => this.rawAttributes[field]?.field || field);
+      const indexExists = existsUniqueIndexes.find((index) => {
+        const indexFields = index.fields.map((field) => field.attribute).sort();
+        return JSON.stringify(indexFields) === JSON.stringify([...columnNames].sort());
+      });
+
+      if (!indexExists) {
+        await this.queryInterface.addIndex(this.tableName, columnNames, {
+          ...uniqueIndex,
+          fields: undefined,
+          transaction: options?.transaction,
+        });
+      }
+    }
   }
 
   async getColumns(options) {

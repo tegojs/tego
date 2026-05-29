@@ -310,13 +310,6 @@ export class ACL extends EventEmitter {
   }
 
   allow(resourceName: string, actionNames: string[] | string, condition?: string | ConditionFunc) {
-    return this.skip(resourceName, actionNames, condition);
-  }
-
-  /**
-   * @deprecated
-   */
-  skip(resourceName: string, actionNames: string[] | string, condition?: string | ConditionFunc) {
     if (!Array.isArray(actionNames)) {
       actionNames = [actionNames];
     }
@@ -324,6 +317,13 @@ export class ACL extends EventEmitter {
     for (const actionName of actionNames) {
       this.allowManager.allow(resourceName, actionName, condition);
     }
+  }
+
+  /**
+   * @deprecated Use `allow()` instead. This method will be removed in a future major version.
+   */
+  skip(resourceName: string, actionNames: string[] | string, condition?: string | ConditionFunc) {
+    return this.allow(resourceName, actionNames, condition);
   }
 
   /**

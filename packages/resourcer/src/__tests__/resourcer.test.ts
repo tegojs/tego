@@ -200,6 +200,92 @@ describe('resourcer', () => {
     );
     expect(context.arr).toStrictEqual([33, 44]);
   });
+
+  it('registerActionHandlers() after define', async () => {
+    const resourcer = new Resourcer();
+    resourcer.define({
+      name: 'test',
+    });
+    resourcer.define({
+      name: 'test2',
+    });
+    resourcer.registerActionHandlers({
+      'test:list': async (ctx, next) => {
+        ctx.arr.push(1);
+        await next();
+        ctx.arr.push(2);
+      },
+      list: async (ctx, next) => {
+        ctx.arr.push(11);
+        await next();
+        ctx.arr.push(22);
+      },
+    });
+    let context = {
+      arr: [],
+    };
+    await resourcer.execute(
+      {
+        resource: 'test',
+        action: 'list',
+      },
+      context,
+    );
+    expect(context.arr).toStrictEqual([1, 2]);
+    context = {
+      arr: [],
+    };
+    await resourcer.execute(
+      {
+        resource: 'test2',
+        action: 'list',
+      },
+      context,
+    );
+    expect(context.arr).toStrictEqual([11, 22]);
+  });
+  it('registerActionHandlers() after define respects only', async () => {
+    const resourcer = new Resourcer();
+    resourcer.define({
+      name: 'test',
+      only: ['list'],
+    });
+    resourcer.registerActionHandlers({
+      async list(ctx, next) {
+        ctx.arr.push(1);
+        await next();
+        ctx.arr.push(2);
+      },
+      async test(ctx, next) {
+        ctx.arr.push('test1');
+        await next();
+        ctx.arr.push('test2');
+      },
+    });
+    const context = {
+      arr: [],
+    };
+    await resourcer.execute(
+      {
+        resource: 'test',
+        action: 'list',
+      },
+      context,
+    );
+    expect(context.arr).toStrictEqual([1, 2]);
+    await expect(
+      resourcer.execute(
+        {
+          resource: 'test',
+          action: 'test',
+        },
+        {
+          arr: [],
+        },
+      ),
+    ).rejects.toThrow('test action is not allowed');
+  });
+
   it('only', async () => {
     const resourcer = new Resourcer();
     resourcer.registerActionHandlers({

@@ -63,7 +63,7 @@ describe('plugin', () => {
     });
   });
 
-  describe.skip('enable', function () {
+  describe('enable', function () {
     it('should call beforeEnable', async () => {
       const beforeEnable = vi.fn();
 
@@ -73,7 +73,8 @@ describe('plugin', () => {
         }
       }
 
-      app.plugin(TestPlugin);
+      app.pm.options.plugins.push([TestPlugin, { name: 'TestPlugin', enabled: false }]);
+      await app.load();
       await app.pm.enable('TestPlugin');
       expect(beforeEnable).toBeCalled();
     });

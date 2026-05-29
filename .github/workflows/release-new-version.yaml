@@ -1,4 +1,4 @@
-# 本文件与 tego-standard 仓库相同文件保持同步
+# 本文件 tego 与 tego-standard 保持同步, 但是 tego-standard 多出 CHANGELOG 相关逻辑
 name: Release New Version
 
 on:
@@ -27,15 +27,16 @@ jobs:
       version: ${{ steps.do_version.outputs.version }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
+          persist-credentials: false
           token: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
           ref: ${{ github.ref }}
-          fetch-depth: 0  # 获取完整的 git 历史，包括所有 tags
+          fetch-depth: 0 # 获取完整的 git 历史，包括所有 tags
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 20.18.0
       - name: Fetch all tags
@@ -259,7 +260,7 @@ jobs:
           fi
 
       - name: Commit and tag
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           tagging_message: ${{ steps.do_version.outputs.version_tag || format('v{0}', steps.do_version.outputs.version) }}
           commit_message: "chore(version): release ${{ steps.do_version.outputs.version_tag || format('v{0}', steps.do_version.outputs.version) }}"
@@ -270,4 +271,3 @@ jobs:
             **/package.json
           skip_dirty_check: true
           skip_fetch: false
-

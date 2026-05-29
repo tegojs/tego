@@ -42,8 +42,47 @@
         "default": "./es/e2e/index.mjs"
       }
     },
+    "./server": {
+      "require": {
+        "types": "./lib/server/index.d.ts",
+        "default": "./lib/server/index.js"
+      },
+      "import": {
+        "types": "./es/server/index.d.ts",
+        "default": "./es/server/index.mjs"
+      }
+    },
+    "./server/mockServer": {
+      "require": {
+        "types": "./lib/server/mockServer.d.ts",
+        "default": "./lib/server/mockServer.js"
+      },
+      "import": {
+        "types": "./es/server/mockServer.d.ts",
+        "default": "./es/server/mockServer.mjs"
+      }
+    },
+    "./setup-server": {
+      "require": {
+        "types": "./lib/setup-server.d.ts",
+        "default": "./lib/setup-server.js"
+      },
+      "import": {
+        "types": "./es/setup-server.d.ts",
+        "default": "./es/setup-server.mjs"
+      }
+    },
     "./package.json": "./package.json",
-    "./vitest": "./vitest.ts"
+    "./vitest": {
+      "require": {
+        "types": "./vitest.d.ts",
+        "default": "./vitest.js"
+      },
+      "import": {
+        "types": "./es/vitest.d.ts",
+        "default": "./es/vitest.mjs"
+      }
+    }
   },
   "main": "lib/index.js",
   "module": "./src/index.ts",
@@ -74,6 +113,7 @@
     "qs": "^6.14.0",
     "sqlite3": "^5.1.7",
     "supertest": "^7.1.4",
+    "tsx": "^4.20.5",
     "vite": "^7.1.10",
     "vitest": "^3.2.4",
     "ws": "^8.18.3"

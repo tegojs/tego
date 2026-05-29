@@ -1,6 +1,6 @@
 import { mockDatabase } from '@tachybase/database';
-
 import { Application, ApplicationOptions, AppSupervisor, Gateway, PluginManager } from '@tego/core';
+
 import jwt from 'jsonwebtoken';
 import qs from 'qs';
 import supertest, { SuperAgentTest } from 'supertest';
@@ -114,7 +114,7 @@ export class MockServer extends Application {
               .auth(
                 jwt.sign(
                   {
-                    userId: typeof userOrId === 'number' ? userOrId : userOrId?.id,
+                    userId: typeof userOrId === 'number' ? userOrId : (userOrId?.id ?? userOrId?.get?.('id')),
                   },
                   process.env.APP_KEY,
                   {
@@ -253,6 +253,45 @@ export async function createMockServer(
   }
   if (!skipStart) {
     await app.runCommandThrowError('start');
+  }
+  if (!app.authManager.tokenController) {
+    app.authManager.setTokenControlService({
+      async getConfig() {
+        return {
+          tokenExpirationTime: 24 * 60 * 60 * 1000,
+          sessionExpirationTime: 7 * 24 * 60 * 60 * 1000,
+          expiredTokenRenewLimit: 24 * 60 * 60 * 1000,
+        };
+      },
+      async setConfig() {},
+      async renew() {
+        return {
+          jti: `test-jti-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          issuedTime: Date.now(),
+        };
+      },
+      async add({ userId }) {
+        return {
+          jti: `test-jti-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+          userId,
+          issuedTime: Date.now(),
+          signInTime: Date.now(),
+          renewed: false,
+        };
+      },
+      async removeSessionExpiredTokens() {},
+    });
+  }
+  if (!app.authManager.userStatusService) {
+    app.authManager.setUserStatusService({
+      async checkUserStatus() {
+        return {
+          allowed: true,
+          status: 'active',
+          isExpired: false,
+        };
+      },
+    });
   }
   return app;
 }

@@ -258,7 +258,7 @@ describe('string field', () => {
     expect(items.map((item) => item.get('sort'))).toEqual([1, 2, 3]);
   });
 
-  test.skip('simultaneously create ', async () => {
+  test('simultaneously create ', async () => {
     const Test = db.collection({
       name: 'tests',
       fields: [{ type: 'sort', name: 'sort' }],

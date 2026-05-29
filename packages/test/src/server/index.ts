@@ -6,10 +6,18 @@ import ws from 'ws';
 export { mockDatabase } from '@tachybase/database';
 export { default as supertest } from 'supertest';
 export * from './mockServer';
+export * from './setupTestEnvironment';
 
-export const pgOnly: () => any = () =>
-  TachybaseGlobal.settings.database.dialect === 'postgres' ? describe : describe.skip;
-export const isPg = () => TachybaseGlobal.settings.database.dialect === 'postgres';
+const noopDescribe = () => {};
+
+export const pgOnly: () => any = () => {
+  const isPostgres = TachybaseGlobal.settings?.database?.dialect === 'postgres';
+  if (isPostgres) {
+    return describe || noopDescribe;
+  }
+  return describe.skip || noopDescribe;
+};
+export const isPg = () => TachybaseGlobal.settings?.database?.dialect === 'postgres';
 
 export function randomStr() {
   // create random string
