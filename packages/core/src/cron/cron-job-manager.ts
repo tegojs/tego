@@ -12,7 +12,6 @@ export interface CronJobParameters {
 
 export class CronJob {
   private timer?: ReturnType<typeof setTimeout>;
-  private _running = false;
 
   constructor(private params: CronJobParameters) {
     if (params.start !== false) {
