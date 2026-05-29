@@ -33,6 +33,7 @@
     "axios": "0.29.0",
     "commander": "^9.5.0",
     "compression": "^1.8.1",
+    "cron-parser": "^5.5.0",
     "dayjs": "1.11.13",
     "decompress": "4.2.1",
     "execa": "^5.1.1",

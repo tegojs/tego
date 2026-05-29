@@ -1,3 +1,5 @@
+import { CronExpressionParser } from 'cron-parser';
+
 import Application from '../application';
 
 export interface CronJobParameters {
@@ -9,7 +11,8 @@ export interface CronJobParameters {
 }
 
 export class CronJob {
-  private timer?: ReturnType<typeof setInterval>;
+  private timer?: ReturnType<typeof setTimeout>;
+  private _running = false;
 
   constructor(private params: CronJobParameters) {
     if (params.start !== false) {
@@ -21,20 +24,28 @@ export class CronJob {
     if (this.timer) {
       return;
     }
+    this.scheduleNext();
+  }
 
-    console.log('Mock CronJob started');
-    this.timer = setInterval(() => {
+  private scheduleNext() {
+    const interval = CronExpressionParser.parse(this.params.cronTime, {
+      tz: this.params.timeZone,
+    });
+    const next = interval.next().getTime();
+    const delay = Math.max(0, next - Date.now());
+
+    this.timer = setTimeout(() => {
+      this.timer = undefined;
       this.params.onTick();
-    }, 1000);
+      this.scheduleNext();
+    }, delay);
   }
 
   stop() {
     if (this.timer) {
-      clearInterval(this.timer);
+      clearTimeout(this.timer);
       this.timer = undefined;
     }
-
-    console.log('Mock CronJob stopped');
   }
 }
 
