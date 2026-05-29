@@ -10,6 +10,8 @@ export interface CronJobParameters {
   context?: any;
 }
 
+const MAX_TIMEOUT = 2 ** 31 - 1;
+
 export class CronJob {
   private timer?: ReturnType<typeof setTimeout>;
 
@@ -33,11 +35,18 @@ export class CronJob {
     const next = interval.next().getTime();
     const delay = Math.max(0, next - Date.now());
 
-    this.timer = setTimeout(() => {
-      this.timer = undefined;
-      this.params.onTick();
-      this.scheduleNext();
-    }, delay);
+    if (delay > MAX_TIMEOUT) {
+      this.timer = setTimeout(() => {
+        this.timer = undefined;
+        this.scheduleNext();
+      }, MAX_TIMEOUT);
+    } else {
+      this.timer = setTimeout(() => {
+        this.timer = undefined;
+        this.params.onTick();
+        this.scheduleNext();
+      }, delay);
+    }
   }
 
   stop() {
