@@ -206,8 +206,7 @@ describe('sort collections', () => {
       ]);
     });
 
-    test.skip('move between scope', async () => {
-      // Skipped: Sort logic differences in cross-scope move operations
+    test('move between scope', async () => {
       for (let i = 0; i < 5; i++) {
         await Post.repository.create({
           values: {

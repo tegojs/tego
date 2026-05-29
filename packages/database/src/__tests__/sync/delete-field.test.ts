@@ -1,6 +1,6 @@
 import { Database, mockDatabase } from '../../index';
 
-describe.skip('delete field', () => {
+describe('delete field', () => {
   let db: Database;
 
   beforeEach(async () => {
@@ -28,9 +28,7 @@ describe.skip('delete field', () => {
 
     expect(userTableInfo.email).toBeDefined();
 
-    User.removeField('email');
-
-    await db.sync();
+    await User.removeFieldFromDb('email');
 
     const userTableInfo2 = await db.sequelize.getQueryInterface().describeTable(User.getTableNameWithSchema());
     expect(userTableInfo2.email).toBeUndefined();

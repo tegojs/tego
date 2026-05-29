@@ -85,6 +85,13 @@ export class SortAbleCollection {
     const targetInstance = await this.collection.repository.findById(targetInstanceId);
 
     if (this.scopeKey && sourceInstance.get(this.scopeKey) !== targetInstance.get(this.scopeKey)) {
+      const fieldName = this.field.get('name');
+      let targetSort = targetInstance.get(fieldName);
+
+      if (options.insertAfter) {
+        targetSort = targetSort + 1;
+      }
+
       await this.collection.repository.update({
         targetCollection: this.collection.name,
         filterByTk: sourceInstanceId,
@@ -93,6 +100,30 @@ export class SortAbleCollection {
         },
         silent: false,
       });
+
+      await this.collection.model.increment(fieldName, {
+        where: {
+          [this.scopeKey]: {
+            [Op.eq]: targetInstance.get(this.scopeKey),
+          },
+          [fieldName]: {
+            [Op.gte]: targetSort,
+          },
+        },
+        by: 1,
+        silent: true,
+      });
+
+      await this.collection.repository.update({
+        targetCollection: this.collection.name,
+        filterByTk: sourceInstanceId,
+        values: {
+          [fieldName]: targetSort,
+        },
+        silent: true,
+      });
+
+      return;
     }
 
     await this.sameScopeMove(sourceInstance, targetInstance, options, sourceInstanceId);

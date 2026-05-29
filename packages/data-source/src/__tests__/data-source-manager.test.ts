@@ -4,7 +4,7 @@ import { SequelizeDataSource } from '../sequelize-data-source';
 
 // 使用 sequential 以避免资源共享时的竞争条件
 describe.sequential('example', () => {
-  test.skip('case1', async () => {
+  test('case1', async () => {
     const app = await createMockServer({
       acl: false,
       resourcer: {
@@ -17,6 +17,26 @@ describe.sequential('example', () => {
       body = ctx.request.body;
       await next();
     });
+
+    const database = mockDatabase({
+      tablePrefix: 'ds1_case1_',
+    });
+    await database.clean({ drop: true });
+    const ds1 = new SequelizeDataSource({
+      name: 'ds1',
+      resourceManager: {},
+      collectionManager: {
+        database,
+      },
+    });
+    ds1.collectionManager.defineCollection({
+      name: 'test1',
+      fields: [{ type: 'string', name: 'name' }],
+    });
+    await ds1.collectionManager.sync();
+    ds1.acl.allow('test1', 'create', 'public');
+    await app.dataSourceManager.add(ds1);
+
     const agent = supertest.agent(app.callback());
     await agent.post('/api/test1:create').set('x-data-source', 'ds1').send({ name: 'n1' });
     expect(body.name).toBe('n1');
@@ -49,7 +69,7 @@ describe.sequential('example', () => {
     });
     await ds1.collectionManager.sync();
     ds1.acl.allow('test1', 'create', 'public');
-    app.dataSourceManager.add(ds1);
+    await app.dataSourceManager.add(ds1);
     const res = await app
       .agent()
       .post('/api/test1:create')

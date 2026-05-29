@@ -108,7 +108,7 @@ describe('list action', () => {
     expect(body.length).toEqual(3);
   });
 
-  test.skip('list by association', async () => {
+  test('list by association', async () => {
     const p1 = await app.db.getRepository('posts').create({
       values: {
         title: 'pt1',
@@ -122,18 +122,18 @@ describe('list action', () => {
     const response = await app
       .agent()
       .resource('posts.tags', p1.id)
-      .list({ fields: ['id', 'postsTags.createdAt'], sort: ['id'] });
+      .list({ fields: ['id'], sort: ['id'] });
 
     const body = response.body;
     expect(body.count).toEqual(2);
     expect(body.rows).toMatchObject([{ id: 1 }, { id: 2 }]);
   });
 
-  it.skip('should return empty error when relation not exists', async () => {
+  it('should return empty error when relation not exists', async () => {
     const response = await app
       .agent()
       .resource('posts.tags', 999)
-      .list({ fields: ['id', 'postsTags.createdAt'], sort: ['id'] });
+      .list({ fields: ['id'], sort: ['id'] });
 
     expect(response.status).toEqual(200);
     expect(response.body.count).toEqual(0);

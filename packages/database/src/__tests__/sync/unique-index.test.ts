@@ -15,8 +15,7 @@ describe('unique index', () => {
     await db.close();
   });
 
-  it.skip('should sync multiple column unique index', async () => {
-    // SQLite may not enforce multi-column unique constraints properly in test environment
+  it('should sync multiple column unique index', async () => {
     const User = db.collection({
       name: 'users',
       indexes: [

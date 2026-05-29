@@ -74,8 +74,10 @@ describe('auth-manager', () => {
     });
 
     describe.skip('blacklist', () => {
-      // These tests require full plugin integration with auth plugin
-      // that properly implements checkToken with blacklist support
+      // Unsupported in this package-level mock: the mocked "basic" authenticator
+      // does not use BaseAuth.checkToken/signOut, so JwtService blacklist hooks
+      // are never reached. Reproduced failures: has/add spies are not called and
+      // blacklisted tokens still return 200.
       const hasFn = vi.fn();
       const addFn = vi.fn();
       beforeEach(async () => {

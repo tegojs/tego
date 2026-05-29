@@ -1,11 +1,8 @@
-import TachybaseGlobal from '@tachybase/globals';
-
 import { Collection } from '../collection';
 import { Database } from '../database';
 import { IdentifierError } from '../errors/identifier-error';
 import { mockDatabase } from './index';
 
-const pgOnly = () => (TachybaseGlobal.settings.database.dialect === 'postgres' ? it : it.skip);
 describe('collection', () => {
   let db: Database;
 
@@ -66,7 +63,7 @@ describe('collection', () => {
     expect(error).toBeUndefined();
   });
 
-  pgOnly()('can create empty collection', async () => {
+  it('can create empty collection', async () => {
     db.collection({
       name: 'empty',
       timestamps: false,
