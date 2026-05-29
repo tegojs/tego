@@ -205,6 +205,8 @@ describe('gateway', () => {
       });
       it.skip('should display a notification-type error message when plugin installation fails', async () => {
         // Requires a mobile-client plugin fixture, but no mobile-client plugin is present in this repo/test setup.
+        // TODO: Add a test-only plugin fixture that registers with plugin manager,
+        // or mock app.pm.get('mobile-client') to return a plugin class with beforeEnable.
         const pluginClass = app.pm.get('mobile-client');
         pluginClass.beforeEnable = async () => {
           throw new Error('install error');

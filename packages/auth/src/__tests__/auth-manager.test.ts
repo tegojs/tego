@@ -78,6 +78,9 @@ describe('auth-manager', () => {
       // does not use BaseAuth.checkToken/signOut, so JwtService blacklist hooks
       // are never reached. Reproduced failures: has/add spies are not called and
       // blacklisted tokens still return 200.
+      // TODO: Replace the mock authenticator with a real JwtService-backed auth
+      // setup (e.g. use the actual "jwt" strategy from @tachybase/auth) to enable
+      // this suite.
       const hasFn = vi.fn();
       const addFn = vi.fn();
       beforeEach(async () => {

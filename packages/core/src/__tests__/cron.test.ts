@@ -32,7 +32,10 @@ describe('cron service', () => {
   });
 
   it.skip('should add cron job', async () => {
-    // This test requires a real cron implementation, but CronJobManager is currently a mock
+    // CronJobManager uses a mock CronJob that logs start/stop but never calls onTick.
+    // TODO: Replace the mock CronJob in CronJobManager with a real cron library
+    // (e.g. actual cron package), or use fake timers (vi.useFakeTimers + advanceTimersByTime)
+    // so onTick is triggered without wall-clock wait.
     const cronManager = app.cronJobManager;
     const jestFn = vi.fn();
     cronManager.addJob({
