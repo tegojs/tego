@@ -52,12 +52,7 @@ describe('evaluate', () => {
     });
   });
 
-  describe.skip('math.js', () => {
-    // Unsupported server evaluator: packages/evaluators/src/server/index.ts only
-    // registers formula.js and string. Reproduced failure after unskipping:
-    // evaluators.get('math.js') is undefined, so mathEval is not a function.
-    // TODO: Register math.js in packages/evaluators/src/server/index.ts, or
-    // remove this suite if math.js support was intentionally dropped.
+  describe('math.js', () => {
     const mathEval = evaluators.get('math.js');
 
     it('number path to array item 0 (math.js)', () => {

@@ -1,4 +1,4 @@
-import { mockServer, MockServer, waitSecond } from '@tachybase/test';
+import { mockServer, MockServer } from '@tachybase/test';
 
 import { vi } from 'vitest';
 
@@ -31,23 +31,24 @@ describe('cron service', () => {
     expect(cron1).not.toBe(cron2);
   });
 
-  it.skip('should add cron job', async () => {
-    // CronJobManager uses a mock CronJob that logs start/stop but never calls onTick.
-    // TODO: Replace the mock CronJob in CronJobManager with a real cron library
-    // (e.g. actual cron package), or use fake timers (vi.useFakeTimers + advanceTimersByTime)
-    // so onTick is triggered without wall-clock wait.
-    const cronManager = app.cronJobManager;
-    const jestFn = vi.fn();
-    cronManager.addJob({
-      cronTime: '* * * * * *',
-      onTick: jestFn,
-    });
+  it('should add cron job', async () => {
+    vi.useFakeTimers();
+    try {
+      const cronManager = app.cronJobManager;
+      const jestFn = vi.fn();
+      cronManager.addJob({
+        cronTime: '* * * * * *',
+        onTick: jestFn,
+      });
 
-    expect(jestFn).not.toBeCalled();
+      expect(jestFn).not.toBeCalled();
 
-    cronManager.start();
-    await waitSecond(2000);
-    expect(jestFn).toBeCalledTimes(2);
+      cronManager.start();
+      await vi.advanceTimersByTimeAsync(2000);
+      expect(jestFn).toBeCalledTimes(2);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('should remove cron job', async () => {

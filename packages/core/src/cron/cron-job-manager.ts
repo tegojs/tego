@@ -9,17 +9,31 @@ export interface CronJobParameters {
 }
 
 export class CronJob {
-  constructor(params: CronJobParameters) {
+  private timer?: ReturnType<typeof setInterval>;
+
+  constructor(private params: CronJobParameters) {
     if (params.start !== false) {
       this.start();
     }
   }
 
   start() {
+    if (this.timer) {
+      return;
+    }
+
     console.log('Mock CronJob started');
+    this.timer = setInterval(() => {
+      this.params.onTick();
+    }, 1000);
   }
 
   stop() {
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = undefined;
+    }
+
     console.log('Mock CronJob stopped');
   }
 }

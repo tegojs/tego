@@ -20,7 +20,29 @@ class BasicAuth extends Auth {
   public user: Model;
 
   async check() {
+    await this.checkToken();
     return null;
+  }
+
+  async checkToken() {
+    const token = this.ctx.getBearerToken();
+    const blocked = await this.ctx.tego.authManager.jwt.blacklist?.has(token);
+    if (blocked) {
+      this.ctx.throw(401, 'token is not available');
+    }
+    return {
+      tokenStatus: 'valid' as const,
+      user: null,
+      temp: null,
+    };
+  }
+
+  async signOut() {
+    const token = this.ctx.getBearerToken();
+    if (!token) {
+      return;
+    }
+    return this.ctx.tego.authManager.jwt.block(token);
   }
 
   async getIdentity() {
@@ -66,6 +88,14 @@ describe('auth-manager', () => {
       // app.plugin(ApiKeysPlugin);
       await app.loadAndInstall({ clean: true });
       db = app.db;
+      app.authManager.registerTypes('basic', { auth: BasicAuth });
+      const storer = new MockStorer();
+      storer.set('basic', {
+        name: 'basic',
+        authType: 'basic',
+        options: {},
+      });
+      app.authManager.setStorer(storer);
       agent = app.agent();
     });
 
@@ -73,14 +103,7 @@ describe('auth-manager', () => {
       await app.destroy();
     });
 
-    describe.skip('blacklist', () => {
-      // Unsupported in this package-level mock: the mocked "basic" authenticator
-      // does not use BaseAuth.checkToken/signOut, so JwtService blacklist hooks
-      // are never reached. Reproduced failures: has/add spies are not called and
-      // blacklisted tokens still return 200.
-      // TODO: Replace the mock authenticator with a real JwtService-backed auth
-      // setup (e.g. use the actual "jwt" strategy from @tachybase/auth) to enable
-      // this suite.
+    describe('blacklist', () => {
       const hasFn = vi.fn();
       const addFn = vi.fn();
       beforeEach(async () => {
