@@ -11,7 +11,13 @@ const noopDescribe = () => {};
 
 // Use global describe (available in vitest/jest) to avoid CJS/ESM import issues
 function getDescribe() {
-  return (globalThis as any).describe || noopDescribe;
+  const desc = (globalThis as any).describe;
+  if (!desc) {
+    throw new Error(
+      'globalThis.describe is not available. Ensure your test runner (vitest/jest) provides it globally or configure globals: true.',
+    );
+  }
+  return desc;
 }
 
 export const pgOnly: () => any = () => {

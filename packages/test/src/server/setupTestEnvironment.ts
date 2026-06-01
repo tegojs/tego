@@ -108,7 +108,8 @@ function workspacePackageDirByPackageName(
 }
 
 function workspaceServerEntry(workspaceRoot: string, packageDir: string) {
-  // Prefer compiled entries: Node.js import() cannot handle .ts files without a loader
+  // Node.js native import() cannot handle .ts files (ERR_UNKNOWN_FILE_EXTENSION).
+  // Prefer compiled entries to ensure dynamic imports succeed.
   const libEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'lib/server/index.js');
   if (fs.existsSync(libEntry)) {
     return libEntry;
