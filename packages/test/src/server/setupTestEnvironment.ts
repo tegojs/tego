@@ -14,6 +14,7 @@ export interface ServerTestEnvironmentOptions {
 }
 
 const runtimeRequire = createRequire(path.resolve(process.cwd(), 'package.json'));
+const selfRequire = createRequire(require.resolve('@tachybase/test/package.json'));
 const workspacePluginNameAliases: Record<string, string> = {
   map: 'block-map',
 };
@@ -43,30 +44,20 @@ function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
   }
 }
 
-function getCoreModules(runtimeRequire: NodeJS.Require) {
-  const cores = [];
+function getCoreModules() {
+  const cores: any[] = [];
 
   try {
-    cores.push(runtimeRequire('@tego/core'));
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== 'MODULE_NOT_FOUND') {
-      throw error;
-    }
+    cores.push(selfRequire('@tego/core'));
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException)?.code !== 'MODULE_NOT_FOUND') throw e;
   }
 
   try {
-    cores.push(runtimeRequire('@tego/server'));
-    const serverRequire = createRequire(runtimeRequire.resolve('@tego/server/package.json'));
-    cores.push(serverRequire('@tego/core'));
-  } catch {
-    // @tego/server is optional for client-only test consumers.
-  }
-
-  for (const mod of Object.values(runtimeRequire.cache)) {
-    const exports = mod?.exports as any;
-    if (exports?.Plugin && exports?.PluginManager) {
-      cores.push(exports);
-    }
+    cores.push(selfRequire('@tego/server'));
+    cores.push(createRequire(selfRequire.resolve('@tego/server/package.json'))('@tego/core'));
+  } catch (e) {
+    if ((e as NodeJS.ErrnoException)?.code !== 'MODULE_NOT_FOUND') throw e;
   }
 
   return [...new Set(cores)];
@@ -117,13 +108,24 @@ function workspacePackageDirByPackageName(
 }
 
 function workspaceServerEntry(workspaceRoot: string, packageDir: string) {
+  // Node.js native import() cannot handle .ts files (ERR_UNKNOWN_FILE_EXTENSION).
+  // Prefer compiled entries to ensure dynamic imports succeed.
+  const libEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'lib/server/index.js');
+  if (fs.existsSync(libEntry)) {
+    return libEntry;
+  }
+
+  const distEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'dist/server/index.js');
+  if (fs.existsSync(distEntry)) {
+    return distEntry;
+  }
+
   const sourceEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'src/server/index.ts');
   if (fs.existsSync(sourceEntry)) {
     return sourceEntry;
   }
 
-  const compiledEntry = path.resolve(workspaceRoot, 'packages', packageDir, 'dist/server/index.js');
-  return fs.existsSync(compiledEntry) ? compiledEntry : null;
+  return null;
 }
 
 function getModuleDefault(mod: any) {
@@ -460,7 +462,7 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
   process.env.TEGO_RUNTIME_HOME = path.join(os.tmpdir(), 'test-sqlite');
   process.env.APP_ENV_PATH = process.env.APP_ENV_PATH || '.env.test';
 
-  const coreModules = getCoreModules(runtimeRequire);
+  const coreModules = getCoreModules();
   for (const core of coreModules) {
     patchPluginRuntime(core, workspaceRoot, packageDirByPluginName);
     patchPluginManager(core, {

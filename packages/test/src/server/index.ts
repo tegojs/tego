@@ -1,6 +1,5 @@
 import TachybaseGlobal from '@tachybase/globals';
 
-import { describe } from 'vitest';
 import ws from 'ws';
 
 export { mockDatabase } from '@tachybase/database';
@@ -10,12 +9,24 @@ export * from './setupTestEnvironment';
 
 const noopDescribe = () => {};
 
+// Use global describe (available in vitest/jest) to avoid CJS/ESM import issues
+function getDescribe() {
+  const desc = (globalThis as any).describe;
+  if (!desc) {
+    throw new Error(
+      'globalThis.describe is not available. Ensure your test runner (vitest/jest) provides it globally or configure globals: true.',
+    );
+  }
+  return desc;
+}
+
 export const pgOnly: () => any = () => {
   const isPostgres = TachybaseGlobal.settings?.database?.dialect === 'postgres';
+  const desc = getDescribe();
   if (isPostgres) {
-    return describe || noopDescribe;
+    return desc;
   }
-  return describe.skip || noopDescribe;
+  return desc.skip || noopDescribe;
 };
 export const isPg = () => TachybaseGlobal.settings?.database?.dialect === 'postgres';
 
