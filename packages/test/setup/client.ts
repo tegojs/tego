@@ -12,7 +12,7 @@ import 'jsdom-worker';
 
 import path from 'node:path';
 
-configure({ asyncUtilTimeout: 30000 });
+configure({ asyncUtilTimeout: 5000 });
 dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
 
 class DOMMatrixMock {
