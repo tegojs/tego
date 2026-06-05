@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useLayoutEffect } from './useLayoutEffect';
 
@@ -22,8 +22,9 @@ export function useForceUpdate() {
     };
   }, EMPTY_ARRAY);
 
-  // Track render cycle per-component to prevent infinite loops
-  useLayoutEffect(() => {
+  // Use useEffect (async) instead of useLayoutEffect (sync) to break
+  // potential infinite render loops when observer fires during render.
+  useEffect(() => {
     renderingRef.current = false;
     if (pendingRef.current) {
       pendingRef.current = false;
@@ -37,7 +38,7 @@ export function useForceUpdate() {
       return;
     }
     if (renderingRef.current) {
-      // Currently rendering — defer to next tick to break potential loops
+      // Currently rendering — defer to after paint to break loops
       pendingRef.current = true;
       return;
     }
