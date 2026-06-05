@@ -273,9 +273,8 @@ export class ACL extends EventEmitter {
 
     let roleStrategyParams;
 
-    if (this.strategyResources === null || this.strategyResources.has(resource)) {
-      roleStrategyParams = roleStrategy?.allow(resource, this.resolveActionAlias(action));
-    }
+    // strategy applies to all resources when no explicit resource filter is set
+    roleStrategyParams = roleStrategy?.allow(resource, this.resolveActionAlias(action));
 
     if (!roleStrategyParams && snippetAllowed) {
       roleStrategyParams = {};
