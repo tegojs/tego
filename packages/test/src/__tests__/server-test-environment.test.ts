@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
 import TachybaseGlobal from '@tachybase/globals';
 
@@ -96,5 +97,20 @@ describe.sequential('setupServerTestEnvironment', () => {
 
     expect(TachybaseGlobal.getInstance().get('PLUGIN_PATHS')).toEqual([secondPluginPath]);
     expect(TachybaseGlobal.settings.presets.runtimePlugins).toEqual(originalSettings.presets.runtimePlugins);
+  });
+
+  it('patches the runtime core plugin manager', async () => {
+    setupServerTestEnvironment({
+      workspaceRoot: process.cwd(),
+      pluginPaths: [path.resolve(process.cwd(), 'packages')],
+      packageDirByPluginName: {
+        'test-runtime-plugin': 'test',
+      },
+    });
+
+    const runtimeRequire = createRequire(path.resolve(process.cwd(), 'package.json'));
+    const runtimeCore = runtimeRequire('@tego/core');
+
+    await expect(runtimeCore.PluginManager.getPackageName('test-runtime-plugin')).resolves.toBe('@tachybase/test');
   });
 });

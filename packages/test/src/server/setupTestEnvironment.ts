@@ -44,21 +44,23 @@ function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
   }
 }
 
-function getCoreModules() {
+function getCoreModules(workspaceRequire: NodeJS.Require = runtimeRequire) {
   const cores: any[] = [];
+  const addCore = (loader: () => any) => {
+    try {
+      cores.push(loader());
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException)?.code !== 'MODULE_NOT_FOUND') throw e;
+    }
+  };
 
-  try {
-    cores.push(selfRequire('@tego/core'));
-  } catch (e) {
-    if ((e as NodeJS.ErrnoException)?.code !== 'MODULE_NOT_FOUND') throw e;
-  }
+  addCore(() => selfRequire('@tego/core'));
+  addCore(() => workspaceRequire('@tego/core'));
 
-  try {
-    cores.push(selfRequire('@tego/server'));
-    cores.push(createRequire(selfRequire.resolve('@tego/server/package.json'))('@tego/core'));
-  } catch (e) {
-    if ((e as NodeJS.ErrnoException)?.code !== 'MODULE_NOT_FOUND') throw e;
-  }
+  addCore(() => selfRequire('@tego/server'));
+  addCore(() => workspaceRequire('@tego/server'));
+  addCore(() => createRequire(selfRequire.resolve('@tego/server/package.json'))('@tego/core'));
+  addCore(() => createRequire(workspaceRequire.resolve('@tego/server/package.json'))('@tego/core'));
 
   return [...new Set(cores)];
 }
@@ -462,7 +464,7 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
   process.env.TEGO_RUNTIME_HOME = path.join(os.tmpdir(), 'test-sqlite');
   process.env.APP_ENV_PATH = process.env.APP_ENV_PATH || '.env.test';
 
-  const coreModules = getCoreModules();
+  const coreModules = getCoreModules(runtimeRequire);
   for (const core of coreModules) {
     patchPluginRuntime(core, workspaceRoot, packageDirByPluginName);
     patchPluginManager(core, {
