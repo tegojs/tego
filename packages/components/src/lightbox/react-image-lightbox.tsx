@@ -21,11 +21,12 @@ import {
   ZOOM_BUTTON_INCREMENT_SIZE,
   ZOOM_RATIO,
 } from './constant';
+import { IReactImageLightboxProps, IReactImageLightboxState } from './interface';
 import { getHighestSafeWindowContext, getWindowHeight, getWindowWidth, translate } from './util';
 
-import './style.css';
-
-import { IReactImageLightboxProps, IReactImageLightboxState } from './interface';
+if (typeof document !== 'undefined') {
+  require('./style.css');
+}
 
 declare var global: any;
 
