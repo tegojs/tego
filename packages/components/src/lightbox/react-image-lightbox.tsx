@@ -24,10 +24,6 @@ import {
 import { IReactImageLightboxProps, IReactImageLightboxState } from './interface';
 import { getHighestSafeWindowContext, getWindowHeight, getWindowWidth, translate } from './util';
 
-if (typeof document !== 'undefined') {
-  require('./style.css');
-}
-
 declare var global: any;
 
 class ReactImageLightbox extends Component<IReactImageLightboxProps, IReactImageLightboxState> {
@@ -252,6 +248,8 @@ class ReactImageLightbox extends Component<IReactImageLightboxProps, IReactImage
   }
 
   componentDidMount() {
+    require('./style.css');
+
     if (!this.props.animationDisabled) {
       // Make opening animation play
       this.setState({ isClosing: false });

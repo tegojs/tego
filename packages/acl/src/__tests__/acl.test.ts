@@ -99,6 +99,56 @@ describe('acl', () => {
     });
   });
 
+  it('should limit strategy permissions to configured strategy resources', () => {
+    acl.setAvailableAction('create', {
+      type: 'new-data',
+    });
+
+    acl.setAvailableStrategy('s1', {
+      displayName: 's1',
+      actions: '*',
+    });
+
+    acl.setStrategyResources(['posts']);
+
+    acl.define({
+      role: 'admin',
+      strategy: 's1',
+    });
+
+    expect(acl.can({ role: 'admin', resource: 'posts', action: 'create' })).toMatchObject({
+      role: 'admin',
+      resource: 'posts',
+      action: 'create',
+    });
+    expect(acl.can({ role: 'admin', resource: 'comments', action: 'create' })).toBeNull();
+  });
+
+  it('should clear strategy resource restrictions when set to null', () => {
+    acl.setAvailableAction('create', {
+      type: 'new-data',
+    });
+
+    acl.setAvailableStrategy('s1', {
+      displayName: 's1',
+      actions: '*',
+    });
+
+    acl.setStrategyResources(['posts']);
+    acl.setStrategyResources(null);
+
+    acl.define({
+      role: 'admin',
+      strategy: 's1',
+    });
+
+    expect(acl.can({ role: 'admin', resource: 'comments', action: 'create' })).toMatchObject({
+      role: 'admin',
+      resource: 'comments',
+      action: 'create',
+    });
+  });
+
   it('should deny all', () => {
     acl.setAvailableStrategy('s1', {
       displayName: 'test',

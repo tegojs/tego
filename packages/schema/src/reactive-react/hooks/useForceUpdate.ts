@@ -22,8 +22,7 @@ export function useForceUpdate() {
     };
   }, EMPTY_ARRAY);
 
-  // Use useEffect (async) instead of useLayoutEffect (sync) to break
-  // potential infinite render loops when observer fires during render.
+  // Defer observer updates fired during render until after paint.
   useEffect(() => {
     renderingRef.current = false;
     if (pendingRef.current) {
@@ -38,14 +37,12 @@ export function useForceUpdate() {
       return;
     }
     if (renderingRef.current) {
-      // Currently rendering — defer to after paint to break loops
       pendingRef.current = true;
       return;
     }
     setState([]);
   }, EMPTY_ARRAY);
 
-  // Mark component as entering render cycle
   renderingRef.current = true;
 
   return scheduler;

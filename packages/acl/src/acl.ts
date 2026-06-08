@@ -122,7 +122,7 @@ export class ACL extends EventEmitter {
   }
 
   setStrategyResources(resources: Array<string> | null) {
-    this.strategyResources = new Set(resources);
+    this.strategyResources = resources === null ? null : new Set(resources);
   }
 
   getStrategyResources() {
@@ -137,7 +137,7 @@ export class ACL extends EventEmitter {
   }
 
   removeStrategyResource(resource: string) {
-    this.strategyResources.delete(resource);
+    this.strategyResources?.delete(resource);
   }
 
   define(options: DefineOptions): ACLRole {
@@ -273,8 +273,9 @@ export class ACL extends EventEmitter {
 
     let roleStrategyParams;
 
-    // strategy applies to all resources when no explicit resource filter is set
-    roleStrategyParams = roleStrategy?.allow(resource, this.resolveActionAlias(action));
+    if (this.strategyResources === null || this.strategyResources.has(resource)) {
+      roleStrategyParams = roleStrategy?.allow(resource, this.resolveActionAlias(action));
+    }
 
     if (!roleStrategyParams && snippetAllowed) {
       roleStrategyParams = {};
