@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
 import { useLayoutEffect } from './useLayoutEffect';
 
@@ -22,8 +22,8 @@ export function useForceUpdate() {
     };
   }, EMPTY_ARRAY);
 
-  // Defer observer updates fired during render until after paint.
-  useEffect(() => {
+  // Defer observer updates fired during render until the current commit finishes.
+  useLayoutEffect(() => {
     renderingRef.current = false;
     if (pendingRef.current) {
       pendingRef.current = false;
