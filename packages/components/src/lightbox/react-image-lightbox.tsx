@@ -248,7 +248,7 @@ class ReactImageLightbox extends Component<IReactImageLightboxProps, IReactImage
   }
 
   componentDidMount() {
-    require('./style.css');
+    void import('./style.css');
 
     if (!this.props.animationDisabled) {
       // Make opening animation play
