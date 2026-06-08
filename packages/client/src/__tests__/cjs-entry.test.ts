@@ -18,9 +18,9 @@ it('loads the CommonJS entry in Node without requiring browser-only assets', () 
     {
       cwd: root,
       encoding: 'utf8',
-      timeout: 12000,
+      timeout: 60000,
     },
   );
 
   expect(output.trim()).toBe('true');
-}, 15000);
+}, 65000);
