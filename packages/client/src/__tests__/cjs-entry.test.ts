@@ -13,7 +13,8 @@ it('loads the client entry through CommonJS in Node without requiring browser-on
       [
         "require('tsx/cjs');",
         "const client = require('./packages/client/src/index.ts');",
-        'console.log([client.APIClient, client.Input, client.FormItem, client.Lightbox].every(Boolean));',
+        'const inputTextArea = client.Input.TextArea;',
+        'console.log([client.APIClient, client.Input, inputTextArea, client.FormItem, client.Lightbox].every(Boolean));',
       ].join(''),
     ],
     {
