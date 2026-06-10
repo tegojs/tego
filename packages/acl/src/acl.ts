@@ -208,6 +208,21 @@ export class ACL extends EventEmitter {
     return this.availableActions;
   }
 
+  protected canUseStrategyForResource(resource: string, action: string, strategy: ACLAvailableStrategy | null) {
+    if (this.strategyResources === null || this.strategyResources.has(resource)) {
+      return true;
+    }
+
+    if (!strategy || strategy.isWildcard()) {
+      return false;
+    }
+
+    const availableAction = this.getAvailableAction(action);
+    const actionResource = availableAction?.options?.resource;
+
+    return !!availableAction && (!actionResource || actionResource === '*' || actionResource === resource);
+  }
+
   setAvailableStrategy(name: string, options: AvailableStrategyOptions) {
     this.availableStrategy.set(name, new ACLAvailableStrategy(this, options));
   }
@@ -272,9 +287,10 @@ export class ACL extends EventEmitter {
     }
 
     let roleStrategyParams;
+    const resolvedAction = this.resolveActionAlias(action);
 
-    if (this.strategyResources === null || this.strategyResources.has(resource)) {
-      roleStrategyParams = roleStrategy?.allow(resource, this.resolveActionAlias(action));
+    if (this.canUseStrategyForResource(resource, resolvedAction, roleStrategy)) {
+      roleStrategyParams = roleStrategy?.allow(resource, resolvedAction);
     }
 
     if (!roleStrategyParams && snippetAllowed) {
