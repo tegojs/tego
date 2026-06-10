@@ -1,30 +1,58 @@
-import fs from 'node:fs';
+import Module from 'node:module';
 import path from 'node:path';
 import TachybaseGlobal from '@tachybase/globals';
 
+import { require as tsxRequire } from 'tsx/cjs/api';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { moduleNotFound } from '../server/errors';
 import { setupServerTestEnvironment } from '../server/setupTestEnvironment';
 
-const globalsLibDir = path.resolve(process.cwd(), 'packages/globals/lib');
-const coreLibDir = path.resolve(process.cwd(), 'packages/core/lib');
-let movedGlobalsLibDir: string;
-let movedCoreLibDir: string;
+type ModuleLoad = (request: string, parent: NodeJS.Module | null, isMain: boolean) => unknown;
 
-function moveIfExists(from: string, to: string) {
-  if (fs.existsSync(from)) {
-    fs.renameSync(from, to);
+const moduleLoader = Module as typeof Module & { _load?: ModuleLoad };
+let restoreModuleLoad: (() => void) | undefined;
+
+/**
+ * These tests patch Module._load only on the supported test runtime:
+ * Node.js >=20.19.0, matching package.json engines and CI.
+ */
+function assertSupportedModuleLoadPatch(loader: typeof moduleLoader): asserts loader is typeof Module & {
+  _load: ModuleLoad;
+} {
+  const [major = 0, minor = 0] = process.versions.node.split('.').map(Number);
+  const isSupportedNode = major > 20 || (major === 20 && minor >= 19);
+  if (!isSupportedNode) {
+    throw new Error(`Module._load test patch supports Node.js >=20.19.0; current runtime is ${process.version}`);
+  }
+  if (typeof loader._load !== 'function') {
+    throw new Error('Module._load test patch requires Node.js to expose Module._load as a function');
   }
 }
 
-function restoreIfMoved(from: string, to: string) {
-  if (fs.existsSync(from)) {
-    fs.renameSync(from, to);
-  }
+function mockMissingBuiltRuntimePackages(packages = ['@tachybase/globals', '@tego/core']) {
+  assertSupportedModuleLoadPatch(moduleLoader);
+  const originalLoad = moduleLoader._load;
+  const missingPackages = new Set(packages);
+
+  moduleLoader._load = function loadWithMissingBuiltRuntimePackages(request, parent, isMain) {
+    if (missingPackages.has(request)) {
+      throw moduleNotFound(request);
+    }
+    return originalLoad.call(this, request, parent, isMain);
+  } as ModuleLoad;
+
+  restoreModuleLoad = () => {
+    moduleLoader._load = originalLoad;
+    restoreModuleLoad = undefined;
+  };
 }
 
-function createTempLibDir(packageName: string) {
-  return path.resolve(process.cwd(), 'packages', packageName, `lib.tmp-server-env-test-${process.pid}-${Date.now()}`);
+function loadWorkspaceCore() {
+  return tsxRequire(
+    path.resolve(process.cwd(), 'packages/core/src/index.ts'),
+    path.resolve(process.cwd(), 'package.json'),
+  );
 }
 
 let originalSettings: typeof TachybaseGlobal.settings;
@@ -49,22 +77,18 @@ function restoreEnv() {
 beforeEach(() => {
   originalSettings = structuredClone(TachybaseGlobal.settings);
   originalEnv = { ...process.env };
-  movedGlobalsLibDir = createTempLibDir('globals');
-  movedCoreLibDir = createTempLibDir('core');
 });
 
 afterEach(() => {
+  restoreModuleLoad?.();
   TachybaseGlobal.getInstance().clear();
   TachybaseGlobal.settings = originalSettings;
   restoreEnv();
-  restoreIfMoved(movedGlobalsLibDir, globalsLibDir);
-  restoreIfMoved(movedCoreLibDir, coreLibDir);
 });
 
 describe.sequential('setupServerTestEnvironment', () => {
   it('configures an isolated sqlite test environment without built globals and core output', async () => {
-    moveIfExists(globalsLibDir, movedGlobalsLibDir);
-    moveIfExists(coreLibDir, movedCoreLibDir);
+    mockMissingBuiltRuntimePackages();
     setupServerTestEnvironment({
       workspaceRoot: process.cwd(),
       pluginPaths: [path.resolve(process.cwd(), 'packages')],
@@ -96,5 +120,20 @@ describe.sequential('setupServerTestEnvironment', () => {
 
     expect(TachybaseGlobal.getInstance().get('PLUGIN_PATHS')).toEqual([secondPluginPath]);
     expect(TachybaseGlobal.settings.presets.runtimePlugins).toEqual(originalSettings.presets.runtimePlugins);
+  });
+
+  it('patches the runtime core plugin manager', async () => {
+    mockMissingBuiltRuntimePackages(['@tego/core']);
+    setupServerTestEnvironment({
+      workspaceRoot: process.cwd(),
+      pluginPaths: [path.resolve(process.cwd(), 'packages')],
+      packageDirByPluginName: {
+        'test-runtime-plugin': 'test',
+      },
+    });
+
+    const runtimeCore = loadWorkspaceCore();
+
+    await expect(runtimeCore.PluginManager.getPackageName('test-runtime-plugin')).resolves.toBe('@tachybase/test');
   });
 });

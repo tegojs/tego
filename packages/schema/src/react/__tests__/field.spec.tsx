@@ -24,6 +24,7 @@ import {
   onFieldChange,
   onFieldUnmount,
 } from '../../core';
+import { observable } from '../../reactive';
 import { ReactiveField } from '../components/ReactiveField';
 import { expectThrowError } from './shared';
 
@@ -255,6 +256,27 @@ test('connect', async () => {
     expect(queryByText('123')).toBeNull();
     expect(queryByText('read pretty')).toBeVisible();
   });
+});
+
+test('observer flushes updates triggered while rendering', async () => {
+  const state = observable({ value: 0 });
+  let renderCount = 0;
+
+  const CustomField = observer(() => {
+    renderCount++;
+    const value = state.value;
+    if (value === 0) {
+      state.value = 1;
+    }
+    return <div data-testid="observer-value">{value}</div>;
+  });
+
+  const { getByTestId } = render(<CustomField />);
+
+  await waitFor(() => {
+    expect(getByTestId('observer-value').textContent).toBe('1');
+  });
+  expect(renderCount).toBeGreaterThan(1);
 });
 
 test('fields unmount and validate', async () => {

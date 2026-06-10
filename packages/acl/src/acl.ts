@@ -122,7 +122,7 @@ export class ACL extends EventEmitter {
   }
 
   setStrategyResources(resources: Array<string> | null) {
-    this.strategyResources = new Set(resources);
+    this.strategyResources = resources === null ? null : new Set(resources);
   }
 
   getStrategyResources() {
@@ -137,7 +137,7 @@ export class ACL extends EventEmitter {
   }
 
   removeStrategyResource(resource: string) {
-    this.strategyResources.delete(resource);
+    this.strategyResources?.delete(resource);
   }
 
   define(options: DefineOptions): ACLRole {

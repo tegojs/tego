@@ -21,11 +21,8 @@ import {
   ZOOM_BUTTON_INCREMENT_SIZE,
   ZOOM_RATIO,
 } from './constant';
-import { getHighestSafeWindowContext, getWindowHeight, getWindowWidth, translate } from './util';
-
-import './style.css';
-
 import { IReactImageLightboxProps, IReactImageLightboxState } from './interface';
+import { getHighestSafeWindowContext, getWindowHeight, getWindowWidth, translate } from './util';
 
 declare var global: any;
 
@@ -251,6 +248,8 @@ class ReactImageLightbox extends Component<IReactImageLightboxProps, IReactImage
   }
 
   componentDidMount() {
+    void import('./style.css');
+
     if (!this.props.animationDisabled) {
       // Make opening animation play
       this.setState({ isClosing: false });
