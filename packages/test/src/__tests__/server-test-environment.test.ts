@@ -1,7 +1,8 @@
-import Module, { createRequire } from 'node:module';
+import Module from 'node:module';
 import path from 'node:path';
 import TachybaseGlobal from '@tachybase/globals';
 
+import { require as tsxRequire } from 'tsx/cjs/api';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { setupServerTestEnvironment } from '../server/setupTestEnvironment';
@@ -17,9 +18,9 @@ function moduleNotFound(request: string) {
   return error;
 }
 
-function mockMissingBuiltRuntimePackages() {
+function mockMissingBuiltRuntimePackages(packages = ['@tachybase/globals', '@tego/core']) {
   const originalLoad = moduleLoader._load;
-  const missingPackages = new Set(['@tachybase/globals', '@tego/core']);
+  const missingPackages = new Set(packages);
 
   moduleLoader._load = function loadWithMissingBuiltRuntimePackages(request, parent, isMain) {
     if (missingPackages.has(request)) {
@@ -32,6 +33,13 @@ function mockMissingBuiltRuntimePackages() {
     moduleLoader._load = originalLoad;
     restoreModuleLoad = undefined;
   };
+}
+
+function loadWorkspaceCore() {
+  return tsxRequire(
+    path.resolve(process.cwd(), 'packages/core/src/index.ts'),
+    path.resolve(process.cwd(), 'package.json'),
+  );
 }
 
 let originalSettings: typeof TachybaseGlobal.settings;
@@ -102,6 +110,7 @@ describe.sequential('setupServerTestEnvironment', () => {
   });
 
   it('patches the runtime core plugin manager', async () => {
+    mockMissingBuiltRuntimePackages(['@tego/core']);
     setupServerTestEnvironment({
       workspaceRoot: process.cwd(),
       pluginPaths: [path.resolve(process.cwd(), 'packages')],
@@ -110,8 +119,7 @@ describe.sequential('setupServerTestEnvironment', () => {
       },
     });
 
-    const runtimeRequire = createRequire(path.resolve(process.cwd(), 'package.json'));
-    const runtimeCore = runtimeRequire('@tego/core');
+    const runtimeCore = loadWorkspaceCore();
 
     await expect(runtimeCore.PluginManager.getPackageName('test-runtime-plugin')).resolves.toBe('@tachybase/test');
   });

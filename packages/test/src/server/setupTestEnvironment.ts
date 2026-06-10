@@ -5,6 +5,8 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import TachybaseGlobalModule from '@tachybase/globals';
 
+import { require as tsxRequire } from 'tsx/cjs/api';
+
 export interface ServerTestEnvironmentOptions {
   workspaceRoot?: string;
   pluginPaths?: string[];
@@ -44,7 +46,13 @@ function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
   }
 }
 
-function getCoreModules(workspaceRequire: NodeJS.Require = runtimeRequire) {
+function moduleNotFound(request: string) {
+  const error = new Error(`Cannot find module '${request}'`) as NodeJS.ErrnoException;
+  error.code = 'MODULE_NOT_FOUND';
+  return error;
+}
+
+function getCoreModules(workspaceRoot: string, workspaceRequire: NodeJS.Require = runtimeRequire) {
   const cores: any[] = [];
   const addCore = (loader: () => any) => {
     try {
@@ -56,6 +64,13 @@ function getCoreModules(workspaceRequire: NodeJS.Require = runtimeRequire) {
 
   addCore(() => selfRequire('@tego/core'));
   addCore(() => workspaceRequire('@tego/core'));
+  addCore(() => {
+    const sourceEntry = path.resolve(workspaceRoot, 'packages/core/src/index.ts');
+    if (!fs.existsSync(sourceEntry)) {
+      throw moduleNotFound(sourceEntry);
+    }
+    return tsxRequire(sourceEntry, path.resolve(workspaceRoot, 'package.json'));
+  });
 
   addCore(() => selfRequire('@tego/server'));
   addCore(() => workspaceRequire('@tego/server'));
@@ -464,7 +479,7 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
   process.env.TEGO_RUNTIME_HOME = path.join(os.tmpdir(), 'test-sqlite');
   process.env.APP_ENV_PATH = process.env.APP_ENV_PATH || '.env.test';
 
-  const coreModules = getCoreModules(runtimeRequire);
+  const coreModules = getCoreModules(workspaceRoot, runtimeRequire);
   for (const core of coreModules) {
     patchPluginRuntime(core, workspaceRoot, packageDirByPluginName);
     patchPluginManager(core, {

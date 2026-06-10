@@ -3,7 +3,7 @@ import path from 'node:path';
 
 import { expect, it } from 'vitest';
 
-it('loads the CommonJS entry in Node without requiring browser-only assets', () => {
+it('loads the client entry through CommonJS in Node without requiring browser-only assets', () => {
   const root = path.resolve(__dirname, '../../../..');
 
   const output = execFileSync(
@@ -11,7 +11,8 @@ it('loads the CommonJS entry in Node without requiring browser-only assets', () 
     [
       '-e',
       [
-        "const client = require('./packages/client/lib/index.js');",
+        "require('tsx/cjs');",
+        "const client = require('./packages/client/src/index.ts');",
         'console.log([client.APIClient, client.Input, client.FormItem, client.Lightbox].every(Boolean));',
       ].join(''),
     ],
