@@ -63,6 +63,10 @@ export class ACLAvailableStrategy {
     return false;
   }
 
+  isWildcard() {
+    return this.options.actions === '*';
+  }
+
   allow(resourceName: string, actionName: string) {
     return this.matchAction(this.acl.resolveActionAlias(actionName));
   }

@@ -124,6 +124,30 @@ describe('acl', () => {
     expect(acl.can({ role: 'admin', resource: 'comments', action: 'create' })).toBeNull();
   });
 
+  it('should allow explicit unbound strategy actions outside configured strategy resources', () => {
+    acl.setAvailableAction('create', {
+      type: 'new-data',
+    });
+
+    acl.setAvailableStrategy('s1', {
+      displayName: 's1',
+      actions: ['create'],
+    });
+
+    acl.setStrategyResources(['posts']);
+
+    acl.define({
+      role: 'admin',
+      strategy: 's1',
+    });
+
+    expect(acl.can({ role: 'admin', resource: 'customPosts', action: 'create' })).toMatchObject({
+      role: 'admin',
+      resource: 'customPosts',
+      action: 'create',
+    });
+  });
+
   it('should clear strategy resource restrictions when set to null', () => {
     acl.setAvailableAction('create', {
       type: 'new-data',
