@@ -1,5 +1,4 @@
-import fs from 'node:fs';
-import { createRequire } from 'node:module';
+import Module, { createRequire } from 'node:module';
 import path from 'node:path';
 import TachybaseGlobal from '@tachybase/globals';
 
@@ -7,25 +6,32 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { setupServerTestEnvironment } from '../server/setupTestEnvironment';
 
-const globalsLibDir = path.resolve(process.cwd(), 'packages/globals/lib');
-const coreLibDir = path.resolve(process.cwd(), 'packages/core/lib');
-let movedGlobalsLibDir: string;
-let movedCoreLibDir: string;
+const moduleLoader = Module as typeof Module & {
+  _load: (request: string, parent: NodeJS.Module | null, isMain: boolean) => unknown;
+};
+let restoreModuleLoad: (() => void) | undefined;
 
-function moveIfExists(from: string, to: string) {
-  if (fs.existsSync(from)) {
-    fs.renameSync(from, to);
-  }
+function moduleNotFound(request: string) {
+  const error = new Error(`Cannot find module '${request}'`) as NodeJS.ErrnoException;
+  error.code = 'MODULE_NOT_FOUND';
+  return error;
 }
 
-function restoreIfMoved(from: string, to: string) {
-  if (fs.existsSync(from)) {
-    fs.renameSync(from, to);
-  }
-}
+function mockMissingBuiltRuntimePackages() {
+  const originalLoad = moduleLoader._load;
+  const missingPackages = new Set(['@tachybase/globals', '@tego/core']);
 
-function createTempLibDir(packageName: string) {
-  return path.resolve(process.cwd(), 'packages', packageName, `lib.tmp-server-env-test-${process.pid}-${Date.now()}`);
+  moduleLoader._load = function loadWithMissingBuiltRuntimePackages(request, parent, isMain) {
+    if (missingPackages.has(request)) {
+      throw moduleNotFound(request);
+    }
+    return originalLoad.call(this, request, parent, isMain);
+  } as typeof moduleLoader._load;
+
+  restoreModuleLoad = () => {
+    moduleLoader._load = originalLoad;
+    restoreModuleLoad = undefined;
+  };
 }
 
 let originalSettings: typeof TachybaseGlobal.settings;
@@ -50,22 +56,18 @@ function restoreEnv() {
 beforeEach(() => {
   originalSettings = structuredClone(TachybaseGlobal.settings);
   originalEnv = { ...process.env };
-  movedGlobalsLibDir = createTempLibDir('globals');
-  movedCoreLibDir = createTempLibDir('core');
 });
 
 afterEach(() => {
+  restoreModuleLoad?.();
   TachybaseGlobal.getInstance().clear();
   TachybaseGlobal.settings = originalSettings;
   restoreEnv();
-  restoreIfMoved(movedGlobalsLibDir, globalsLibDir);
-  restoreIfMoved(movedCoreLibDir, coreLibDir);
 });
 
 describe.sequential('setupServerTestEnvironment', () => {
   it('configures an isolated sqlite test environment without built globals and core output', async () => {
-    moveIfExists(globalsLibDir, movedGlobalsLibDir);
-    moveIfExists(coreLibDir, movedCoreLibDir);
+    mockMissingBuiltRuntimePackages();
     setupServerTestEnvironment({
       workspaceRoot: process.cwd(),
       pluginPaths: [path.resolve(process.cwd(), 'packages')],
