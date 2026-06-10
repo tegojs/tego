@@ -5,20 +5,33 @@ import TachybaseGlobal from '@tachybase/globals';
 import { require as tsxRequire } from 'tsx/cjs/api';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { moduleNotFound } from '../server/errors';
 import { setupServerTestEnvironment } from '../server/setupTestEnvironment';
 
-const moduleLoader = Module as typeof Module & {
-  _load: (request: string, parent: NodeJS.Module | null, isMain: boolean) => unknown;
-};
+type ModuleLoad = (request: string, parent: NodeJS.Module | null, isMain: boolean) => unknown;
+
+const moduleLoader = Module as typeof Module & { _load?: ModuleLoad };
 let restoreModuleLoad: (() => void) | undefined;
 
-function moduleNotFound(request: string) {
-  const error = new Error(`Cannot find module '${request}'`) as NodeJS.ErrnoException;
-  error.code = 'MODULE_NOT_FOUND';
-  return error;
+/**
+ * These tests patch Module._load only on the supported test runtime:
+ * Node.js >=20.19.0, matching package.json engines and CI.
+ */
+function assertSupportedModuleLoadPatch(loader: typeof moduleLoader): asserts loader is typeof Module & {
+  _load: ModuleLoad;
+} {
+  const [major = 0, minor = 0] = process.versions.node.split('.').map(Number);
+  const isSupportedNode = major > 20 || (major === 20 && minor >= 19);
+  if (!isSupportedNode) {
+    throw new Error(`Module._load test patch supports Node.js >=20.19.0; current runtime is ${process.version}`);
+  }
+  if (typeof loader._load !== 'function') {
+    throw new Error('Module._load test patch requires Node.js to expose Module._load as a function');
+  }
 }
 
 function mockMissingBuiltRuntimePackages(packages = ['@tachybase/globals', '@tego/core']) {
+  assertSupportedModuleLoadPatch(moduleLoader);
   const originalLoad = moduleLoader._load;
   const missingPackages = new Set(packages);
 
@@ -27,7 +40,7 @@ function mockMissingBuiltRuntimePackages(packages = ['@tachybase/globals', '@teg
       throw moduleNotFound(request);
     }
     return originalLoad.call(this, request, parent, isMain);
-  } as typeof moduleLoader._load;
+  } as ModuleLoad;
 
   restoreModuleLoad = () => {
     moduleLoader._load = originalLoad;

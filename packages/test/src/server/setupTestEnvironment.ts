@@ -7,6 +7,8 @@ import TachybaseGlobalModule from '@tachybase/globals';
 
 import { require as tsxRequire } from 'tsx/cjs/api';
 
+import { moduleNotFound } from './errors';
+
 export interface ServerTestEnvironmentOptions {
   workspaceRoot?: string;
   pluginPaths?: string[];
@@ -44,12 +46,6 @@ function getTachybaseGlobal(runtimeRequire: NodeJS.Require) {
     }
     throw error;
   }
-}
-
-function moduleNotFound(request: string) {
-  const error = new Error(`Cannot find module '${request}'`) as NodeJS.ErrnoException;
-  error.code = 'MODULE_NOT_FOUND';
-  return error;
 }
 
 function getCoreModules(workspaceRoot: string, workspaceRequire: NodeJS.Require = runtimeRequire) {
