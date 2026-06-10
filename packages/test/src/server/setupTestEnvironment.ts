@@ -156,6 +156,7 @@ function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPlugin
   }
 
   const originalLoadCollections = core.Plugin.prototype.loadCollections;
+  const originalLoadMigrations = core.Plugin.prototype.loadMigrations;
 
   core.Plugin.prototype.loadCollections = async function loadWorkspaceCollections() {
     const currentOptions = getServerTestEnvironmentOptions(core);
@@ -178,6 +179,33 @@ function patchPluginRuntime(core: any, workspaceRoot: string, packageDirByPlugin
     await this.db.import({
       directory,
       from: this.options.packageName,
+    });
+  };
+
+  core.Plugin.prototype.loadMigrations = async function loadWorkspaceMigrations() {
+    const currentOptions = getServerTestEnvironmentOptions(core);
+    const currentWorkspaceRoot = currentOptions?.workspaceRoot || workspaceRoot;
+    const currentPackageDirByPluginName = currentOptions?.packageDirByPluginName || packageDirByPluginName;
+    const packageDir = this.options?.workspaceSource
+      ? workspacePackageDirByPackageName(currentWorkspaceRoot, this.options?.packageName, currentPackageDirByPluginName)
+      : null;
+    if (!packageDir) {
+      return originalLoadMigrations.call(this);
+    }
+
+    const sourceDirectory = path.resolve(currentWorkspaceRoot, 'packages', packageDir, 'src/server/migrations');
+    const compiledDirectory = path.resolve(currentWorkspaceRoot, 'packages', packageDir, 'dist/server/migrations');
+    const directory = fs.existsSync(compiledDirectory) ? compiledDirectory : sourceDirectory;
+    if (!fs.existsSync(directory)) {
+      return { beforeLoad: [], afterSync: [], afterLoad: [] };
+    }
+
+    return this.app.loadMigrations({
+      directory: directory.replace(/\\/g, '/'),
+      namespace: this.options.packageName,
+      context: {
+        plugin: this,
+      },
     });
   };
 
@@ -472,6 +500,11 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
 
   ImportedTachybaseGlobal.getInstance().set('PLUGIN_PATHS', pluginPaths);
   TachybaseGlobal.getInstance().set('PLUGIN_PATHS', pluginPaths);
+  const workerPaths = [workspaceRoot, ...pluginPaths];
+  ImportedTachybaseGlobal.getInstance().set('WORKER_PATHS', workerPaths);
+  ImportedTachybaseGlobal.getInstance().set('WORKER_MODULES', []);
+  TachybaseGlobal.getInstance().set('WORKER_PATHS', workerPaths);
+  TachybaseGlobal.getInstance().set('WORKER_MODULES', []);
   process.env.TEGO_RUNTIME_HOME = path.join(os.tmpdir(), 'test-sqlite');
   process.env.APP_ENV_PATH = process.env.APP_ENV_PATH || '.env.test';
 
