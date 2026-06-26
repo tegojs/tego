@@ -734,6 +734,15 @@ export class Database extends EventEmitter implements AsyncEmitter {
       await this.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null);
     }
 
+    // SQLite: disable FK constraints during sync. Without this,
+    // sequelize.sync()'s topological sort can land on an unfavorable order
+    // where a FK target table hasn't been created yet, throwing an error
+    // that aborts the entire sync loop and leaves most tables uncreated.
+    const isSQLite = this.inDialect('sqlite');
+    if (isSQLite) {
+      await this.sequelize.query('PRAGMA foreign_keys = OFF');
+    }
+
     if (this.options.schema && this.inDialect('postgres')) {
       await this.sequelize.query(`CREATE SCHEMA IF NOT EXISTS "${this.options.schema}"`, null);
     }
@@ -742,6 +751,10 @@ export class Database extends EventEmitter implements AsyncEmitter {
 
     if (isMySQL) {
       await this.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null);
+    }
+
+    if (isSQLite) {
+      await this.sequelize.query('PRAGMA foreign_keys = ON');
     }
 
     return result;
