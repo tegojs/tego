@@ -49,8 +49,9 @@ export class SortField extends Field {
     // Guard against tables not existing yet during sync.
     // sequelize.sync() triggers afterSync for each model as it's created,
     // but related tables (e.g. collectionCategories for collections with
-    // scopeKey) may not exist yet.  Silently skip — sort values will be
-    // initialized on first actual use.
+    // scopeKey) may not exist yet.  Only catch missing-table errors;
+    // re-throw everything else so configuration / SQL / permission issues
+    // surface immediately.
     try {
       const orderField = (() => {
         const model = this.collection.model;
@@ -66,9 +67,9 @@ export class SortField extends Field {
         throw new Error(`can not find order key for collection ${this.collection.name}`);
       })();
 
-      const needInit = async (scopeKey = null, scopeValue = null) => {
-        const filter = {};
-        if (scopeKey && scopeValue) {
+      const needInit = async (scopeKey: string | null = null, scopeValue: any = null) => {
+        const filter: Record<string, any> = {};
+        if (scopeKey != null && scopeValue != null) {
           filter[scopeKey] = scopeValue;
         }
 
@@ -88,8 +89,9 @@ export class SortField extends Field {
         return emptyCount === totalCount && emptyCount > 0;
       };
 
-      const doInit = async (scopeKey = null, scopeValue = null) => {
+      const doInit = async (scopeKey: string | null = null, scopeValue: any = null) => {
         const queryInterface = this.collection.db.sequelize.getQueryInterface();
+        const escape = this.collection.db.sequelize.escape.bind(this.collection.db.sequelize);
 
         if (scopeKey) {
           const scopeAttribute = this.collection.model.rawAttributes[scopeKey];
@@ -108,14 +110,14 @@ export class SortField extends Field {
         let sql: string;
 
         const whereClause =
-          scopeKey && scopeValue
+          scopeKey != null && scopeValue != null
             ? (() => {
-                const filteredScopeValue = scopeValue.filter((v) => v !== null);
+                const filteredScopeValue = scopeValue.filter((v: any) => v !== null);
                 if (filteredScopeValue.length === 0) {
                   return '';
                 }
                 const initialClause = `
-  WHERE ${queryInterface.quoteIdentifier(scopeKey)} IN (${filteredScopeValue.map((v) => `'${v}'`).join(', ')})`;
+  WHERE ${queryInterface.quoteIdentifier(scopeKey)} IN (${filteredScopeValue.map((v: any) => escape(v)).join(', ')})`;
 
                 const nullCheck = scopeValue.includes(null)
                   ? ` OR ${queryInterface.quoteIdentifier(scopeKey)} IS NULL`
@@ -138,6 +140,20 @@ export class SortField extends Field {
     WHERE ${this.collection.quotedTableName()}.${quotedOrderField} = ordered_table.${quotedOrderField};
   `;
         } else if (this.collection.db.inDialect('sqlite')) {
+          // Constrain the outer UPDATE to the same scope rows so that rows
+          // outside the scope are not set to NULL by the correlated subquery.
+          const outerWhere =
+            scopeKey && scopeValue
+              ? (() => {
+                  const filtered = scopeValue.filter((v: any) => v !== null);
+                  if (filtered.length === 0) return '';
+                  let clause = `WHERE ${queryInterface.quoteIdentifier(scopeKey)} IN (${filtered.map((v: any) => escape(v)).join(', ')})`;
+                  if (scopeValue.includes(null)) {
+                    clause += ` OR ${queryInterface.quoteIdentifier(scopeKey)} IS NULL`;
+                  }
+                  return clause;
+                })()
+              : '';
           sql = `
     UPDATE ${this.collection.quotedTableName()}
     SET ${sortColumnName} = (
@@ -150,7 +166,8 @@ export class SortField extends Field {
         ${whereClause}
       ) AS ordered_table
       WHERE ${this.collection.quotedTableName()}.${quotedOrderField} = ordered_table.${quotedOrderField}
-    );
+    )
+    ${outerWhere};
   `;
         } else if (this.collection.db.inDialect('mysql') || this.collection.db.inDialect('mariadb')) {
           sql = `
@@ -192,10 +209,17 @@ export class SortField extends Field {
       } else if (await needInit()) {
         await doInit();
       }
-    } catch {
-      // Table or related tables may not exist yet during sync.
-      // This is expected when afterSync fires before all tables are created.
-      // Sort values will be initialized on first actual write.
+    } catch (err: unknown) {
+      // During sync, related tables may not exist yet.  Only swallow
+      // known "missing table / relation" errors; re-throw everything else.
+      const msg = err instanceof Error ? err.message : String(err);
+      const isMissingTable =
+        /no such table|relation .* does not exist|Table .* doesn't exist|No description found|SQLITE_ERROR/i.test(
+          msg,
+        );
+      if (!isMissingTable) {
+        throw err;
+      }
     }
   };
 
