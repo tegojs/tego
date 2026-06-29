@@ -1,6 +1,9 @@
 import path from 'node:path';
-import { setupServerTestEnvironment } from '@tachybase/test/server';
+import { patchCjsResolverForTestRuntime, setupServerTestEnvironment } from '@tachybase/test/server';
 import { initEnv } from '@tego/devkit';
+
+// Patch CJS resolver BEFORE any test modules load to prevent dual-instance bugs
+patchCjsResolverForTestRuntime();
 
 setupServerTestEnvironment({
   workspaceRoot: process.cwd(),

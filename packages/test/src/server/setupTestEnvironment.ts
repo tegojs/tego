@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import { createRequire } from 'node:module';
+import { createRequire, Module } from 'node:module';
 import os from 'node:os';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -26,6 +26,109 @@ const ImportedTachybaseGlobal = (TachybaseGlobalModule as any).getInstance
   ? TachybaseGlobalModule
   : (TachybaseGlobalModule as any).default;
 const testUnsafeBuiltinPlugins = new Set(['event-source', 'worker-thread']);
+const cjsResolverPatched = Symbol.for('tego.test.server-env-cjs-resolver-patched');
+
+function patchSlowBuffer() {
+  try {
+    const buffer = runtimeRequire('node:buffer');
+    buffer.SlowBuffer ??= buffer.Buffer;
+  } catch {
+    // ignore if buffer is not available
+  }
+}
+
+/**
+ * Patch CJS _resolveFilename so that @tego/server and @tego/core always resolve
+ * to the copy used by @tachybase/test. Call this at module level in your setup
+ * file (before setupServerTestEnvironment) to prevent dual-instance bugs.
+ */
+export function patchCjsResolverForTestRuntime(workspaceRoot?: string) {
+  if ((globalThis as any)[cjsResolverPatched]) {
+    return;
+  }
+
+  const resolvedWorkspaceRoot = workspaceRoot || process.cwd();
+  const workspaceRequire = createRequire(path.resolve(resolvedWorkspaceRoot, 'package.json'));
+  let testServerPath: string | undefined;
+  let testCorePath: string | undefined;
+  try {
+    testServerPath = selfRequire.resolve('@tego/server');
+  } catch {
+    // @tego/server not available through selfRequire
+  }
+  try {
+    testCorePath = selfRequire.resolve('@tego/core');
+  } catch {
+    // @tego/core not available through selfRequire
+  }
+
+  if (!testServerPath && !testCorePath) {
+    return;
+  }
+
+  const runtimeResolutions = new Map<string, string>();
+  if (testServerPath) {
+    runtimeResolutions.set('@tego/server', testServerPath);
+    try {
+      runtimeResolutions.set('@tego/server/package.json', selfRequire.resolve('@tego/server/package.json'));
+    } catch {
+      // ignore
+    }
+  }
+  if (testCorePath) {
+    runtimeResolutions.set('@tego/core', testCorePath);
+    try {
+      runtimeResolutions.set('@tego/core/package.json', selfRequire.resolve('@tego/core/package.json'));
+    } catch {
+      // ignore
+    }
+  }
+
+  const ModuleWithResolver = Module as typeof Module & {
+    _resolveFilename: (request: string, ...args: unknown[]) => string;
+  };
+  const originalResolveFilename = ModuleWithResolver._resolveFilename;
+  ModuleWithResolver._resolveFilename = function resolveTestRuntime(
+    this: unknown,
+    request: string,
+    ...args: unknown[]
+  ) {
+    return runtimeResolutions.get(request) || originalResolveFilename.call(this, request, ...args);
+  };
+
+  (globalThis as any)[cjsResolverPatched] = true;
+}
+
+function configureWorkerGlobalsForContexts(workspaceRoot: string, pluginPaths: string[]) {
+  const workspaceRequire = createRequire(path.resolve(workspaceRoot, 'package.json'));
+  const contexts = [runtimeRequire, selfRequire, workspaceRequire];
+
+  // Collect additional require contexts from @tego/core and @tego/server resolutions
+  for (const packageName of ['@tego/core', '@tego/server']) {
+    for (const req of [selfRequire, workspaceRequire]) {
+      try {
+        contexts.push(createRequire(req.resolve(`${packageName}/package.json`)));
+      } catch {
+        // ignore if package is not resolvable
+      }
+    }
+  }
+
+  const workerPaths = [workspaceRoot, ...pluginPaths];
+  const uniqueContexts = [...new Set(contexts)];
+  for (const req of uniqueContexts) {
+    try {
+      const tachybaseGlobal = getTachybaseGlobal(req);
+      tachybaseGlobal.getInstance().set('PLUGIN_PATHS', pluginPaths);
+      tachybaseGlobal.getInstance().set('WORKER_PATHS', workerPaths);
+      tachybaseGlobal.getInstance().set('WORKER_MODULES', []);
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'MODULE_NOT_FOUND') {
+        throw error;
+      }
+    }
+  }
+}
 
 function createRuntimeRequire(workspaceRoot: string) {
   const hostPackageJson = path.resolve(workspaceRoot, 'package.json');
@@ -507,6 +610,14 @@ export function setupServerTestEnvironment(options: ServerTestEnvironmentOptions
   TachybaseGlobal.getInstance().set('WORKER_MODULES', []);
   process.env.TEGO_RUNTIME_HOME = path.join(os.tmpdir(), 'test-sqlite');
   process.env.APP_ENV_PATH = process.env.APP_ENV_PATH || '.env.test';
+
+  // Node 26 compatibility: jsonwebtoken@8 references SlowBuffer which no longer exists
+  patchSlowBuffer();
+
+  // Configure worker globals across all require contexts (workspace, self, core, server)
+  if (pluginPaths.length > 0) {
+    configureWorkerGlobalsForContexts(workspaceRoot, pluginPaths);
+  }
 
   const coreModules = getCoreModules(workspaceRoot, runtimeRequire);
   for (const core of coreModules) {
