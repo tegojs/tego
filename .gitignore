@@ -1,5 +1,7 @@
 *.sqlite
+*.tar.gz
 *.tbdump
+*.tgz
 .DS_Store
 .env
 .env.e2e

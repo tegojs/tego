@@ -63,15 +63,56 @@ function tsConfigPathsToAlias() {
 export interface TegoVitestConfigOptions {
   server?: {
     setupFile?: string;
+    /** Force CJS entry for @tachybase/test in server tests (avoids ESM createRequire issues). */
+    forceCjsEntry?: boolean;
   };
   client?: {
     setupFile?: string;
+    /** Override the default client test timeout (ms). */
+    testTimeout?: number;
   };
+  /** Additional path aliases merged with defaults from tsconfig.paths.json. */
+  aliases?: Array<{ find: string | RegExp; replacement: string }>;
 }
 
 export function defineTegoVitestConfig(options: TegoVitestConfigOptions = {}) {
   const serverSetupFile = options.server?.setupFile || resolve(packageRoot, './setup/server.ts');
   const clientSetupFiles = [resolve(packageRoot, './setup/client.ts'), options.client?.setupFile].filter(Boolean);
+  const mergedAliases = [...(options.aliases || []), ...tsConfigPathsToAlias()];
+
+  const serverProject: any = {
+    root: process.cwd(),
+    resolve: {
+      mainFields: ['module'],
+    },
+    extends: true,
+    test: {
+      name: 'server',
+      setupFiles: serverSetupFile,
+      include: ['packages/**/__tests__/**/*.test.ts', 'apps/**/__tests__/**/*.test.ts'],
+      exclude: [
+        '**/node_modules/**',
+        '**/dist/**',
+        '**/lib/**',
+        '**/es/**',
+        '**/e2e/**',
+        '**/__e2e__/**',
+        '**/{vitest,commitlint}.config.*',
+        'packages/**/{sdk,client,schema,components}/**/__tests__/**/*.{test,spec}.{ts,tsx}',
+      ],
+      alias: [...mergedAliases],
+    },
+  };
+
+  if (options.server?.forceCjsEntry) {
+    try {
+      const testRequire = createRequire(path.resolve(process.cwd(), 'node_modules/@tachybase/test/package.json'));
+      const testCjsEntry = testRequire.resolve('@tachybase/test');
+      serverProject.test.alias.push({ find: '@tachybase/test', replacement: testCjsEntry });
+    } catch {
+      // fallback: if @tachybase/test is not resolvable, skip forced CJS entry
+    }
+  }
 
   return defineConfig({
     test: {
@@ -90,30 +131,9 @@ export function defineTegoVitestConfig(options: TegoVitestConfigOptions = {}) {
       },
       silent: !!process.env.GITHUB_ACTIONS,
       globals: true,
-      alias: tsConfigPathsToAlias(),
+      alias: mergedAliases,
       projects: [
-        {
-          root: process.cwd(),
-          resolve: {
-            mainFields: ['module'],
-          },
-          extends: true,
-          test: {
-            name: 'server',
-            setupFiles: serverSetupFile,
-            include: ['packages/**/__tests__/**/*.test.ts', 'apps/**/__tests__/**/*.test.ts'],
-            exclude: [
-              '**/node_modules/**',
-              '**/dist/**',
-              '**/lib/**',
-              '**/es/**',
-              '**/e2e/**',
-              '**/__e2e__/**',
-              '**/{vitest,commitlint}.config.*',
-              'packages/**/{sdk,client,schema,components}/**/__tests__/**/*.{test,spec}.{ts,tsx}',
-            ],
-          },
-        },
+        serverProject,
         {
           // @ts-ignore
           plugins: [react()],
@@ -130,7 +150,8 @@ export function defineTegoVitestConfig(options: TegoVitestConfigOptions = {}) {
             setupFiles: clientSetupFiles,
             environment: 'jsdom',
             css: false,
-            alias: tsConfigPathsToAlias(),
+            alias: mergedAliases,
+            testTimeout: options.client?.testTimeout,
             include: ['packages/**/{sdk,client,schema,components}/**/__tests__/**/*.{test,spec}.{ts,tsx}'],
             exclude: [
               '**/node_modules/**',
