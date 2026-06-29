@@ -734,17 +734,32 @@ export class Database extends EventEmitter implements AsyncEmitter {
       await this.sequelize.query('SET FOREIGN_KEY_CHECKS = 0', null);
     }
 
-    if (this.options.schema && this.inDialect('postgres')) {
-      await this.sequelize.query(`CREATE SCHEMA IF NOT EXISTS "${this.options.schema}"`, null);
+    // SQLite: disable FK constraints during sync. Without this,
+    // sequelize.sync()'s topological sort can land on an unfavorable order
+    // where a FK target table hasn't been created yet, throwing an error
+    // that aborts the entire sync loop and leaves most tables uncreated.
+    // Note: SQLite uses a single cached connection per database, so the
+    // PRAGMA applies to the same connection used by sequelize.sync().
+    const isSQLite = this.inDialect('sqlite');
+    if (isSQLite) {
+      await this.sequelize.query('PRAGMA foreign_keys = OFF');
     }
 
-    const result = await this.sequelize.sync(options);
+    try {
+      if (this.options.schema && this.inDialect('postgres')) {
+        await this.sequelize.query(`CREATE SCHEMA IF NOT EXISTS "${this.options.schema}"`, null);
+      }
 
-    if (isMySQL) {
-      await this.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null);
+      return await this.sequelize.sync(options);
+    } finally {
+      if (isMySQL) {
+        await this.sequelize.query('SET FOREIGN_KEY_CHECKS = 1', null);
+      }
+
+      if (isSQLite) {
+        await this.sequelize.query('PRAGMA foreign_keys = ON');
+      }
     }
-
-    return result;
   }
 
   async clean(options: CleanOptions) {
