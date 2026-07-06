@@ -3,6 +3,7 @@ export interface Settings {
     APP_ENV: string;
     APP_PORT: number;
     APP_KEY: string;
+    APP_REQUEST_BODY_LIMIT?: string;
     INIT_APP_LANG: string;
     INIT_ROOT_EMAIL: string;
     INIT_ROOT_USERNAME: string;
