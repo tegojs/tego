@@ -7,6 +7,7 @@ module.exports = {
     APP_ENV: 'development',
     APP_PORT: 3000,
     APP_KEY: 'test-key',
+    APP_REQUEST_BODY_LIMIT: '10mb',
     API_BASE_PATH: '/api/',
     INIT_APP_LANG: 'en-US',
     INIT_ROOT_EMAIL: 'admin@tachybase.com',
