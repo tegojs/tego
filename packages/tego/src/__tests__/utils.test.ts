@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { convertEnvToSettings } from '../utils';
+import { convertEnvToSettings, mergeExternalPluginPresets } from '../utils';
 
 describe('convertEnvToSettings', () => {
   it('should convert flat env into structured settings object', () => {
@@ -20,5 +20,34 @@ describe('convertEnvToSettings', () => {
     expect(result.database.storage).toBe('storage/db/tachybase.sqlite');
     expect(result.cache.default_store).toBe('memory');
     expect(result.env.INIT_APP_LANG).toBe('zh-CN');
+  });
+});
+
+describe('mergeExternalPluginPresets', () => {
+  it('should append plugins added by a newer default preset', () => {
+    const defaults = [
+      { name: 'existing', enabledByDefault: true },
+      { name: 'new-plugin', enabledByDefault: false },
+    ];
+    const runtime = [{ name: 'existing', enabledByDefault: true }];
+
+    expect(mergeExternalPluginPresets(defaults, runtime)).toEqual(defaults);
+  });
+
+  it('should preserve runtime overrides for existing plugins', () => {
+    const defaults = [{ name: 'existing', enabledByDefault: true }];
+    const runtime = [{ name: 'existing', enabledByDefault: false }];
+
+    expect(mergeExternalPluginPresets(defaults, runtime)).toEqual(runtime);
+  });
+
+  it('should preserve runtime-only plugins without creating duplicates', () => {
+    const defaults = [{ name: 'existing', enabledByDefault: true }];
+    const runtime = [
+      { name: 'existing', enabledByDefault: false },
+      { name: 'private-plugin', enabledByDefault: false },
+    ];
+
+    expect(mergeExternalPluginPresets(defaults, runtime)).toEqual(runtime);
   });
 });

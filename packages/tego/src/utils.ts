@@ -274,3 +274,16 @@ export function convertEnvToSettings(flatEnv: Record<string, string | undefined>
 
   return settings;
 }
+
+export interface ExternalPluginPreset {
+  name: string;
+  enabledByDefault: boolean;
+}
+
+export function mergeExternalPluginPresets(
+  defaultPlugins: ExternalPluginPreset[] = [],
+  runtimePlugins: ExternalPluginPreset[] = [],
+) {
+  const runtimePluginNames = new Set(runtimePlugins.map((plugin) => plugin.name));
+  return [...runtimePlugins, ...defaultPlugins.filter((plugin) => !runtimePluginNames.has(plugin.name))];
+}

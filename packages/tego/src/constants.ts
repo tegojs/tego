@@ -4,17 +4,23 @@ import TachybaseGlobal from '@tachybase/globals';
 
 import _ from 'lodash';
 
-import { convertEnvToSettings, parseEnvironment } from './utils';
+import { convertEnvToSettings, mergeExternalPluginPresets, parseEnvironment } from './utils';
 
 // 解析环境变量
 parseEnvironment();
 
 // 读取配置
+const defaultSettingsPath = path.join(__dirname, '../presets/settings.js');
 if (!fs.existsSync(`${process.env.TEGO_RUNTIME_HOME}/settings.js`)) {
   fs.mkdirSync(`${process.env.TEGO_RUNTIME_HOME}`, { recursive: true });
-  fs.copyFileSync(path.join(__dirname, '../presets/settings.js'), `${process.env.TEGO_RUNTIME_HOME}/settings.js`);
+  fs.copyFileSync(defaultSettingsPath, `${process.env.TEGO_RUNTIME_HOME}/settings.js`);
 }
+const defaultSettings = require(defaultSettingsPath);
 const baseSettings = require(`${process.env.TEGO_RUNTIME_HOME}/settings.js`);
+baseSettings.presets.externalPlugins = mergeExternalPluginPresets(
+  defaultSettings.presets.externalPlugins,
+  baseSettings.presets.externalPlugins,
+);
 
 // 用环境变量覆盖 settings.js 的配置 (环境变量优先)
 const envSettings = convertEnvToSettings(process.env as any);
