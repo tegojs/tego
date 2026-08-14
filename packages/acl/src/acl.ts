@@ -220,7 +220,7 @@ export class ACL extends EventEmitter {
     const availableAction = this.getAvailableAction(action);
     const actionResource = availableAction?.options?.resource;
 
-    return !!availableAction && (!actionResource || actionResource === '*' || actionResource === resource);
+    return !!availableAction && (actionResource === '*' || actionResource === resource);
   }
 
   setAvailableStrategy(name: string, options: AvailableStrategyOptions) {

@@ -124,14 +124,23 @@ describe('acl', () => {
     expect(acl.can({ role: 'admin', resource: 'comments', action: 'create' })).toBeNull();
   });
 
-  it('should allow explicit unbound strategy actions outside configured strategy resources', () => {
-    acl.setAvailableAction('create', {
-      type: 'new-data',
+  it('should require explicit resource binding outside configured strategy resources', () => {
+    acl.setAvailableAction('view', {
+      aliases: ['get', 'list'],
+      type: 'old-data',
+    });
+    acl.setAvailableAction('viewSystemSettings', {
+      resource: 'systemSettings',
+      type: 'old-data',
+    });
+    acl.setAvailableAction('viewAnySystemResource', {
+      resource: '*',
+      type: 'old-data',
     });
 
     acl.setAvailableStrategy('s1', {
       displayName: 's1',
-      actions: ['create'],
+      actions: ['view', 'viewSystemSettings', 'viewAnySystemResource'],
     });
 
     acl.setStrategyResources(['posts']);
@@ -141,10 +150,21 @@ describe('acl', () => {
       strategy: 's1',
     });
 
-    expect(acl.can({ role: 'admin', resource: 'customPosts', action: 'create' })).toMatchObject({
+    expect(acl.can({ role: 'admin', resource: 'posts', action: 'get' })).toMatchObject({
       role: 'admin',
-      resource: 'customPosts',
-      action: 'create',
+      resource: 'posts',
+      action: 'get',
+    });
+    expect(acl.can({ role: 'admin', resource: 'aichat', action: 'get' })).toBeNull();
+    expect(acl.can({ role: 'admin', resource: 'systemSettings', action: 'viewSystemSettings' })).toMatchObject({
+      role: 'admin',
+      resource: 'systemSettings',
+      action: 'viewSystemSettings',
+    });
+    expect(acl.can({ role: 'admin', resource: 'storages', action: 'viewAnySystemResource' })).toMatchObject({
+      role: 'admin',
+      resource: 'storages',
+      action: 'viewAnySystemResource',
     });
   });
 
