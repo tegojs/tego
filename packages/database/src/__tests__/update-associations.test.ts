@@ -4,6 +4,25 @@ import { updateAssociations } from '../update-associations';
 import { mockDatabase } from './';
 
 describe('update associations', () => {
+  it('preserves a commit error without rolling back a finished transaction', async () => {
+    const commitError = new Error('primary customer relationship required');
+    const transaction = {
+      finished: undefined,
+      commit: vi.fn(async () => {
+        transaction.finished = 'commit';
+        throw commitError;
+      }),
+      rollback: vi.fn().mockRejectedValue(new Error('already committed')),
+    };
+    const instance = {
+      constructor: { associations: {} },
+      sequelize: { transaction: vi.fn().mockResolvedValue(transaction) },
+    };
+
+    await expect(updateAssociations(instance as any, {})).rejects.toBe(commitError);
+    expect(transaction.rollback).not.toHaveBeenCalled();
+  });
+
   describe('belongsTo', () => {
     let db: Database;
     beforeEach(async () => {

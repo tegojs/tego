@@ -172,7 +172,7 @@ export async function updateAssociations(instance: Model, values: any, options: 
       await transaction.commit();
     }
   } catch (error) {
-    if (newTransaction) {
+    if (newTransaction && !(transaction as any).finished) {
       await transaction.rollback();
     }
     throw error;
