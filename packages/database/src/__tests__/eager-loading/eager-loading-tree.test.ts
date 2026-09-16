@@ -166,6 +166,45 @@ describe('Eager loading tree', () => {
     expect(all[0].get('targets')[0].toJSON().owner).toBeUndefined();
   });
 
+  it('serializes a parent record after loading a scoped belongsTo target with association joins', async () => {
+    const source = db.collection({
+      name: 'source',
+      fields: [{ type: 'belongsTo', name: 'target', target: 'target' }],
+    });
+    db.collection({
+      name: 'target',
+      fields: [
+        { type: 'string', name: 'title' },
+        { type: 'belongsTo', name: 'owner', target: 'owner' },
+      ],
+    });
+    db.collection({ name: 'owner', fields: [{ type: 'string', name: 'tenantId' }] });
+    await db.sync();
+    await source.repository.create({
+      values: { target: { title: 'visible', owner: { tenantId: 'current' } } },
+    });
+
+    const rows = await source.repository.find({
+      appends: ['target'],
+      context: {
+        getAssociationReadScope: async (collection) =>
+          collection.name === 'target' ? { filter: { 'owner.tenantId': 'current' } } : {},
+      },
+    });
+
+    Object.defineProperty(rows[0].get('target'), 'serializationTrap', {
+      enumerable: true,
+      get: () => {
+        throw new Error('Association models must not be cloned as plain objects');
+      },
+    });
+    const serialized = JSON.parse(JSON.stringify(rows[0]));
+    expect(serialized.target.title).toBe('visible');
+    expect(serialized.target.owner).toBeUndefined();
+    expect(serialized.target._previousDataValues).toBeUndefined();
+    expect(() => rows[0].set('target', rows[0].get('target'))).not.toThrow();
+  });
+
   it('does not allow root filters to probe target fields hidden by the target scope', async () => {
     const source = db.collection({ name: 'source', fields: [{ type: 'hasMany', name: 'targets', target: 'target' }] });
     db.collection({ name: 'target', fields: [{ type: 'string', name: 'secret' }] });
