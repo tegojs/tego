@@ -173,7 +173,11 @@ export async function updateAssociations(instance: Model, values: any, options: 
     }
   } catch (error) {
     if (newTransaction && !(transaction as any).finished) {
-      await transaction.rollback();
+      try {
+        await transaction.rollback();
+      } catch (rollbackError) {
+        console.error(`[${new Date().toISOString()}] Transaction rollback failed:`, rollbackError);
+      }
     }
     throw error;
   }
