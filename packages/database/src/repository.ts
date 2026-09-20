@@ -215,11 +215,12 @@ class RelationRepositoryBuilder<R extends RelationRepository> {
   }
 }
 
-export interface AggregateOptions {
+export interface AggregateOptions extends Transactionable {
   method: 'avg' | 'count' | 'min' | 'max' | 'sum';
   field?: string;
   filter?: Filter;
   distinct?: boolean;
+  context?: any;
 }
 
 interface FirstOrCreateOptions extends Transactionable {
@@ -359,6 +360,15 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
       ...options,
       fields: [],
     });
+
+    await this.applyAssociationReadScopes(
+      queryOptions.include,
+      this.collection.model,
+      options.context,
+      true,
+      '',
+      queryOptions,
+    );
 
     options.optionsTransformer?.(queryOptions);
     const hasAssociationFilter = () => {

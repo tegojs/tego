@@ -46,6 +46,10 @@ describe('association aggregation', () => {
           name: 'readCount',
         },
         {
+          type: 'string',
+          name: 'tenantId',
+        },
+        {
           type: 'belongsTo',
           name: 'user',
         },
@@ -172,16 +176,16 @@ describe('association aggregation', () => {
             name: 'u1',
             age: 1,
             posts: [
-              { title: 'p1', category: 'c1', readCount: 1 },
-              { title: 'p2', category: 'c2', readCount: 2 },
+              { title: 'p1', category: 'c1', readCount: 1, tenantId: 'current' },
+              { title: 'p2', category: 'c2', readCount: 2, tenantId: 'current' },
             ],
           },
           {
             name: 'u2',
             age: 2,
             posts: [
-              { title: 'p3', category: 'c3', readCount: 3 },
-              { title: 'p4', category: 'c4', readCount: 4 },
+              { title: 'p3', category: 'c3', readCount: 3, tenantId: 'foreign' },
+              { title: 'p4', category: 'c4', readCount: 4, tenantId: 'foreign' },
             ],
           },
         ],
@@ -218,6 +222,29 @@ describe('association aggregation', () => {
       });
 
       expect(sumResult).toEqual(3);
+    });
+
+    it('should apply association read scopes to aggregate filters', async () => {
+      const context = {
+        getAssociationReadScope: async (collection: Collection) =>
+          collection.name === 'posts' ? { filter: { tenantId: 'current' } } : {},
+      };
+
+      const deniedResult = await User.repository.aggregate({
+        method: 'count',
+        field: 'id',
+        filter: { 'posts.tenantId': 'foreign' },
+        context,
+      });
+      const allowedResult = await User.repository.aggregate({
+        method: 'count',
+        field: 'id',
+        filter: { 'posts.tenantId': 'current' },
+        context,
+      });
+
+      expect(deniedResult).toEqual(0);
+      expect(allowedResult).toEqual(1);
     });
   });
 });
