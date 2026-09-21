@@ -6,7 +6,7 @@ import { appendChildCollectionNameAfterRepositoryFind } from '../listeners/appen
 import { OptionsParser } from '../options-parser';
 import { AdjacencyListRepository } from '../repositories/tree-repository/adjacency-list-repository';
 import SortParser from '../sort-parser';
-import { rebaseAssociationScope } from './rebase-association-scope';
+import { rebaseAssociationScope, rebaseAssociationScopeToRoot } from './rebase-association-scope';
 
 type IncludeType = {
   association: string;
@@ -239,21 +239,31 @@ export class EagerLoadingTree {
         // load root instances
         const rootInclude = this.rootQueryOptions?.include || node.includeOption || [];
 
-        const scopeRootInclude = (includes, parentPath = '') =>
+        const scopeRootInclude = (includes, parentPath = '', rootScopeWheres: any[] = []) =>
           includes.map((include) => {
             const path = parentPath ? `${parentPath}.${include.association}` : include.association;
+            const readScopeIncludes = include.readScope?.include || [];
+            const scopedWhere = rebaseAssociationScope(include.readScope?.where || {}, path);
+            const hasNestedScopeJoins = readScopeIncludes.length > 0;
+            if (include.readScope && hasNestedScopeJoins) {
+              rootScopeWheres.push(rebaseAssociationScopeToRoot(include.readScope?.where || {}, path));
+            }
             return {
               ...include,
               ...(include.readScope
                 ? {
-                    where: {
-                      [Op.and]: [include.where || {}, rebaseAssociationScope(include.readScope.where || {}, path)],
-                    },
-                    include: mergeInclude(include.include || [], include.readScope.include || []),
+                    ...(hasNestedScopeJoins
+                      ? {}
+                      : {
+                          where: {
+                            [Op.and]: [include.where || {}, scopedWhere],
+                          },
+                        }),
+                    include: mergeInclude(include.include || [], readScopeIncludes),
                     required: include.required ?? Object.keys(include.where || {}).length > 0,
                   }
                 : {}),
-              include: scopeRootInclude(mergeInclude(include.include || [], include.readScope?.include || []), path),
+              include: scopeRootInclude(mergeInclude(include.include || [], readScopeIncludes), path, rootScopeWheres),
             };
           });
 
@@ -296,15 +306,24 @@ export class EagerLoadingTree {
         const sortedRootIncludes = rootInclude.filter((include) =>
           includeForSort.some((sorted) => sorted.association === include.association),
         );
+        const rootScopeWheres: any[] = [];
         const includeForAll = scopeRootInclude(
           mergeInclude(mergeInclude(includeForFilter, includeForSort), [
             ...sortedRootIncludes,
             ...sortReadScopeIncludes,
           ]),
+          '',
+          rootScopeWheres,
         );
+        const sortScopeWheres: any[] = [];
         const scopedIncludeForSort = scopeRootInclude(
           mergeInclude(includeForSort, [...sortedRootIncludes, ...sortReadScopeIncludes]),
+          '',
+          sortScopeWheres,
         );
+        const scopedRootWhere = rootScopeWheres.length
+          ? { [Op.and]: [this.rootQueryOptions?.where || {}, ...rootScopeWheres] }
+          : this.rootQueryOptions?.where;
 
         const belongsToAssociationsOnly = isBelongsToAssociationOnly(includeForAll, node.model);
 
@@ -314,6 +333,7 @@ export class EagerLoadingTree {
             attributes: node.attributes,
             distinct: true,
             include: includeForAll,
+            where: scopedRootWhere,
             transaction,
           });
         } else {
@@ -333,6 +353,7 @@ export class EagerLoadingTree {
               group,
               transaction,
               include: includeForAll,
+              where: scopedRootWhere,
             } as any)
           ).map((row) => {
             return { row, pk: row[primaryKeyField] };
@@ -349,6 +370,7 @@ export class EagerLoadingTree {
 
           instances = await node.model.findAll({
             ...findOptions,
+            ...(sortScopeWheres.length ? { where: { [Op.and]: [findOptions.where, ...sortScopeWheres] } } : {}),
             transaction,
             include: scopedIncludeForSort,
           });

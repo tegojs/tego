@@ -22,7 +22,7 @@ import mustHaveFilter from './decorators/must-have-filter-decorator';
 import injectTargetCollection from './decorators/target-collection-decorator';
 import { transactionWrapperBuilder } from './decorators/transaction-decorator';
 import { EagerLoadingTree } from './eager-loading/eager-loading-tree';
-import { rebaseAssociationScope } from './eager-loading/rebase-association-scope';
+import { rebaseAssociationScope, rebaseAssociationScopeToRoot } from './eager-loading/rebase-association-scope';
 import { ArrayFieldRepository } from './field-repository/array-field-repository';
 import { ArrayField, RelationField } from './fields';
 import FilterParser from './filter-parser';
@@ -948,12 +948,32 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
             if (typeof sort === 'string') assertField(sort.replace(/^-/, ''));
           }
         }
-        const parsed = new OptionsParser(scope, { collection }).toSequelizeParams();
+        const parsed = new OptionsParser({ filter: scope.filter }, { collection }).toSequelizeParams();
         include.readScope = { ...parsed, allowedFields: scope.fields, allowedAppends: scope.appends };
         if (forCount) {
           const required = include.required ?? Object.keys(include.where || {}).length > 0;
-          include.where = { [Op.and]: [include.where || {}, rebaseAssociationScope(parsed.where || {}, path)] };
-          include.include = [...(include.include || []), ...(parsed.include || [])];
+          const scopedWhere = rebaseAssociationScope(parsed.where || {}, path);
+          const rootWhereReferencesPath = (value: any): boolean => {
+            if (!value || typeof value !== 'object') return false;
+            return Reflect.ownKeys(value).some(
+              (key) =>
+                (typeof key === 'string' && (key === `$${path}$` || key.startsWith(`$${path}.`))) ||
+                rootWhereReferencesPath(value[key]),
+            );
+          };
+          const hasNestedScopeJoins = parsed.include?.length > 0;
+          const scopeFiltersRoot = required || include.required === true || rootWhereReferencesPath(rootOptions?.where);
+
+          if (hasNestedScopeJoins) {
+            if (scopeFiltersRoot) {
+              rootOptions.where = {
+                [Op.and]: [rootOptions.where || {}, rebaseAssociationScopeToRoot(parsed.where || {}, path)],
+              };
+              include.include = [...(include.include || []), ...parsed.include];
+            }
+          } else {
+            include.where = { [Op.and]: [include.where || {}, scopedWhere] };
+          }
           include.required = required;
         }
       }

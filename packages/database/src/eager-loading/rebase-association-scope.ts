@@ -16,3 +16,23 @@ export function rebaseAssociationScope(where: any, path: string): any {
   }
   return result;
 }
+
+/** Move a target scope into a root query by qualifying both direct fields and association aliases. */
+export function rebaseAssociationScopeToRoot(where: any, path: string): any {
+  if (Array.isArray(where)) {
+    return where.map((item) => rebaseAssociationScopeToRoot(item, path));
+  }
+  if (!lodash.isPlainObject(where)) {
+    return where;
+  }
+  const result = {};
+  for (const key of Reflect.ownKeys(where)) {
+    if (typeof key !== 'string') {
+      result[key] = rebaseAssociationScopeToRoot(where[key], path);
+      continue;
+    }
+    const field = key.startsWith('$') && key.endsWith('$') ? key.slice(1, -1) : key;
+    result[`$${path}.${field}$`] = where[key];
+  }
+  return result;
+}

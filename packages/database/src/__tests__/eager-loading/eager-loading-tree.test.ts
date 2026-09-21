@@ -1,5 +1,7 @@
 import Database, { mockDatabase } from '@tachybase/database';
 
+import { Op } from 'sequelize';
+
 import { EagerLoadingTree } from '../../eager-loading/eager-loading-tree';
 
 describe('Eager loading tree', () => {
@@ -266,6 +268,110 @@ describe('Eager loading tree', () => {
     await expect(source.repository.find({ filter: { 'target.owner.secret': 'hidden' }, context })).rejects.toThrow(
       'Association field is not readable',
     );
+  });
+
+  it('does not expand allowed appends into recursively loaded associations', async () => {
+    const source = db.collection({
+      name: 'source',
+      fields: [{ type: 'belongsTo', name: 'target', target: 'target' }],
+    });
+    const target = db.collection({
+      name: 'target',
+      fields: [{ type: 'belongsTo', name: 'source', target: 'source' }],
+    });
+    await db.sync();
+    const targetRecord = await target.repository.create({ values: {} });
+    await source.repository.create({ values: { targetId: targetRecord.get('id') } });
+    const scopedCollections: string[] = [];
+    const context = {
+      getAssociationReadScope: async (collection) => {
+        scopedCollections.push(collection.name);
+        if (scopedCollections.length > 4) {
+          throw new Error('association read scopes recursed through allowed appends');
+        }
+        return collection.name === 'target' ? { appends: ['source'] } : { appends: ['target'] };
+      },
+    };
+
+    const [rows, count] = await source.repository.findAndCount({
+      filter: { target: { id: targetRecord.get('id') } },
+      appends: ['target'],
+      context,
+    });
+
+    expect(count).toBe(1);
+    expect(rows[0].get('target')?.get('id')).toBe(targetRecord.get('id'));
+    expect(Object.hasOwn(rows[0].get('target').dataValues, 'source')).toBe(false);
+    expect(scopedCollections).toEqual(['target', 'target']);
+  });
+
+  it('keeps association joins required by read-scope filters without expanding allowed appends', async () => {
+    const records = db.collection({
+      name: 'records',
+      fields: [{ type: 'belongsTo', name: 'project', target: 'projects' }],
+    });
+    const projects = db.collection({
+      name: 'projects',
+      fields: [
+        { type: 'string', name: 'name' },
+        {
+          type: 'belongsToMany',
+          name: 'users',
+          target: 'users',
+          through: 'projects_users',
+          foreignKey: 'projectId',
+          otherKey: 'userId',
+        },
+        { type: 'hasMany', name: 'records', target: 'records', foreignKey: 'projectId' },
+      ],
+    });
+    const users = db.collection({ name: 'users' });
+    await db.sync();
+    const currentUser = await users.repository.create({ values: {} });
+    const project = await projects.repository.create({
+      values: { name: 'visible', users: [currentUser] },
+    });
+    await records.repository.create({ values: { projectId: project.get('id') } });
+    const scopedCollections: string[] = [];
+    const context = {
+      getAssociationReadScope: async (collection) => {
+        scopedCollections.push(collection.name);
+        if (scopedCollections.length > 6) {
+          throw new Error('association read scopes recursed through allowed appends');
+        }
+        if (collection.name === 'projects') {
+          return { filter: { users: { id: currentUser.get('id') } }, appends: ['records', 'users'] };
+        }
+        if (collection.name === 'users') {
+          return { appends: ['projects'] };
+        }
+        return { appends: ['project'] };
+      },
+    };
+
+    const countSpy = vi.spyOn(records.model, 'count');
+    const findSpy = vi.spyOn(records.model, 'findAll');
+
+    const [rows, count] = await records.repository.findAndCount({
+      filter: { project: { name: 'visible' } },
+      appends: ['project'],
+      context,
+    });
+
+    expect(count).toBe(1);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].get('project')?.get('id')).toBe(project.get('id'));
+    expect(Object.hasOwn(rows[0].get('project').dataValues, 'records')).toBe(false);
+    expect(Object.hasOwn(rows[0].get('project').dataValues, 'users')).toBe(false);
+    const countOptions = countSpy.mock.calls[0][0] as any;
+    const projectInclude = countOptions.include.find((item) => item.association === 'project');
+    expect(projectInclude.where?.[Op.and]?.[1]?.['$project.users.id$']).toBeUndefined();
+    expect(countOptions.where[Op.and][1]).toHaveProperty('$project.users.id$', currentUser.get('id'));
+    const rootFindOptions = findSpy.mock.calls[0][0] as any;
+    const rootProjectInclude = rootFindOptions.include.find((item) => item.association === 'project');
+    expect(rootProjectInclude.where?.[Op.and]?.[1]?.['$project.users.id$']).toBeUndefined();
+    expect(rootFindOptions.where[Op.and][1]).toHaveProperty('$project.users.id$', currentUser.get('id'));
+    expect(scopedCollections).toEqual(['projects', 'users', 'projects']);
   });
 
   it('scopes the relation joined for root sorting before ordering and paging', async () => {
