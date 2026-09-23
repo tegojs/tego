@@ -46,13 +46,7 @@ export function transactionWrapperBuilder(transactionGenerator) {
             return results;
           } catch (err) {
             console.error(err);
-            if (!transaction.finished) {
-              try {
-                await transaction.rollback();
-              } catch (rollbackError) {
-                console.error(`[${new Date().toISOString()}] Transaction rollback failed:`, rollbackError);
-              }
-            }
+            await transaction.rollback();
             throw err;
           }
         } else {

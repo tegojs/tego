@@ -22,7 +22,6 @@ import mustHaveFilter from './decorators/must-have-filter-decorator';
 import injectTargetCollection from './decorators/target-collection-decorator';
 import { transactionWrapperBuilder } from './decorators/transaction-decorator';
 import { EagerLoadingTree } from './eager-loading/eager-loading-tree';
-import { rebaseAssociationScope, rebaseAssociationScopeToRoot } from './eager-loading/rebase-association-scope';
 import { ArrayFieldRepository } from './field-repository/array-field-repository';
 import { ArrayField, RelationField } from './fields';
 import FilterParser from './filter-parser';
@@ -215,12 +214,11 @@ class RelationRepositoryBuilder<R extends RelationRepository> {
   }
 }
 
-export interface AggregateOptions extends Transactionable {
+export interface AggregateOptions {
   method: 'avg' | 'count' | 'min' | 'max' | 'sum';
   field?: string;
   filter?: Filter;
   distinct?: boolean;
-  context?: any;
 }
 
 interface FirstOrCreateOptions extends Transactionable {
@@ -230,7 +228,6 @@ interface FirstOrCreateOptions extends Transactionable {
 }
 
 export class Repository<TModelAttributes extends {} = any, TCreationAttributes extends {} = TModelAttributes> {
-  readonly supportsAssociationReadScope = true;
   database: Database;
   collection: Collection;
   model: ModelStatic<Model>;
@@ -333,15 +330,6 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
       delete queryOptions.include;
     }
 
-    await this.applyAssociationReadScopes(
-      queryOptions.include,
-      this.collection.model,
-      countOptions?.context,
-      true,
-      '',
-      queryOptions,
-    );
-
     const count = await this.collection.model.count({
       ...queryOptions,
       transaction,
@@ -360,15 +348,6 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
       ...options,
       fields: [],
     });
-
-    await this.applyAssociationReadScopes(
-      queryOptions.include,
-      this.collection.model,
-      options.context,
-      true,
-      '',
-      queryOptions,
-    );
 
     options.optionsTransformer?.(queryOptions);
     const hasAssociationFilter = () => {
@@ -434,41 +413,19 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
       ...this.buildQueryOptions(options),
     };
 
-    const sortReadScopeIncludes = [];
-    for (const sort of lodash.castArray(options.sort || [])) {
-      if (typeof sort !== 'string') continue;
-      const parts = sort.replace(/^-/, '').split('.');
-      const firstAssociation = model.associations[parts[0]];
-      if (!firstAssociation || opts.include?.some((item) => item.association === parts[0])) continue;
-      const include: any = { association: parts[0], include: [] };
-      let parent = include;
-      let target = firstAssociation.target;
-      for (const segment of parts.slice(1, -1)) {
-        const association = target.associations[segment];
-        if (!association) break;
-        const child = { association: segment, include: [] };
-        parent.include.push(child);
-        parent = child;
-        target = association.target;
-      }
-      await this.applyAssociationReadScopes([include], model, options.context, false, '', opts);
-      if (include.readScope) sortReadScopeIncludes.push(include);
-    }
-    await this.applyAssociationReadScopes(opts.include, model, options.context, false, '', opts);
-
     let rows;
 
-    if (opts.include?.length || sortReadScopeIncludes.length) {
+    if (opts.include && opts.include.length > 0) {
       const eagerLoadingTree = EagerLoadingTree.buildFromSequelizeOptions({
         model,
         rootAttributes: opts.attributes,
-        includeOption: opts.include || [],
+        includeOption: opts.include,
         rootOrder: opts.order,
         rootQueryOptions: opts,
         db: this.database,
       });
 
-      await eagerLoadingTree.load(transaction, sortReadScopeIncludes);
+      await eagerLoadingTree.load(transaction);
 
       rows = eagerLoadingTree.root.instances;
     } else {
@@ -856,138 +813,6 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
     }
 
     return { where: {}, ...options, ...params };
-  }
-
-  protected async applyAssociationReadScopes(
-    includes: any[],
-    model: ModelStatic<any>,
-    context: any,
-    forCount = false,
-    parentPath = '',
-    rootOptions?: any,
-    parentAllowedAppends?: string[],
-  ) {
-    if (!includes?.length || typeof context?.getAssociationReadScope !== 'function') {
-      return;
-    }
-
-    for (const include of includes) {
-      const association =
-        typeof include.association === 'string' ? model.associations[include.association] : include.association;
-      const target = association?.target;
-      const path = parentPath ? `${parentPath}.${association?.as}` : association?.as;
-      const collection = target && this.database.modelCollection.get(target);
-      if (!collection) {
-        continue;
-      }
-
-      const ownScope = await context.getAssociationReadScope(collection, association);
-      let scope = ownScope;
-      if (Array.isArray(parentAllowedAppends)) {
-        const grantedWholeAssociation = parentAllowedAppends.includes(association.as);
-        if (!grantedWholeAssociation) {
-          const nestedPaths = parentAllowedAppends
-            .filter((append) => append.startsWith(`${association.as}.`))
-            .map((append) => append.slice(association.as.length + 1));
-          const permittedFields = nestedPaths.filter((append) => collection.model.rawAttributes[append]);
-          const permittedAppends = nestedPaths.filter((append) => collection.model.associations[append.split('.')[0]]);
-          const ownAppends = ownScope?.appends;
-          scope = {
-            ...ownScope,
-            fields: Array.isArray(ownScope?.fields)
-              ? ownScope.fields.filter((field: string) => permittedFields.includes(field))
-              : permittedFields,
-            appends: Array.isArray(ownAppends)
-              ? [
-                  ...new Set(
-                    ownAppends.flatMap((own: string) =>
-                      permittedAppends
-                        .filter(
-                          (allowed) =>
-                            own === allowed || own.startsWith(`${allowed}.`) || allowed.startsWith(`${own}.`),
-                        )
-                        .map((allowed) => (own.length > allowed.length ? own : allowed)),
-                    ),
-                  ),
-                ]
-              : permittedAppends,
-          };
-        }
-      }
-      if (scope) {
-        if (Array.isArray(scope.fields) || Array.isArray(scope.appends)) {
-          const assertField = (fieldPath: string) => {
-            const prefix = `${path}.`;
-            const relativePath = fieldPath.slice(prefix.length);
-            const firstField = relativePath.split('.')[0];
-            const allowedAssociation = scope.appends?.some(
-              (append: string) => relativePath === append || relativePath.startsWith(`${append}.`),
-            );
-            const isAssociation = !!target.associations?.[firstField];
-            const deniedField =
-              Array.isArray(scope.fields) && !scope.fields.includes(firstField) && !allowedAssociation;
-            const deniedAssociation = isAssociation && Array.isArray(scope.appends) && !allowedAssociation;
-            if (fieldPath.startsWith(prefix) && (deniedField || deniedAssociation)) {
-              if (typeof context.throw === 'function') {
-                context.throw(403, 'Association field is not readable');
-              }
-              throw new Error('Association field is not readable');
-            }
-          };
-          const checkFilter = (value: any) => {
-            if (!value || typeof value !== 'object') return;
-            for (const key of Reflect.ownKeys(value)) {
-              if (typeof key === 'string' && key.startsWith('$') && key.endsWith('$')) {
-                assertField(key.slice(1, -1));
-              }
-              checkFilter(value[key]);
-            }
-          };
-          checkFilter(rootOptions?.where);
-          for (const sort of lodash.castArray(rootOptions?.sort || [])) {
-            if (typeof sort === 'string') assertField(sort.replace(/^-/, ''));
-          }
-        }
-        const parsed = new OptionsParser({ filter: scope.filter }, { collection }).toSequelizeParams();
-        include.readScope = { ...parsed, allowedFields: scope.fields, allowedAppends: scope.appends };
-        if (forCount) {
-          const required = include.required ?? Object.keys(include.where || {}).length > 0;
-          const scopedWhere = rebaseAssociationScope(parsed.where || {}, path);
-          const rootWhereReferencesPath = (value: any): boolean => {
-            if (!value || typeof value !== 'object') return false;
-            return Reflect.ownKeys(value).some(
-              (key) =>
-                (typeof key === 'string' && (key === `$${path}$` || key.startsWith(`$${path}.`))) ||
-                rootWhereReferencesPath(value[key]),
-            );
-          };
-          const hasNestedScopeJoins = parsed.include?.length > 0;
-          const scopeFiltersRoot = required || include.required === true || rootWhereReferencesPath(rootOptions?.where);
-
-          if (hasNestedScopeJoins) {
-            if (scopeFiltersRoot) {
-              rootOptions.where = {
-                [Op.and]: [rootOptions.where || {}, rebaseAssociationScopeToRoot(parsed.where || {}, path)],
-              };
-              include.include = [...(include.include || []), ...parsed.include];
-            }
-          } else {
-            include.where = { [Op.and]: [include.where || {}, scopedWhere] };
-          }
-          include.required = required;
-        }
-      }
-
-      await this.applyAssociationReadScopes(
-        include.include,
-        target,
-        context,
-        forCount,
-        path,
-        rootOptions,
-        scope?.appends,
-      );
-    }
   }
 
   protected parseFilter(filter: Filter, options?: any) {

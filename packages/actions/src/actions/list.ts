@@ -1,6 +1,8 @@
 import qs from 'node:querystring';
 import { assign } from '@tachybase/utils';
 
+import { Op, QueryTypes } from 'sequelize';
+
 import { Context } from '..';
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE } from '../constants';
 import { getRepositoryFromParams, pageArgsToLimitArgs } from '../utils';
@@ -90,50 +92,81 @@ async function listWithPagination(ctx: Context) {
   });
   let filterTreeData = [];
   let filterTreeCount = 0;
-  let hasFilteredTree = false;
   if (ctx.action.params.tree && options.filter) {
-    const parentKey = collection.treeParentField?.foreignKey || 'parentId';
+    let foreignKey =
+      collection.treeParentField?.collection.model.rawAttributes[collection.treeParentField?.foreignKey]?.field ||
+      'parentId';
+    if (!ctx.db.isMySQLCompatibleDialect()) {
+      foreignKey = `"${foreignKey}"`;
+    }
     const params = Object.values(options.filter).flat()[0] || {};
+    let dataIds = [];
     if (Object.entries(params).length) {
-      hasFilteredTree = true;
-      const readScope = await ctx.getTreeReadScope?.(collection);
-      const scopeFilter = readScope?.filter || {};
-      const scopedFilter = (filter) => ({ $and: [scopeFilter, filter] });
-      const matches = await repository.find({ filter: scopedFilter(params), context: ctx });
-      const visible = new Map(matches.map((item) => [item.id, item]));
-      let ancestorIds = matches.map((item) => item.get(parentKey)).filter((id) => id != null);
-      let descendantIds = matches.map((item) => item.id);
-      while (ancestorIds.length || descendantIds.length) {
-        const branches = [];
-        if (ancestorIds.length) branches.push({ id: { $in: ancestorIds } });
-        if (descendantIds.length) branches.push({ [parentKey]: { $in: descendantIds } });
-        const adjacent = await repository.find({ filter: scopedFilter({ $or: branches }), context: ctx });
-        ancestorIds = [];
-        descendantIds = [];
-        for (const row of adjacent) {
-          if (visible.has(row.id)) continue;
-          visible.set(row.id, row);
-          if (row.get(parentKey) != null) ancestorIds.push(row.get(parentKey));
-          descendantIds.push(row.id);
-        }
+      const getParent = async (filter = {}) => {
+        const data = await repository.find({
+          filter: filter,
+        });
+        dataIds = data.map((item) => item.id);
+      };
+      await getParent(params);
+      const allDataIds = [];
+      for (const dataId of dataIds) {
+        const query = `
+        WITH RECURSIVE tree1 AS (
+            SELECT id, ${foreignKey}
+            FROM ${collection.model.getTableName()}
+            WHERE id = :dataId
+
+              UNION ALL
+
+              SELECT p.id, p.${foreignKey}
+              FROM tree1 up
+              JOIN ${collection.model.getTableName()} p ON up.${foreignKey} = p.id
+          ),
+          tree2 AS (
+              SELECT id, ${foreignKey}
+              FROM ${collection.model.getTableName()}
+              WHERE id = :dataId
+
+              UNION ALL
+
+            SELECT p.id, p.${foreignKey}
+            FROM tree2 down
+            JOIN ${collection.model.getTableName()} p ON down.id = p.${foreignKey}
+        )
+        SELECT DISTINCT *
+        FROM (
+          SELECT *
+          FROM tree1
+          UNION ALL
+          SELECT *
+          FROM tree2
+      ) AS formData;`;
+        const filterTreeDatas = await ctx.db.sequelize.query(query, {
+          replacements: {
+            dataId,
+          },
+          type: QueryTypes.SELECT,
+        });
+        const newRows: any[] = filterTreeDatas;
+        const filterIds = newRows.map((item) => item.id);
+        allDataIds.push(...filterIds);
       }
-      const ids = [...visible.keys()];
-      const requiredFields = ['id', parentKey];
-      const requestedFields = Array.isArray(options.fields) ? options.fields : undefined;
+      const ids = [...new Set(allDataIds)];
+      const where = {
+        id: {
+          [Op.in]: ids,
+        },
+      };
       const [rows, count] = await repository.findAndCount({
-        filter: scopedFilter({ id: { $in: ids } }),
-        fields: requestedFields !== undefined ? [...new Set([...requestedFields, ...requiredFields])] : undefined,
-        except: options.except?.filter((field) => !requiredFields.includes(field)),
+        filter: where,
         appends: options.appends || [],
-        sort: options.sort,
-        context: ctx,
       });
       const _data = rows.map((item) => item.dataValues);
-      const visibleIds = new Set(_data.map((row) => row.id));
-      const father = _data.filter((parent) => parent[parentKey] == null || !visibleIds.has(parent[parentKey]));
+      const father = _data.filter((parent) => parent.parentId === null);
       const transTreeData = (father, allRows) => {
         father.forEach((parent, index) => {
-          const children = allRows.filter((child) => child[parentKey] === parent.id);
+          const children = allRows.filter((child) => child.parentId === parent.id);
           const i = index.toString();
           parent.__index = parent.father || parent.father === '0' ? parent.father + '.children.' + i : i;
           if (children?.length) {
@@ -151,28 +184,14 @@ async function listWithPagination(ctx: Context) {
         });
       };
       transTreeData(father, _data);
-      const stripInternalFields = (nodes) => {
-        for (const row of nodes) {
-          for (const field of requiredFields) {
-            if (
-              (requestedFields !== undefined && !requestedFields.includes(field)) ||
-              options.except?.includes(field)
-            ) {
-              delete row[field];
-            }
-          }
-          if (row.children?.length) stripInternalFields(row.children);
-        }
-      };
-      stripInternalFields(father);
-      filterTreeData = father.slice(options.offset || 0, (options.offset || 0) + options.limit);
+      filterTreeData = father;
       filterTreeCount = father.length;
     }
   }
-  const [rows, count] = hasFilteredTree ? [filterTreeData, filterTreeCount] : await repository.findAndCount(options);
+  const [rows, count] = await repository.findAndCount(options);
   ctx.body = {
-    count: hasFilteredTree ? filterTreeCount : count,
-    rows: hasFilteredTree ? filterTreeData : rows,
+    count: filterTreeData.length ? filterTreeCount : count,
+    rows: filterTreeData.length ? filterTreeData : rows,
     page: Number(page),
     pageSize: Number(pageSize),
     totalPage: totalPage(count, pageSize),
@@ -200,5 +219,3 @@ export async function list(ctx: Context, next) {
 
   await next();
 }
-
-Object.assign(list, { supportsScopedTreeRead: true });

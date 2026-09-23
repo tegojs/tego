@@ -172,12 +172,8 @@ export async function updateAssociations(instance: Model, values: any, options: 
       await transaction.commit();
     }
   } catch (error) {
-    if (newTransaction && !(transaction as any).finished) {
-      try {
-        await transaction.rollback();
-      } catch (rollbackError) {
-        console.error(`[${new Date().toISOString()}] Transaction rollback failed:`, rollbackError);
-      }
+    if (newTransaction) {
+      await transaction.rollback();
     }
     throw error;
   }

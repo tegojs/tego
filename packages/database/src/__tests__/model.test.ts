@@ -13,23 +13,6 @@ describe('model', () => {
   });
 
   describe('toJSON', () => {
-    it('should return a deep clone of nested values', async () => {
-      const collection = db.collection({
-        name: 'records',
-        fields: [{ type: 'json', name: 'metadata' }],
-      });
-      await db.sync();
-
-      const record = await collection.repository.create({
-        values: { metadata: { nested: { value: 'original' } } },
-      });
-
-      const data = record.toJSON();
-      data['metadata'].nested.value = 'changed';
-
-      expect(record.get('metadata').nested.value).toBe('original');
-    });
-
     it('should return null when belongsTo association empty', async () => {
       const user = db.collection({
         name: 'users',

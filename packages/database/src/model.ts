@@ -129,7 +129,7 @@ export class Model<TModelAttributes extends {} = any, TCreationAttributes extend
       return result as T;
     };
 
-    return lodash.cloneDeep(traverseJSON(this.get({ plain: true }) as T, opts));
+    return traverseJSON(super.toJSON(), opts);
   }
 
   private hiddenObjKey(obj, options: JSONTransformerOptions) {
