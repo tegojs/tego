@@ -4,6 +4,53 @@ import { updateAssociations } from '../update-associations';
 import { mockDatabase } from './';
 
 describe('update associations', () => {
+  it('preserves a commit error without rolling back a finished transaction', async () => {
+    const commitError = new Error('primary customer relationship required');
+    const transaction = {
+      finished: undefined,
+      commit: vi.fn(async () => {
+        transaction.finished = 'commit';
+        throw commitError;
+      }),
+      rollback: vi.fn().mockRejectedValue(new Error('already committed')),
+    };
+    const instance = {
+      constructor: { associations: {} },
+      sequelize: { transaction: vi.fn().mockResolvedValue(transaction) },
+    };
+
+    await expect(updateAssociations(instance as any, {})).rejects.toBe(commitError);
+    expect(transaction.rollback).not.toHaveBeenCalled();
+  });
+
+  it('preserves an association error when its rollback also fails', async () => {
+    const associationError = new Error('association write failed');
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const transaction = {
+      finished: undefined,
+      commit: vi.fn(),
+      rollback: vi.fn().mockRejectedValue(new Error('rollback failed')),
+    };
+    const instance = {
+      constructor: {
+        associations: {
+          posts: {
+            associationType: 'HasMany',
+            accessors: { set: 'setPosts' },
+          },
+        },
+      },
+      sequelize: { transaction: vi.fn().mockResolvedValue(transaction) },
+      setPosts: vi.fn().mockRejectedValue(associationError),
+    };
+
+    await expect(updateAssociations(instance as any, { posts: null })).rejects.toBe(associationError);
+    expect(transaction.rollback).toHaveBeenCalledOnce();
+    expect(transaction.commit).not.toHaveBeenCalled();
+    expect(consoleError).toHaveBeenCalledOnce();
+    consoleError.mockRestore();
+  });
+
   describe('belongsTo', () => {
     let db: Database;
     beforeEach(async () => {
