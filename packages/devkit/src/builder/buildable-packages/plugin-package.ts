@@ -24,7 +24,7 @@ import {
   getPackagesFromFiles,
   getSourcePackages,
 } from '../build/utils/buildPluginUtils';
-import { getDepPkgPath, getDepsConfig } from '../build/utils/getDepsConfig';
+import { getDepsConfig, getDepVersion } from '../build/utils/getDepsConfig';
 import { IBuildablePackage, IBuildContext } from '../interfaces';
 
 const require = createRequire(import.meta.url);
@@ -144,23 +144,26 @@ export function deleteServerFiles(cwd: string, log: PkgLog) {
   });
 }
 
-export function writeExternalPackageVersion(cwd: string, log: PkgLog) {
+export async function writeExternalPackageVersion(cwd: string, log: PkgLog) {
   log('write external version');
   const sourceFiles = fg
     .globSync(sourceGlobalFiles, { cwd, absolute: true })
     .map((item) => fs.readFileSync(item, 'utf-8'));
   const sourcePackages = getSourcePackages(sourceFiles);
   const excludePackages = getExcludePackages(sourcePackages, external, pluginPrefix);
-  const data = excludePackages.reduce<Record<string, string>>((prev, packageName) => {
+  const data: Record<string, string> = {};
+
+  for (const packageName of excludePackages) {
     try {
-      const depPkgPath = getDepPkgPath(packageName, cwd);
-      const depPkg = require(depPkgPath);
-      prev[packageName] = depPkg.version;
+      const version = await getDepVersion(packageName, cwd);
+      if (version) {
+        data[packageName] = version;
+      }
     } catch (error) {
-      console.error(error);
+      console.error(`Error getting version for ${packageName}:`, error);
     }
-    return prev;
-  }, {});
+  }
+
   const externalVersionPath = path.join(cwd, target_dir, 'externalVersion.js');
   fs.writeFileSync(externalVersionPath, `module.exports = ${JSON.stringify(data, null, 2)};`);
 }
@@ -402,7 +405,7 @@ export class PluginPackage implements IBuildablePackage {
 
     await buildPluginClient(this.dir, userConfig, this.context.sourcemap, log);
     await buildPluginServer(this.dir, userConfig, this.context.sourcemap, log);
-    writeExternalPackageVersion(this.dir, log);
+    await writeExternalPackageVersion(this.dir, log);
 
     if (this.context.dts) {
       await buildDeclaration(this.dir, 'dist', log);
