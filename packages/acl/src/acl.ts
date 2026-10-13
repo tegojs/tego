@@ -48,6 +48,17 @@ interface CanArgs {
   ctx?: any;
 }
 
+export interface ActionParamsResolutionContext extends CanArgs {
+  acl: ACL;
+  source: 'resource' | 'strategy';
+}
+
+/** Synchronous server extension, after action authorization and before fixed/request filters. */
+export type ActionParamsResolver = (
+  context: ActionParamsResolutionContext,
+  params: RoleActionParams,
+) => RoleActionParams;
+
 export class ACL extends EventEmitter {
   /**
    * @internal
@@ -88,6 +99,8 @@ export class ACL extends EventEmitter {
   public middlewareSourceMap: WeakMap<Function, string> = new WeakMap();
 
   protected strategyResources: Set<string> | null = null;
+
+  private actionParamsResolvers = new Set<ActionParamsResolver>();
 
   constructor() {
     super();
@@ -231,6 +244,14 @@ export class ACL extends EventEmitter {
     this.addListener('beforeGrantAction', listener);
   }
 
+  /** Registration is opt-in and never grants an action denied by the role. */
+  registerActionParamsResolver(resolver: ActionParamsResolver): () => void {
+    this.actionParamsResolvers.add(resolver);
+    return () => {
+      this.actionParamsResolvers.delete(resolver);
+    };
+  }
+
   can(options: CanArgs): CanResult | null {
     const { role, resource, action, rawResourceName, ctx } = options;
     const aclRole = this.roles.get(role);
@@ -248,8 +269,15 @@ export class ACL extends EventEmitter {
 
     const fixedParams = this.fixedParamsManager.getParams(rawResourceName ? rawResourceName : resource, action);
 
-    const mergeParams = (result: CanResult) => {
-      const params = result['params'] || {};
+    const mergeParams = (result: CanResult, source: ActionParamsResolutionContext['source']) => {
+      let params = result['params'] || {};
+
+      for (const resolver of this.actionParamsResolvers) {
+        params = resolver({ ...options, acl: this, source }, lodash.cloneDeep(params));
+        if (!lodash.isPlainObject(params) || typeof params.then === 'function') {
+          throw new TypeError('ACL action parameters resolver must return a synchronous plain object');
+        }
+      }
 
       const mergedParams = assign(params, fixedParams);
 
@@ -269,12 +297,15 @@ export class ACL extends EventEmitter {
 
       if (actionParams) {
         // handle single action config
-        return mergeParams({
-          role,
-          resource,
-          action,
-          params: actionParams,
-        });
+        return mergeParams(
+          {
+            role,
+            resource,
+            action,
+            params: actionParams,
+          },
+          'resource',
+        );
       } else {
         return null;
       }
@@ -304,7 +335,7 @@ export class ACL extends EventEmitter {
         result['params'] = roleStrategyParams;
       }
 
-      return mergeParams(result);
+      return mergeParams(result, 'strategy');
     }
 
     return null;
@@ -422,7 +453,7 @@ export class ACL extends EventEmitter {
     }
 
     ctx.can = (options: Omit<CanArgs, 'role'>) => {
-      const can = this.can({ role: roleName, ...options });
+      const can = this.can({ role: roleName, ...options, ctx });
       if (!can) {
         return null;
       }
