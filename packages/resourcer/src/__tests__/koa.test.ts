@@ -159,6 +159,58 @@ describe('koa middleware', () => {
     expect(response.body.arr).toEqual([3, 4]);
   });
 
+  describe('array request bodies', () => {
+    let agent: ReturnType<typeof supertest.agent>;
+
+    beforeEach(() => {
+      const app = new Koa();
+      const resourcer = new Resourcer({ prefix: '/api' });
+      resourcer.define({
+        name: 'posts.tags',
+        type: 'belongsToMany',
+        actions: {
+          set: {
+            values: [99],
+            handler(ctx) {
+              ctx.body = { ...ctx.action.params, sourceId: ctx.action.sourceId };
+            },
+          },
+        },
+      });
+      app.use(bodyParser());
+      app.use(resourcer.middleware());
+      agent = supertest.agent(app.callback());
+    });
+
+    it.each(['/api/posts/1/tags', '/api/posts/1/tags:set'])(
+      'preserves empty arrays instead of retaining default targets on %s',
+      async (path) => {
+        const response = await agent.post(path).send([]);
+        expect(response.status).toBe(200);
+        expect(response.body).toMatchObject({ actionName: 'set', sourceId: '1', values: [] });
+      },
+    );
+
+    it.each([undefined, {}])('retains defaults when no target array was sent: %j', async (body) => {
+      const request = agent.post('/api/posts/1/tags:set');
+      const response = await (body === undefined ? request : request.send(body));
+      expect(response.status).toBe(200);
+      expect(response.body.values).toEqual([99]);
+    });
+
+    it('preserves nonempty target arrays', async () => {
+      const response = await agent.post('/api/posts/1/tags:set').send([101, 102]);
+      expect(response.status).toBe(200);
+      expect(response.body.values).toEqual([101, 102]);
+    });
+
+    it('retains a query selector alongside an explicit empty array', async () => {
+      const response = await agent.post('/api/posts/1/tags:set?filterByTk=101').send([]);
+      expect(response.status).toBe(200);
+      expect(response.body).toMatchObject({ filterByTk: '101', values: [] });
+    });
+  });
+
   describe('action options', () => {
     let resourcer: Resourcer;
     let app: Koa;
