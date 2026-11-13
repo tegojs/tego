@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import TachybaseGlobal from '@tachybase/globals';
 
 import _ from 'lodash';
@@ -21,6 +22,24 @@ baseSettings.presets.externalPlugins = mergeExternalPluginPresets(
   defaultSettings.presets.externalPlugins,
   baseSettings.presets.externalPlugins,
 );
+
+// Security: never use the shipped placeholder APP_KEY ('test-key') as a live
+// signing secret. When the operator has not provided APP_KEY, derive a
+// cryptographically random per-install key and persist it, instead of falling
+// back to the well-known default that would let anyone forge admin tokens.
+if (!process.env.APP_KEY && (!baseSettings.env?.APP_KEY || baseSettings.env.APP_KEY === 'test-key')) {
+  const keyFile = path.join(process.env.TEGO_RUNTIME_HOME, '.app-key');
+  let appKey = '';
+  if (fs.existsSync(keyFile)) {
+    appKey = fs.readFileSync(keyFile, 'utf8').trim();
+  }
+  if (!appKey) {
+    appKey = crypto.randomBytes(32).toString('hex');
+    fs.writeFileSync(keyFile, appKey, { mode: 0o600 });
+  }
+  baseSettings.env = baseSettings.env || {};
+  baseSettings.env.APP_KEY = appKey;
+}
 
 // 用环境变量覆盖 settings.js 的配置 (环境变量优先)
 const envSettings = convertEnvToSettings(process.env as any);
