@@ -23,7 +23,7 @@ function assertActiveTransaction(sequelize: Sequelize, transaction: Transaction)
 
 export function assertAssociationEventTransaction(owner: object, transaction: Transaction | null | undefined) {
   const scope = associationEvents.getStore();
-  if (!scope || scope.owner !== owner || scope.closed || scope.flushing) return;
+  if (!scope || scope.owner !== owner || scope.closed) return;
   assertActiveTransaction(scope.sequelize, scope.transaction);
   if (transaction !== scope.transaction)
     throw new TypeError('Deferred association writes must use their original transaction');

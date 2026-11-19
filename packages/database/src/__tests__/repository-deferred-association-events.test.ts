@@ -343,6 +343,69 @@ describe('repository deferred association events', () => {
       await finish(transaction);
     }
   });
+  it('rejects writes from a flushed listener that omit the scoped transaction', async () => {
+    const transaction = await begin();
+    const generate = vi
+      .spyOn(db.sequelize, 'transaction')
+      .mockRejectedValue(new Error('Unexpected transaction generation'));
+    db.on('documents.afterUpdateWithAssociations', async () => {
+      await documents.repository.update({ filterByTk: 1, values: { name: 'Nested' } });
+    });
+    try {
+      await expect(
+        documents.repository.withDeferredAssociationEvents(transaction, async (flush) => {
+          await documents.repository.update({ filterByTk: 1, values: { name: 'Changed' }, transaction });
+          await flush();
+        }),
+      ).rejects.toThrow(/original transaction/i);
+      expect(generate).not.toHaveBeenCalled();
+      expect((await documents.model.findByPk(1, { transaction })).getDataValue('name')).toBe('Changed');
+    } finally {
+      generate.mockRestore();
+      await finish(transaction);
+    }
+    expect((await documents.model.findByPk(1)).getDataValue('name')).toBe('Original');
+  });
+  it.each(['create', 'update'] as const)(
+    'rejects %s from a flushed listener using another transaction before writing',
+    async (action) => {
+      const otherDb = mockDatabase({ dialect: 'sqlite', storage: ':memory:', logging: false });
+      const otherDocuments = otherDb.collection({
+        name: 'documents',
+        timestamps: false,
+        fields: [{ name: 'name', type: 'string' }],
+      });
+      await otherDb.sync();
+      await otherDocuments.model.create({ id: 1, name: 'Other original' });
+      const otherTransaction = await otherDb.sequelize.transaction();
+      const transaction = await begin();
+      db.on('documents.afterUpdateWithAssociations', async () => {
+        await documents.repository[action]({
+          filterByTk: 1,
+          values: { name: 'Wrong' },
+          transaction: otherTransaction,
+          hooks: false,
+        });
+      });
+      try {
+        await expect(
+          documents.repository.withDeferredAssociationEvents(transaction, async (flush) => {
+            await documents.repository.update({ filterByTk: 1, values: { name: 'Changed' }, transaction });
+            await flush();
+          }),
+        ).rejects.toThrow(/original transaction/i);
+        expect(await otherDocuments.model.count({ transaction: otherTransaction })).toBe(1);
+        expect((await otherDocuments.model.findByPk(1, { transaction: otherTransaction })).getDataValue('name')).toBe(
+          'Other original',
+        );
+      } finally {
+        await finish(transaction);
+        await finish(otherTransaction);
+        await otherDb.close();
+      }
+      expect((await documents.model.findByPk(1)).getDataValue('name')).toBe('Original');
+    },
+  );
   it('rejects reentrant flush and preserves the failure', async () => {
     const transaction = await begin();
     try {
