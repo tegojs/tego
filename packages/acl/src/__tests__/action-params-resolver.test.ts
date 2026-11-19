@@ -63,6 +63,14 @@ describe('ACL action parameters before fixed restrictions', () => {
     expect(action.params.whitelist).toEqual([]);
   });
 
+  it('keeps an empty current write whitelist as deny-all across later merges', () => {
+    const action = new Action({ whitelist: [] });
+
+    action.mergeParams({ whitelist: ['tenantId'] });
+
+    expect(action.params.whitelist).toEqual([]);
+  });
+
   it('does not invoke resolvers or grant denied actions or missing roles', () => {
     const resolver = vi.fn((_context, params) => params);
     acl.registerActionParamsResolver(resolver);

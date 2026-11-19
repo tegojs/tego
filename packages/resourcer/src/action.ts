@@ -300,7 +300,9 @@ export class Action {
       appends: 'union',
       except: 'union',
       whitelist: (current, incoming) =>
-        Array.isArray(incoming) && incoming.length === 0 ? [] : mergeStrategies.get('intersect')(current, incoming),
+        (Array.isArray(current) && current.length === 0) || (Array.isArray(incoming) && incoming.length === 0)
+          ? []
+          : mergeStrategies.get('intersect')(current, incoming),
       blacklist: 'intersect',
       sort: 'overwrite',
       ...strategies,
