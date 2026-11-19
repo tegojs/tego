@@ -13,7 +13,16 @@ interface AssociationEventScope {
   error?: unknown;
 }
 
-const associationEvents = new AsyncLocalStorage<AssociationEventScope>();
+const associationEvents = new AsyncLocalStorage<AssociationEventScope[]>();
+
+function getAssociationEventScope(owner: object) {
+  const scopes = associationEvents.getStore();
+  if (!scopes) return;
+
+  for (let index = scopes.length - 1; index >= 0; index--) {
+    if (scopes[index].owner === owner) return scopes[index];
+  }
+}
 
 function assertActiveTransaction(sequelize: Sequelize, transaction: Transaction) {
   const state = transaction as Transaction & { sequelize?: Sequelize; finished?: string };
@@ -22,16 +31,16 @@ function assertActiveTransaction(sequelize: Sequelize, transaction: Transaction)
 }
 
 export function assertAssociationEventTransaction(owner: object, transaction: Transaction | null | undefined) {
-  const scope = associationEvents.getStore();
-  if (!scope || scope.owner !== owner || scope.closed) return;
+  const scope = getAssociationEventScope(owner);
+  if (!scope || scope.closed) return;
   assertActiveTransaction(scope.sequelize, scope.transaction);
   if (transaction !== scope.transaction)
     throw new TypeError('Deferred association writes must use their original transaction');
 }
 
 export async function dispatchAssociationEvents(owner: object, transaction: Transaction, emit: () => Promise<void>) {
-  const scope = associationEvents.getStore();
-  if (!scope || scope.owner !== owner || scope.closed || scope.flushing) return emit();
+  const scope = getAssociationEventScope(owner);
+  if (!scope || scope.closed || scope.flushing) return emit();
   assertAssociationEventTransaction(owner, transaction);
   scope.pending.push(emit);
 }
@@ -54,11 +63,12 @@ export async function withDeferredAssociationEvents<T>(
     closed: false,
     failed: false,
   };
-  return associationEvents.run(scope, async () => {
+  return associationEvents.run([...(associationEvents.getStore() || []), scope], async () => {
     let activeFlush: Promise<void> | undefined;
     const flush = (): Promise<void> => {
       try {
-        if (associationEvents.getStore() !== scope || scope.closed || scope.flushing)
+        const scopes = associationEvents.getStore();
+        if (scopes?.[scopes.length - 1] !== scope || scope.closed || scope.flushing)
           throw new TypeError('Association events can only be flushed in their active scope');
         assertActiveTransaction(sequelize, transaction);
         if (scope.failed) throw scope.error;

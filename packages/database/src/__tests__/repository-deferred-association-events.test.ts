@@ -173,6 +173,67 @@ describe('repository deferred association events', () => {
       await finish(transaction);
     }
   });
+  it('keeps outer repository events deferred through a different nested repository scope', async () => {
+    const transaction = await begin();
+    const connectionEvents: number[] = [];
+    db.on('connections.afterCreateWithAssociations', (record) => {
+      connectionEvents.push(record.getDataValue('id'));
+    });
+    try {
+      await documents.repository.withDeferredAssociationEvents(transaction, async (flushDocuments) => {
+        await documents.repository.create({ values: { id: 2, name: 'Outer' }, transaction });
+        await connections.repository.withDeferredAssociationEvents(transaction, async (flushConnections) => {
+          await documents.repository.create({ values: { id: 3, name: 'Nested outer' }, transaction });
+          await connections.repository.create({ values: { id: 4, documentId: 3 }, transaction });
+          await flushConnections();
+          expect(connectionEvents).toEqual([4]);
+          expect(events).toEqual([]);
+        });
+        expect(events).toEqual([]);
+        await flushDocuments();
+      });
+      expect(events).toEqual(['Create:Outer:0', 'Save:Outer:0', 'Create:Nested outer:1', 'Save:Nested outer:1']);
+    } finally {
+      await finish(transaction);
+    }
+  });
+  it.each(['create', 'update'] as const)(
+    'rejects an outer repository %s using another transaction inside a different nested scope',
+    async (action) => {
+      const otherDb = mockDatabase({ dialect: 'sqlite', storage: ':memory:', logging: false });
+      const otherDocuments = otherDb.collection({
+        name: 'documents',
+        timestamps: false,
+        fields: [{ name: 'name', type: 'string' }],
+      });
+      await otherDb.sync();
+      await otherDocuments.model.create({ id: 1, name: 'Other original' });
+      const otherTransaction = await otherDb.sequelize.transaction();
+      const transaction = await begin();
+      try {
+        await documents.repository.withDeferredAssociationEvents(transaction, async () => {
+          await connections.repository.withDeferredAssociationEvents(transaction, async () => {
+            await expect(
+              documents.repository[action]({
+                filterByTk: 1,
+                values: { id: 2, name: 'Wrong transaction' },
+                transaction: otherTransaction,
+                hooks: false,
+              }),
+            ).rejects.toThrow(/original transaction/i);
+          });
+        });
+        expect(await otherDocuments.model.count({ transaction: otherTransaction })).toBe(1);
+        expect((await otherDocuments.model.findByPk(1, { transaction: otherTransaction })).getDataValue('name')).toBe(
+          'Other original',
+        );
+      } finally {
+        await finish(transaction);
+        await finish(otherTransaction);
+        await otherDb.close();
+      }
+    },
+  );
   it('rejects a flush retained after its scope has ended', async () => {
     const transaction = await begin();
     let retained: () => Promise<void>;
