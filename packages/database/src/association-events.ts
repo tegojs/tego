@@ -14,7 +14,13 @@ interface AssociationEventScope {
 }
 
 const associationEvents = new AsyncLocalStorage<AssociationEventScope[]>();
-const flushingAssociationEventScope = new AsyncLocalStorage<AssociationEventScope>();
+
+interface AssociationEventInvocation {
+  scope: AssociationEventScope;
+  active: boolean;
+}
+
+const associationEventInvocations = new AsyncLocalStorage<AssociationEventInvocation[]>();
 
 function getAssociationEventScope(owner: object) {
   const scopes = associationEvents.getStore();
@@ -41,7 +47,10 @@ export function assertAssociationEventTransaction(owner: object, transaction: Tr
 
 export async function dispatchAssociationEvents(owner: object, transaction: Transaction, emit: () => Promise<void>) {
   const scope = getAssociationEventScope(owner);
-  if (!scope || scope.closed || flushingAssociationEventScope.getStore() === scope) return emit();
+  const activeInvocation = associationEventInvocations.getStore()?.some((invocation) => {
+    return invocation.scope === scope && invocation.active;
+  });
+  if (!scope || scope.closed || activeInvocation) return emit();
   assertAssociationEventTransaction(owner, transaction);
   scope.pending.push(emit);
 }
@@ -81,7 +90,13 @@ export async function withDeferredAssociationEvents<T>(
         try {
           while (scope.pending.length) {
             const emit = scope.pending.shift()!;
-            await flushingAssociationEventScope.run(scope, emit);
+            const invocation: AssociationEventInvocation = { scope, active: true };
+            const invocations = [...(associationEventInvocations.getStore() || []), invocation];
+            try {
+              await associationEventInvocations.run(invocations, emit);
+            } finally {
+              invocation.active = false;
+            }
           }
         } catch (error) {
           scope.failed = true;

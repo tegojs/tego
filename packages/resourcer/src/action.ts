@@ -1,4 +1,4 @@
-import { assign, MergeStrategies, requireModule } from '@tachybase/utils';
+import { assign, mergeStrategies, MergeStrategies, requireModule } from '@tachybase/utils';
 
 import compose from 'koa-compose';
 import _ from 'lodash';
@@ -299,7 +299,8 @@ export class Action {
       fields: 'intersect',
       appends: 'union',
       except: 'union',
-      whitelist: 'intersect',
+      whitelist: (current, incoming) =>
+        Array.isArray(incoming) && incoming.length === 0 ? [] : mergeStrategies.get('intersect')(current, incoming),
       blacklist: 'intersect',
       sort: 'overwrite',
       ...strategies,

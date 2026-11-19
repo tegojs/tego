@@ -1,3 +1,5 @@
+import { Action } from '@tachybase/resourcer';
+
 import { ACL } from '..';
 
 describe('ACL action parameters before fixed restrictions', () => {
@@ -50,6 +52,16 @@ describe('ACL action parameters before fixed restrictions', () => {
       expect(acl.can({ role: 'writer', resource: 'documents', action })?.params).toEqual({ whitelist: ['name'] });
     },
   );
+
+  it('keeps a disjoint resolved write whitelist as deny-all against request fields', () => {
+    acl.define({ role: 'writer', actions: { 'documents:update': { fields: ['name'] } } });
+    acl.registerActionParamsResolver(() => ({ fields: ['tenantId'] }));
+
+    const action = new Action({ whitelist: ['tenantId'] });
+    action.mergeParams(acl.can({ role: 'writer', resource: 'documents', action: 'update' }).params);
+
+    expect(action.params.whitelist).toEqual([]);
+  });
 
   it('does not invoke resolvers or grant denied actions or missing roles', () => {
     const resolver = vi.fn((_context, params) => params);
