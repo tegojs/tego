@@ -395,7 +395,7 @@ export class Resourcer {
           ctx.action.mergeParams({
             ...query,
             ...params,
-            ...(_.isEmpty(ctx.request.body) ? {} : { values: ctx.request.body }),
+            ...(Array.isArray(ctx.request.body) || !_.isEmpty(ctx.request.body) ? { values: ctx.request.body } : {}),
           });
         }
         return compose(ctx.action.getHandlers())(ctx, next);

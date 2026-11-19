@@ -86,6 +86,19 @@ function patchDescribeTableQuery(queryGenerator) {
 
 export function patchSequelizeQueryInterface(db: Database) {
   if (db.inDialect('postgres')) {
+    const queryInterface = db.sequelize.getQueryInterface();
+    const commitTransaction = queryInterface.commitTransaction;
+    queryInterface.commitTransaction = async function (transaction, options) {
+      try {
+        return await commitTransaction.call(this, transaction, options);
+      } catch (error) {
+        // Sequelize 6 runs these hooks in finally, even when COMMIT was rejected.
+        // A failed commit must not publish successful-write notifications.
+        const hooks = (transaction as typeof transaction & { _afterCommitHooks?: unknown[] })._afterCommitHooks;
+        if (Array.isArray(hooks)) hooks.length = 0;
+        throw error;
+      }
+    };
     //@ts-ignore
     const queryGenerator = db.sequelize.dialect.queryGenerator;
     patchShowConstraintsQuery(queryGenerator, db);

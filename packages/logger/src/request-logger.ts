@@ -72,7 +72,9 @@ export const requestLogger = (appName: string, options?: RequestLoggerOptions) =
       }
     }
 
-    ctx.res.setHeader('X-Request-Id', reqId);
+    if (!ctx.res.headersSent) {
+      ctx.res.setHeader('X-Request-Id', reqId);
+    }
 
     if (error) {
       throw error;

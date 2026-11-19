@@ -12,10 +12,16 @@ import {
   DestroyOptions as SequelizeDestroyOptions,
   FindOptions as SequelizeFindOptions,
   UpdateOptions as SequelizeUpdateOptions,
+  Transaction,
   Transactionable,
   WhereOperators,
 } from 'sequelize';
 
+import {
+  assertAssociationEventTransaction,
+  dispatchAssociationEvents,
+  withDeferredAssociationEvents,
+} from './association-events';
 import { Collection } from './collection';
 import { Database } from './database';
 import mustHaveFilter from './decorators/must-have-filter-decorator';
@@ -170,6 +176,7 @@ interface RelatedQueryOptions {
 }
 
 const transaction = transactionWrapperBuilder(function () {
+  assertAssociationEventTransaction(this, undefined);
   return (<Repository>this).collection.model.sequelize.transaction();
 });
 
@@ -236,6 +243,20 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
     this.database = collection.context.database;
     this.collection = collection;
     this.model = collection.model;
+  }
+
+  /**
+   * Delay this repository's create/update association-complete events in an active transaction.
+   * Call and await flush() after persisting connections and before final write validation.
+   * Row hooks retain their normal timing; writes made by flushed listeners dispatch normally.
+   * The caller owns commit/rollback and must roll back the transaction if this scope rejects.
+   */
+  async withDeferredAssociationEvents<T>(
+    transaction: Transaction,
+    callback: (flush: () => Promise<void>) => Promise<T>,
+  ): Promise<T> {
+    this.checkConnection();
+    return withDeferredAssociationEvents(this, this.database.sequelize, transaction, callback);
   }
 
   /**
@@ -532,6 +553,7 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
     }
 
     const transaction = await this.getTransaction(options);
+    assertAssociationEventTransaction(this, transaction);
 
     const guard = UpdateGuard.fromOptions(this.model, {
       ...options,
@@ -556,15 +578,17 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
     });
 
     if (options.hooks !== false) {
-      await this.database.emitAsync(`${this.collection.name}.afterCreateWithAssociations`, instance, {
-        ...options,
-        transaction,
+      await dispatchAssociationEvents(this, transaction, async () => {
+        await this.database.emitAsync(`${this.collection.name}.afterCreateWithAssociations`, instance, {
+          ...options,
+          transaction,
+        });
+        await this.database.emitAsync(`${this.collection.name}.afterSaveWithAssociations`, instance, {
+          ...options,
+          transaction,
+        });
+        instance.clearChangedWithAssociations();
       });
-      await this.database.emitAsync(`${this.collection.name}.afterSaveWithAssociations`, instance, {
-        ...options,
-        transaction,
-      });
-      instance.clearChangedWithAssociations();
     }
 
     return instance;
@@ -609,6 +633,7 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
     }
 
     const transaction = await this.getTransaction(options);
+    assertAssociationEventTransaction(this, transaction);
 
     const guard = UpdateGuard.fromOptions(this.model, { ...options, underscored: this.collection.options.underscored });
 
@@ -666,15 +691,17 @@ export class Repository<TModelAttributes extends {} = any, TCreationAttributes e
 
     if (options.hooks !== false) {
       for (const instance of instances) {
-        await this.database.emitAsync(`${this.collection.name}.afterUpdateWithAssociations`, instance, {
-          ...options,
-          transaction,
+        await dispatchAssociationEvents(this, transaction, async () => {
+          await this.database.emitAsync(`${this.collection.name}.afterUpdateWithAssociations`, instance, {
+            ...options,
+            transaction,
+          });
+          await this.database.emitAsync(`${this.collection.name}.afterSaveWithAssociations`, instance, {
+            ...options,
+            transaction,
+          });
+          instance.clearChangedWithAssociations();
         });
-        await this.database.emitAsync(`${this.collection.name}.afterSaveWithAssociations`, instance, {
-          ...options,
-          transaction,
-        });
-        instance.clearChangedWithAssociations();
       }
     }
 
