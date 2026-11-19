@@ -77,6 +77,21 @@ describe('ACL action parameters before fixed restrictions', () => {
     action.mergeParams({ whitelist: undefined });
     expect(action.params.whitelist).toBeUndefined();
 
+    action.mergeParams({ whitelist: 'tenantId,createdAt' as any });
+    expect(action.params.whitelist).toEqual(['tenantId', 'createdAt']);
+
+    action.mergeParams({ whitelist: undefined });
+    expect(action.params.whitelist).toEqual(['tenantId', 'createdAt']);
+
+    const currentString = new Action({ whitelist: 'ownerId,tenantId' as any });
+    currentString.mergeParams({ whitelist: undefined });
+    expect(currentString.params.whitelist).toEqual(['ownerId', 'tenantId']);
+
+    const nonString = new Action({ whitelist: undefined });
+    const value = { field: 'tenantId' };
+    nonString.mergeParams({ whitelist: value as any });
+    expect(nonString.params.whitelist).toBe(value);
+
     action.mergeParams({ whitelist: [] });
     action.mergeParams({ whitelist: undefined });
     expect(action.params.whitelist).toEqual([]);

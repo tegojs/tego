@@ -300,8 +300,8 @@ export class Action {
       appends: 'union',
       except: 'union',
       whitelist: (current, incoming) => {
-        if (current === undefined) return incoming;
-        if (incoming === undefined) return current;
+        if (current === undefined) return typeof incoming === 'string' ? incoming.split(',') : incoming;
+        if (incoming === undefined) return typeof current === 'string' ? current.split(',') : current;
         if ((Array.isArray(current) && current.length === 0) || (Array.isArray(incoming) && incoming.length === 0)) {
           return [];
         }
