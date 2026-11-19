@@ -6,6 +6,20 @@ import { Database } from '../database';
 
 const postgresUrl = process.env.TENANT_ACCESS_TEST_DATABASE_URL;
 
+function normalizePostgresHost(hostname: string) {
+  return hostname.startsWith('[') && hostname.endsWith(']') ? hostname.slice(1, -1) : hostname;
+}
+
+describe('PostgreSQL test host normalization', () => {
+  it.each([
+    ['localhost', 'localhost'],
+    ['127.0.0.1', '127.0.0.1'],
+    ['[::1]', '::1'],
+  ])('normalizes %s to %s', (hostname, expected) => {
+    expect(normalizePostgresHost(hostname)).toBe(expected);
+  });
+});
+
 describe.runIf(!!postgresUrl)('transaction commit outcomes', () => {
   let db: Database;
   const schema = `commit_${randomUUID().replaceAll('-', '')}`;
@@ -22,7 +36,7 @@ describe.runIf(!!postgresUrl)('transaction commit outcomes', () => {
       throw new Error('Commit tests require a dedicated local test database');
     db = new Database({
       dialect: 'postgres',
-      host: connection.hostname,
+      host: normalizePostgresHost(connection.hostname),
       port: Number(connection.port || 5432),
       database: connection.pathname.slice(1),
       username: decodeURIComponent(connection.username),

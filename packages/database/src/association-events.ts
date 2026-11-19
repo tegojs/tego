@@ -14,6 +14,7 @@ interface AssociationEventScope {
 }
 
 const associationEvents = new AsyncLocalStorage<AssociationEventScope[]>();
+const flushingAssociationEventScope = new AsyncLocalStorage<AssociationEventScope>();
 
 function getAssociationEventScope(owner: object) {
   const scopes = associationEvents.getStore();
@@ -40,7 +41,7 @@ export function assertAssociationEventTransaction(owner: object, transaction: Tr
 
 export async function dispatchAssociationEvents(owner: object, transaction: Transaction, emit: () => Promise<void>) {
   const scope = getAssociationEventScope(owner);
-  if (!scope || scope.closed || scope.flushing) return emit();
+  if (!scope || scope.closed || flushingAssociationEventScope.getStore() === scope) return emit();
   assertAssociationEventTransaction(owner, transaction);
   scope.pending.push(emit);
 }
@@ -78,7 +79,10 @@ export async function withDeferredAssociationEvents<T>(
       scope.flushing = true;
       activeFlush = (async () => {
         try {
-          while (scope.pending.length) await scope.pending.shift()!();
+          while (scope.pending.length) {
+            const emit = scope.pending.shift()!;
+            await flushingAssociationEventScope.run(scope, emit);
+          }
         } catch (error) {
           scope.failed = true;
           scope.error = error;

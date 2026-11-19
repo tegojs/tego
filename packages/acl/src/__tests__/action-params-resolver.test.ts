@@ -41,6 +41,16 @@ describe('ACL action parameters before fixed restrictions', () => {
     expect(fixed).toHaveBeenCalledTimes(1);
   });
 
+  it.each(['create', 'update'] as const)(
+    'keeps stored %s field grants enforced when a resolver replaces the grant params',
+    (action) => {
+      acl.define({ role: 'writer', actions: { [`documents:${action}`]: { fields: ['name'] } } });
+      acl.registerActionParamsResolver(() => ({ fields: ['name', 'tenantId'] }));
+
+      expect(acl.can({ role: 'writer', resource: 'documents', action })?.params).toEqual({ whitelist: ['name'] });
+    },
+  );
+
   it('does not invoke resolvers or grant denied actions or missing roles', () => {
     const resolver = vi.fn((_context, params) => params);
     acl.registerActionParamsResolver(resolver);

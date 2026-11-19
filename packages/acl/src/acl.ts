@@ -270,12 +270,35 @@ export class ACL extends EventEmitter {
     const fixedParams = this.fixedParamsManager.getParams(rawResourceName ? rawResourceName : resource, action);
 
     const mergeParams = (result: CanResult, source: ActionParamsResolutionContext['source']) => {
+      const isWriteAction = ['create', 'update'].includes(this.resolveActionAlias(action));
+      const grantedWhitelist = isWriteAction ? result.params?.whitelist || result.params?.fields : undefined;
       let params = result['params'] || {};
+
+      if (isWriteAction && Array.isArray(grantedWhitelist)) {
+        params = { ...params, whitelist: grantedWhitelist };
+        delete params.fields;
+      }
 
       for (const resolver of this.actionParamsResolvers) {
         params = resolver({ ...options, acl: this, source }, lodash.cloneDeep(params));
         if (!lodash.isPlainObject(params) || typeof params.then === 'function') {
           throw new TypeError('ACL action parameters resolver must return a synchronous plain object');
+        }
+
+        if (isWriteAction) {
+          if (Array.isArray(params.fields)) {
+            const resolverFields = params.fields;
+            delete params.fields;
+            params.whitelist = Array.isArray(params.whitelist)
+              ? lodash.intersection(params.whitelist, resolverFields)
+              : resolverFields;
+          }
+
+          if (Array.isArray(grantedWhitelist)) {
+            params.whitelist = Array.isArray(params.whitelist)
+              ? lodash.intersection(grantedWhitelist, params.whitelist)
+              : grantedWhitelist;
+          }
         }
       }
 
