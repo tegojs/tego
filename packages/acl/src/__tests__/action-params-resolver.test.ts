@@ -71,6 +71,17 @@ describe('ACL action parameters before fixed restrictions', () => {
     expect(action.params.whitelist).toEqual([]);
   });
 
+  it('treats undefined whitelist operands as absent without clearing an explicit restriction', () => {
+    const action = new Action({ whitelist: undefined });
+
+    action.mergeParams({ whitelist: undefined });
+    expect(action.params.whitelist).toBeUndefined();
+
+    action.mergeParams({ whitelist: [] });
+    action.mergeParams({ whitelist: undefined });
+    expect(action.params.whitelist).toEqual([]);
+  });
+
   it('does not invoke resolvers or grant denied actions or missing roles', () => {
     const resolver = vi.fn((_context, params) => params);
     acl.registerActionParamsResolver(resolver);

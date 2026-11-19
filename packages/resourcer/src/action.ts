@@ -299,10 +299,14 @@ export class Action {
       fields: 'intersect',
       appends: 'union',
       except: 'union',
-      whitelist: (current, incoming) =>
-        (Array.isArray(current) && current.length === 0) || (Array.isArray(incoming) && incoming.length === 0)
-          ? []
-          : mergeStrategies.get('intersect')(current, incoming),
+      whitelist: (current, incoming) => {
+        if (current === undefined) return incoming;
+        if (incoming === undefined) return current;
+        if ((Array.isArray(current) && current.length === 0) || (Array.isArray(incoming) && incoming.length === 0)) {
+          return [];
+        }
+        return mergeStrategies.get('intersect')(current, incoming);
+      },
       blacklist: 'intersect',
       sort: 'overwrite',
       ...strategies,
