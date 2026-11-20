@@ -23,7 +23,7 @@
     "dayjs": "1.11.13",
     "debug": "4.4.3",
     "deepmerge": "^4.3.1",
-    "dottie": "2.0.6",
+    "dottie": "2.0.7",
     "excel-date-to-js": "^1.1.5",
     "exponential-backoff": "^3.1.2",
     "flat": "^5.0.2",
