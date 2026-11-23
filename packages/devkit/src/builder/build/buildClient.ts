@@ -2,7 +2,7 @@ import path from 'node:path';
 
 import { pluginLess } from '@rsbuild/plugin-less';
 import { pluginReact } from '@rsbuild/plugin-react';
-import { build } from '@rslib/core';
+import { createRslib } from '@rslib/core';
 import fg from 'fast-glob';
 import { build as tsupBuild } from 'tsup';
 
@@ -34,55 +34,59 @@ async function buildClientEsm(
 ) {
   const entry = fg.globSync(['src/**', ...globExcludeFiles, '!src/**/*.json'], { cwd, absolute: true });
 
-  await build({
-    source: {
-      entry: {
-        index: entry,
-      },
-      define: {
-        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
-        'process.env.__TEST__': false,
-        'process.env.__E2E__': process.env.__E2E__ ? true : false,
-      },
-    },
-    lib: [
-      {
-        bundle: false,
-        dts: false,
-        format: 'esm',
-        output: {
-          distPath: {
-            root: path.join(cwd, 'es'),
-          },
+  const rslib = await createRslib({
+    cwd,
+    config: {
+      source: {
+        entry: {
+          index: entry,
+        },
+        define: {
+          'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+          'process.env.__TEST__': false,
+          'process.env.__E2E__': process.env.__E2E__ ? true : false,
         },
       },
-      {
-        output: {
-          distPath: {
-            root: path.join(cwd, 'lib'),
+      lib: [
+        {
+          bundle: false,
+          dts: false,
+          format: 'esm',
+          output: {
+            distPath: {
+              root: path.join(cwd, 'es'),
+            },
           },
         },
-        bundle: false,
-        dts: false,
-        format: 'cjs',
+        {
+          output: {
+            distPath: {
+              root: path.join(cwd, 'lib'),
+            },
+          },
+          bundle: false,
+          dts: false,
+          format: 'cjs',
+        },
+      ],
+      output: {
+        sourceMap: {
+          css: sourcemap,
+          js: sourcemap ? 'source-map' : false,
+        },
+        target: 'web',
+        overrideBrowserslist: ['chrome >= 69', 'edge >= 79', 'safari >= 12'],
+        externals({ request }, callback) {
+          if (request && external(request)) {
+            return callback(null, request);
+          }
+          callback();
+        },
       },
-    ],
-    output: {
-      sourceMap: {
-        css: sourcemap,
-        js: sourcemap ? 'source-map' : false,
-      },
-      target: 'web',
-      overrideBrowserslist: ['chrome >= 69', 'edge >= 79', 'safari >= 12'],
-      externals({ request }, callback) {
-        if (external(request)) {
-          return callback(null, request);
-        }
-        callback();
-      },
+      plugins: [pluginReact(), pluginLess()],
     },
-    plugins: [pluginReact(), pluginLess()],
   });
+  await rslib.build();
 }
 
 export function buildLocale(cwd: string, userConfig: UserConfig, log: PkgLog) {
