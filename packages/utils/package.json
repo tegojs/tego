@@ -37,7 +37,7 @@
   "types": "lib/index.d.ts",
   "dependencies": {
     "@hapi/topo": "^6.0.2",
-    "@rc-component/mini-decimal": "^1.1.0",
+    "@rc-component/mini-decimal": "^1.1.4",
     "dayjs": "1.11.13",
     "dedupe": "^3.0.3",
     "deepmerge": "^4.3.1",
