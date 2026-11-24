@@ -411,8 +411,8 @@ importers:
         specifier: ^6.14.0
         version: 6.14.0
       semver:
-        specifier: 7.7.2
-        version: 7.7.2
+        specifier: 7.8.6
+        version: 7.8.6
       serve-handler:
         specifier: ^6.1.6
         version: 6.1.6
@@ -448,8 +448,8 @@ importers:
         specifier: ^6.14.0
         version: 6.14.0
       '@types/semver':
-        specifier: ^7.7.1
-        version: 7.7.1
+        specifier: ^7.8.0
+        version: 7.8.0
       '@types/serve-handler':
         specifier: ^6.1.4
         version: 6.1.4
@@ -560,8 +560,8 @@ importers:
         specifier: ^6.14.0
         version: 6.14.0
       semver:
-        specifier: 7.7.2
-        version: 7.7.2
+        specifier: 7.8.6
+        version: 7.8.6
       sequelize:
         specifier: ^6.37.7
         version: 6.37.7(mysql2@3.14.4)(pg@8.16.3)(sqlite3@5.1.7)
@@ -579,8 +579,8 @@ importers:
         specifier: ^4.17.20
         version: 4.17.20
       '@types/semver':
-        specifier: 7.7.1
-        version: 7.7.1
+        specifier: 7.8.0
+        version: 7.8.0
       china-division:
         specifier: ^2.7.0
         version: 2.7.0
@@ -669,8 +669,8 @@ importers:
         specifier: ^6.1.4
         version: 6.1.4
       semver:
-        specifier: ^7.7.2
-        version: 7.7.2
+        specifier: ^7.8.6
+        version: 7.8.6
       simple-git:
         specifier: ^3.28.0
         version: 3.28.0
@@ -718,8 +718,8 @@ importers:
         specifier: ^6.3.1
         version: 6.3.1
       '@types/semver':
-        specifier: ^7.7.1
-        version: 7.7.1
+        specifier: ^7.8.0
+        version: 7.8.0
       '@types/tar':
         specifier: ^6.1.13
         version: 6.1.13
@@ -3635,8 +3635,8 @@ packages:
   '@types/seedrandom@3.0.8':
     resolution: {integrity: sha512-TY1eezMU2zH2ozQoAFAQFOPpvP15g+ZgSfTZt31AUUH/Rxtnz3H+A/Sv1Snw2/amp//omibc+AEkTaA8KUeOLQ==}
 
-  '@types/semver@7.7.1':
-    resolution: {integrity: sha512-FmgJfu+MOcQ370SD0ev7EI8TlCAfKYU+B4m5T3yXc1CiRN94g/SZPtsCkk506aUDtlMnFZvasDwHHUcZUEaYuA==}
+  '@types/semver@7.8.0':
+    resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
 
   '@types/send@0.17.4':
     resolution: {integrity: sha512-x2EM6TJOybec7c52BX0ZspPodMsQUd5L6PRwOunVyVUhXiBSKf3AezDL8Dgvgt5o0UfKNfuA0eMLr2wLT4AiBA==}
@@ -7399,12 +7399,17 @@ packages:
     resolution: {integrity: sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g==}
     hasBin: true
 
-  semver@6.3.1:
-    resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
+  semver@6.3.2:
+    resolution: {integrity: sha512-GYrCADwpu6yV5OAvchkQ27Z5wwMxWAEMg5NNWjyHh/5DboFFqbdbvYNIvZouQpxXyeMPoTOh0vdPYKlf0ZswdQ==}
     hasBin: true
 
   semver@7.7.2:
     resolution: {integrity: sha512-RF0Fw+rO5AMf9MAyaRXI4AV0Ulj5lMHqVxxdSgiVbixSCXoEmmX/jk0CuJw4+3SqroYO9VoUh+HcuJivvtJemA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  semver@7.8.6:
+    resolution: {integrity: sha512-9lpSSU4Mly3mrtruwLs1eLK6+gzbzqeBFwRNjIjE+9LuDpWdYctrQlQ3ej1Ilgi7gknpsTRnPoLP8DpCHqHIJw==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -8564,7 +8569,7 @@ snapshots:
       debug: 4.4.3
       gensync: 1.0.0-beta.2
       json5: 2.2.3
-      semver: 6.3.1
+      semver: 6.3.2
     transitivePeerDependencies:
       - supports-color
 
@@ -8590,7 +8595,7 @@ snapshots:
       '@babel/helper-validator-option': 7.27.1
       browserslist: 4.25.3
       lru-cache: 5.1.1
-      semver: 6.3.1
+      semver: 6.3.2
 
   '@babel/helper-globals@7.28.0': {}
 
@@ -8720,7 +8725,7 @@ snapshots:
   '@commitlint/is-ignored@19.8.1':
     dependencies:
       '@commitlint/types': 19.8.1
-      semver: 7.7.2
+      semver: 7.8.6
 
   '@commitlint/lint@19.8.1':
     dependencies:
@@ -9240,7 +9245,7 @@ snapshots:
       '@babel/traverse': 7.28.3
       '@babel/types': 7.28.2
       prettier: 3.6.2
-      semver: 7.7.2
+      semver: 7.8.6
     transitivePeerDependencies:
       - supports-color
 
@@ -9536,7 +9541,7 @@ snapshots:
       promise-all-reject-late: 1.0.1
       promise-call-limit: 3.0.2
       read-package-json-fast: 4.0.0
-      semver: 7.7.2
+      semver: 7.8.6
       ssri: 12.0.0
       treeverse: 3.0.0
       walk-up-path: 4.0.0
@@ -9546,12 +9551,12 @@ snapshots:
   '@npmcli/fs@1.1.1':
     dependencies:
       '@gar/promisify': 1.1.3
-      semver: 7.7.2
+      semver: 7.8.6
     optional: true
 
   '@npmcli/fs@4.0.0':
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.6
 
   '@npmcli/git@6.0.3':
     dependencies:
@@ -9561,7 +9566,7 @@ snapshots:
       npm-pick-manifest: 10.0.0
       proc-log: 5.0.0
       promise-retry: 2.0.1
-      semver: 7.7.2
+      semver: 7.8.6
       which: 5.0.0
 
   '@npmcli/installed-package-contents@3.0.0':
@@ -9582,7 +9587,7 @@ snapshots:
       json-parse-even-better-errors: 4.0.0
       pacote: 21.0.1
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.6
     transitivePeerDependencies:
       - supports-color
 
@@ -9603,7 +9608,7 @@ snapshots:
       hosted-git-info: 8.1.0
       json-parse-even-better-errors: 4.0.0
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.6
       validate-npm-package-license: 3.0.4
 
   '@npmcli/package-json@7.0.0':
@@ -9613,7 +9618,7 @@ snapshots:
       hosted-git-info: 9.0.0
       json-parse-even-better-errors: 4.0.0
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.6
       validate-npm-package-license: 3.0.4
 
   '@npmcli/promise-spawn@8.0.3':
@@ -9770,7 +9775,7 @@ snapshots:
       ramda: '@pnpm/ramda@0.28.1'
       right-pad: 1.0.1
       rxjs: 7.8.1
-      semver: 7.7.2
+      semver: 7.8.6
       stacktracey: 2.1.8
       string-length: 4.0.2
 
@@ -9845,7 +9850,7 @@ snapshots:
       detect-libc: 2.0.4
       execa: safe-execa@0.1.2
       mem: 8.1.1
-      semver: 7.7.2
+      semver: 7.8.6
 
   '@pnpm/parse-overrides@4.0.3':
     dependencies:
@@ -9896,7 +9901,7 @@ snapshots:
       archy: 1.0.0
       chalk: 4.1.2
       cli-columns: 4.0.0
-      semver: 7.7.2
+      semver: 7.8.6
 
   '@pnpm/resolver-base@11.1.0':
     dependencies:
@@ -10730,7 +10735,7 @@ snapshots:
 
   '@types/seedrandom@3.0.8': {}
 
-  '@types/semver@7.7.1': {}
+  '@types/semver@7.8.0': {}
 
   '@types/send@0.17.4':
     dependencies:
@@ -10871,7 +10876,7 @@ snapshots:
       node-fetch: 2.7.0(encoding@0.1.13)
       picocolors: 1.1.1
       progress: 2.0.3
-      semver: 7.7.2
+      semver: 7.8.6
       tar-fs: 2.1.3
       yargs: 16.2.0
     transitivePeerDependencies:
@@ -11281,7 +11286,7 @@ snapshots:
 
   builtins@5.0.1:
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.6
 
   bundle-name@4.1.0:
     dependencies:
@@ -13149,7 +13154,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.6
 
   make-dir@5.1.0:
     optional: true
@@ -13548,7 +13553,7 @@ snapshots:
 
   node-abi@3.75.0:
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.6
 
   node-addon-api@7.1.1: {}
 
@@ -13576,7 +13581,7 @@ snapshots:
       make-fetch-happen: 14.0.3
       nopt: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.6
       tar: 7.5.1
       tinyglobby: 0.2.15
       which: 5.0.0
@@ -13592,7 +13597,7 @@ snapshots:
       nopt: 5.0.0
       npmlog: 6.0.2
       rimraf: 3.0.2
-      semver: 7.7.2
+      semver: 7.8.6
       tar: 6.2.1
       which: 2.0.2
     transitivePeerDependencies:
@@ -13628,7 +13633,7 @@ snapshots:
 
   npm-install-checks@7.1.2:
     dependencies:
-      semver: 7.7.2
+      semver: 7.8.6
 
   npm-normalize-package-bin@4.0.0: {}
 
@@ -13636,14 +13641,14 @@ snapshots:
     dependencies:
       hosted-git-info: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.6
       validate-npm-package-name: 6.0.2
 
   npm-package-arg@13.0.0:
     dependencies:
       hosted-git-info: 9.0.0
       proc-log: 5.0.0
-      semver: 7.7.2
+      semver: 7.8.6
       validate-npm-package-name: 6.0.2
 
   npm-packlist@10.0.2:
@@ -13656,7 +13661,7 @@ snapshots:
       npm-install-checks: 7.1.2
       npm-normalize-package-bin: 4.0.0
       npm-package-arg: 12.0.2
-      semver: 7.7.2
+      semver: 7.8.6
 
   npm-registry-fetch@18.0.2:
     dependencies:
@@ -13805,7 +13810,7 @@ snapshots:
       ky: 1.8.1
       registry-auth-token: 5.1.0
       registry-url: 6.0.1
-      semver: 7.7.2
+      semver: 7.8.6
 
   pacote@21.0.1:
     dependencies:
@@ -14953,9 +14958,11 @@ snapshots:
 
   semver@5.7.2: {}
 
-  semver@6.3.1: {}
+  semver@6.3.2: {}
 
   semver@7.7.2: {}
+
+  semver@7.8.6: {}
 
   seq-queue@0.0.5: {}
 
@@ -15135,7 +15142,7 @@ snapshots:
       detect-newline: 4.0.1
       git-hooks-list: 4.1.1
       is-plain-obj: 4.1.0
-      semver: 7.7.2
+      semver: 7.8.6
       sort-object-keys: 1.1.3
       tinyglobby: 0.2.15
 
@@ -15653,7 +15660,7 @@ snapshots:
       is-npm: 6.0.0
       latest-version: 9.0.0
       pupa: 3.1.0
-      semver: 7.7.2
+      semver: 7.8.6
       xdg-basedir: 5.1.0
 
   upper-case@2.0.2:
