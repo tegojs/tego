@@ -1,7 +1,7 @@
 import EventEmitter from 'node:events';
 import { Context } from '@tachybase/actions';
 import { Action } from '@tachybase/resourcer';
-import { assign, getCurrentStacks, parseFilter, Toposort, ToposortOptions } from '@tachybase/utils';
+import { assign, getCurrentStacks, mergeStrategies, parseFilter, Toposort, ToposortOptions } from '@tachybase/utils';
 
 import compose from 'koa-compose';
 import lodash from 'lodash';
@@ -302,7 +302,23 @@ export class ACL extends EventEmitter {
         }
       }
 
-      const mergedParams = assign(params, fixedParams);
+      const mergedParams = assign(
+        params,
+        fixedParams,
+        isWriteAction
+          ? {
+              whitelist: (current, incoming) => {
+                if (
+                  (Array.isArray(current) && current.length === 0) ||
+                  (Array.isArray(incoming) && incoming.length === 0)
+                ) {
+                  return [];
+                }
+                return mergeStrategies.get('intersect')(current, incoming);
+              },
+            }
+          : {},
+      );
 
       if (Object.keys(mergedParams).length) {
         result['params'] = mergedParams;

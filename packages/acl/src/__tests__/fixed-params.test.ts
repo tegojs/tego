@@ -79,4 +79,19 @@ describe('fixed params', () => {
       },
     });
   });
+  it('keeps an empty write whitelist as deny-all when fixed params allow fields', () => {
+    const acl = new ACL();
+    acl.define({ role: 'writer', actions: { 'documents:update': { fields: [] } } });
+    acl.addFixedParams('documents', 'update', () => ({ whitelist: ['secret'] }));
+
+    expect(acl.can({ role: 'writer', resource: 'documents', action: 'update' })?.params?.whitelist).toEqual([]);
+  });
+
+  it('keeps an empty fixed write whitelist as deny-all', () => {
+    const acl = new ACL();
+    acl.define({ role: 'writer', actions: { 'documents:update': { fields: ['secret'] } } });
+    acl.addFixedParams('documents', 'update', () => ({ whitelist: [] }));
+
+    expect(acl.can({ role: 'writer', resource: 'documents', action: 'update' })?.params?.whitelist).toEqual([]);
+  });
 });

@@ -1,4 +1,4 @@
-import { assign } from '@tachybase/utils';
+import { assign, mergeStrategies } from '@tachybase/utils';
 
 type Context = any;
 export type Merger = () => object;
@@ -43,7 +43,12 @@ export default class FixedParamsManager {
       fields: 'intersect',
       appends: 'union',
       except: 'union',
-      whitelist: 'intersect',
+      whitelist: (current, incoming) => {
+        if ((Array.isArray(current) && current.length === 0) || (Array.isArray(incoming) && incoming.length === 0)) {
+          return [];
+        }
+        return mergeStrategies.get('intersect')(current, incoming);
+      },
       blacklist: 'intersect',
       sort: 'overwrite',
     });
