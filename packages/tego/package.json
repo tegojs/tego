@@ -69,7 +69,7 @@
     "npm-registry-fetch": "19.0.0",
     "pg": "^8.16.3",
     "react": "18.3.1",
-    "sequelize": "6.37.7",
+    "sequelize": "6.37.8",
     "sqlite3": "5.1.7",
     "tar": "7.5.1",
     "umzug": "3.8.2",
