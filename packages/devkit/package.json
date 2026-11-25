@@ -62,7 +62,7 @@
     "rimraf": "^6.1.4",
     "semver": "^7.8.6",
     "simple-git": "^3.28.0",
-    "tar": "^7.5.1",
+    "tar": "^7.5.23",
     "terminal-kit": "^3.1.2",
     "tree-kill": "^1.2.2",
     "tsconfig-paths": "^4.2.0",
@@ -80,7 +80,7 @@
     "@types/npm-packlist": "^7.0.3",
     "@types/npmcli__arborist": "^6.3.1",
     "@types/semver": "^7.8.0",
-    "@types/tar": "^6.1.13",
+    "@types/tar": "^7.0.87",
     "@types/update-notifier": "^6.0.8",
     "esbuild-plugin-file-path-extensions": "^2.1.4"
   }
