@@ -55,7 +55,7 @@
     "fs-extra": "^11.3.2",
     "lodash": "^4.17.21",
     "npm-packlist": "^10.0.2",
-    "open": "^10.2.0",
+    "open": "^11.0.4",
     "p-all": "^3.0.0",
     "package-json": "^10.0.1",
     "portfinder": "^1.0.38",
