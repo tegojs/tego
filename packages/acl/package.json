@@ -20,7 +20,7 @@
     "@tachybase/utils": "workspace:*",
     "koa-compose": "^4.1.0",
     "lodash": "4.17.21",
-    "minimatch": "^5.1.6"
+    "minimatch": "^11.0.9"
   },
   "devDependencies": {
     "@types/lodash": "4.17.20",
