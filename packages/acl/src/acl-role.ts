@@ -1,5 +1,5 @@
 import lodash from 'lodash';
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 
 import { ACL, DefineOptions } from './acl';
 import { ACLAvailableStrategy, AvailableStrategyOptions } from './acl-available-strategy';
