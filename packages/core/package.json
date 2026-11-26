@@ -51,7 +51,7 @@
     "semver": "7.8.6",
     "serve-handler": "^6.1.6",
     "winston": "^3.17.0",
-    "ws": "^8.18.3",
+    "ws": "^8.23.0",
     "xpipe": "^1.0.8"
   },
   "devDependencies": {
@@ -64,7 +64,7 @@
     "@types/qs": "^6.14.0",
     "@types/semver": "^7.8.0",
     "@types/serve-handler": "^6.1.4",
-    "@types/ws": "^8.18.1",
+    "@types/ws": "^8.18.2",
     "supertest": "^7.1.4"
   }
 }
