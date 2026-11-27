@@ -19,12 +19,12 @@
     "@tachybase/database": "workspace:*",
     "@tachybase/resourcer": "workspace:*",
     "@tachybase/utils": "workspace:*",
-    "koa": "^2.16.2",
+    "koa": "^3.3.0",
     "lodash": "4.17.21",
     "sequelize": "^6.37.8"
   },
   "devDependencies": {
-    "@types/koa": "^2.15.0",
+    "@types/koa": "^3.0.3",
     "@types/lodash": "^4.17.20",
     "koa-bodyparser": "^4.4.1",
     "qs": "^6.17.1",
