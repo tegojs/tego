@@ -35,7 +35,7 @@
   "dependencies": {
     "@hapi/topo": "^6.0.2",
     "@inquirer/prompts": "^7.8.6",
-    "@npmcli/arborist": "^9.1.4",
+    "@npmcli/arborist": "^10.0.5",
     "@pnpm/workspace.find-packages": "^1.1.12",
     "@rsbuild/core": "^2.3.2",
     "@rsbuild/plugin-less": "^2.0.1",
